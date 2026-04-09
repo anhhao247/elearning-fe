@@ -1,10 +1,87 @@
+"use client"
+
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { api } from "@/lib/axios"
+import { useAuthStore } from "@/store/useAuthStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
 
 export default function LoginPage() {
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { setToken, setUser } = useAuthStore()
+
+  // Handle OAuth errors and Google login callback
+  useEffect(() => {
+    // Debug: log tất cả query params
+    const queryParams = Object.fromEntries(searchParams.entries())
+    console.log("🔍 Callback query params:", queryParams)
+
+    const error = searchParams.get("error")
+    if (error) {
+      toast.error(`Đăng nhập thất bại: ${error}`)
+      return
+    }
+
+    // Xử lý callback Google: lấy accessToken từ query param
+    const accessToken = searchParams.get("token")
+    console.log("🔐 AccessToken from query:", accessToken)
+    
+    if (accessToken) {
+      setToken(accessToken)
+      console.log("✅ Token saved to store")
+      api.get("/users/me", {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      })
+        .then((res) => {
+          setUser(res.data)
+          toast.success("Đăng nhập Google thành công!")
+          router.push("/")
+        })
+        .catch(() => {
+          toast.error("Không lấy được thông tin người dùng từ Google.")
+        })
+    }
+  }, [searchParams, setToken, setUser, router])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    try {
+      const response = await api.post("/auth/login", { username, password })
+      const { accessToken } = response.data
+
+      if (accessToken) {
+        setToken(accessToken)
+        
+        // Fetch user data after successful login
+        const userRes = await api.get("/users/me")
+        setUser(userRes.data)
+
+        toast.success("Đăng nhập thành công!")
+        router.push("/")
+      }
+    } catch (error) {
+      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")
+      console.error("Login error:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google"
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-zinc-50 dark:bg-zinc-950">
       <Card className="w-full max-w-md shadow-md">
@@ -16,7 +93,13 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="w-full">
+            <Button 
+              type="button"
+              variant="outline" 
+              className="w-full"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+            >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -49,13 +132,20 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Hoặc đăng nhập với email</span>
+              <span className="bg-card px-2 text-muted-foreground">Hoặc đăng nhập với tài khoản</span>
             </div>
           </div>
-          <form className="grid gap-4">
+          <form className="grid gap-4" onSubmit={handleLogin}>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Label htmlFor="username">Tên đăng nhập</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Tên đăng nhập"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
             </div>
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
@@ -64,10 +154,16 @@ export default function LoginPage() {
                   Quên mật khẩu?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
-            <Button type="button" className="w-full mt-2">
-              Đăng nhập
+            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+              {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
           </form>
         </CardContent>

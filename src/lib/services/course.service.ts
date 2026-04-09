@@ -1,0 +1,35 @@
+import { Course, PageResponse } from '@/types/course'
+
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api'
+
+export async function getCourses({
+  page = '0',
+  limit = '10',
+  sortBy = 'createdAt',
+  sortDir = 'desc',
+  keyword = '',
+  level = '',
+  isFree = '',
+  categoryId = ''
+}: Record<string, string>): Promise<PageResponse<Course>> {
+  const query = new URLSearchParams()
+  query.set('page', page)
+  query.set('limit', limit)
+  if (sortBy) query.set('sortBy', sortBy)
+  if (sortDir) query.set('sortDir', sortDir)
+  if (keyword) query.set('keyword', keyword)
+  if (level) query.set('level', level)
+  if (isFree !== '') query.set('isFree', isFree)
+  if (categoryId) query.set('categoryId', categoryId)
+
+  const response = await fetch(`${baseUrl}/v1/courses?${query.toString()}`, {
+    cache: 'no-store', // Tắt cache để search/filter chính xác theo thời gian thực
+  })
+
+  // Nếu API down hoặc lỗi, ta ném exception để Error Boundary xử lý hoặc Loading Skeleton hiện fallback
+  if (!response.ok) {
+    throw new Error('Failed to fetch courses')
+  }
+
+  return response.json()
+}
