@@ -3,6 +3,7 @@ import Image from "next/image"
 import { Course } from "@/types/course"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { generateSlug } from "@/lib/utils"
 
 function formatMoney(amount: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -26,7 +27,7 @@ function getLevelBadgeVariant(level: string) {
 
 export function CourseCard({ course }: { course: Course }) {
   return (
-    <Link href={`/courses/${course.id}`}>
+    <Link href={`/courses/${generateSlug(course.title, course.id)}`}>
       <Card className="h-full flex flex-col overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
         {course.thumbnail ? (
