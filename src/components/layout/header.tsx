@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { UserNav } from "@/components/layout/user-nav";
 
 export function Header() {
   return (
@@ -15,14 +15,7 @@ export function Header() {
             <Link href="/about" className="transition-colors hover:text-foreground/80 text-foreground/60">Về chúng tôi</Link>
           </nav>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4">
-          <Button variant="ghost" asChild className="hidden sm:flex">
-            <Link href="/login">Đăng nhập</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Đăng ký</Link>
-          </Button>
-        </div>
+        <UserNav />
       </div>
     </header>
   );
