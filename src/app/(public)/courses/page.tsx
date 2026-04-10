@@ -1,9 +1,12 @@
 import { Suspense } from "react"
 import { getCourses } from "@/lib/services/course.service"
-import { CourseCard } from "@/components/features/courses/CourseCard"
-import { CourseFilters } from "@/components/features/courses/CourseFilters"
-import { CoursePagination } from "@/components/features/courses/CoursePagination"
+import { CourseCard } from "@/components/features/courses/course-card"
+import { CourseFilters } from "@/components/features/courses/course-filters"
+import { CoursePagination } from "@/components/features/courses/course-pagination"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Filter } from "lucide-react"
 
 export const metadata = {
   title: "Danh sách khóa học | EduPlatform",
@@ -32,23 +35,57 @@ export default async function CoursesPage({ searchParams }: PageProps) {
 
   // Gọi Suspense nội bộ cho component List
   return (
-    <div className="container mx-auto px-4 md:px-6 py-8">
-      <div className="flex flex-col gap-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Khám phá Khóa học</h1>
-          <p className="text-muted-foreground mt-2">
-            Tìm kiếm từ hàng ngàn khóa học phù hợp với nhu cầu và năng lực của bạn
+    <>
+      {/* Hero Banner Section */}
+      <div className="bg-primary/5 py-12 md:py-16 border-b border-border">
+        <div className="container mx-auto px-4 md:px-6 text-center lg:text-left flex flex-col items-center lg:items-start space-y-4">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
+            Khám phá các khóa học thú vị
+          </h1>
+          <p className="text-muted-foreground text-lg max-w-2xl">
+            Nâng cao kỹ năng với hàng ngàn khóa học chất lượng từ các chuyên gia hàng đầu.
           </p>
         </div>
-
-        <CourseFilters />
-
-        {/* Bọc bằng Suspense khi SSR call API bị delay */}
-        <Suspense fallback={<CoursesSkeleton />}>
-          <CourseList params={params.toString()} />
-        </Suspense>
       </div>
-    </div>
+
+      <div className="container mx-auto px-4 md:px-6 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Mobile Filter Trigger */}
+          <div className="lg:hidden flex justify-between items-center bg-card p-4 rounded-lg border">
+            <span className="font-medium">Bộ lọc khóa học</span>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Lọc
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[300px] sm:w-[350px] overflow-y-auto">
+                <SheetHeader className="mb-4">
+                  <SheetTitle>Bộ lọc khóa học</SheetTitle>
+                </SheetHeader>
+                <CourseFilters />
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop Sidebar Filters */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-20">
+              <CourseFilters />
+            </div>
+          </aside>
+
+          {/* Main Course List */}
+          <div className="flex-1 flex flex-col gap-6 w-full min-w-0">
+            {/* Bọc bằng Suspense khi SSR call API bị delay */}
+            <Suspense fallback={<CoursesSkeleton />}>
+              <CourseList params={params.toString()} />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
@@ -61,7 +98,7 @@ async function CourseList({ params }: { params: string }) {
     data = await getCourses(paramObj)
   } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-red-50 dark:bg-red-950/10 text-red-500">
+      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-destructive/5 text-destructive border-destructive/20">
         <p>Lỗi kết nối tới máy chủ: Không thể lấy danh sách khóa học.</p>
         <p className="text-sm mt-2 opacity-80">Vui lòng thử lại sau.</p>
       </div>
@@ -81,11 +118,15 @@ async function CourseList({ params }: { params: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="text-sm text-muted-foreground">
-        Hiển thị tổng cộng <span className="font-semibold text-foreground">{totalElements}</span> kết quả
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-card p-4 rounded-lg border gap-4">
+        <div className="text-sm text-muted-foreground">
+          Hiển thị tổng cộng <span className="font-semibold text-foreground">{totalElements}</span> kết quả
+        </div>
+        
+        {/* Placeholder cho Dropdown Sắp xếp giống thiết kế (hiện API đã hỗ trợ param sortBy/sortDir, logic gán param tương tự filter) */}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {courses.map((course) => (
           <CourseCard key={course.id} course={course} />
         ))}
@@ -99,9 +140,9 @@ async function CourseList({ params }: { params: string }) {
 function CoursesSkeleton() {
   return (
     <div className="flex flex-col gap-6">
-      <Skeleton className="h-4 w-32 mb-2" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, i) => (
+      <div className="h-14 bg-card rounded-lg border animate-pulse" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {Array.from({ length: 9 }).map((_, i) => (
           <div key={i} className="flex flex-col h-full overflow-hidden rounded-xl border bg-card">
             <Skeleton className="aspect-video w-full rounded-none" />
             <div className="p-6 flex-1 flex flex-col gap-3">

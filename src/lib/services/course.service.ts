@@ -36,15 +36,8 @@ export async function getCourses({
 }
 
 export async function getCourseDetail(id: string | number) {
-  const response = await fetch(`${baseUrl}/v1/courses/${id}`, {
-    cache: 'no-store', // Không lưu cache để test, hoặc thay đổi cache pattern theo nhu cầu
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch course detail')
-  }
-
-  return response.json()
+  const { data } = await api.get(`/v1/courses/${id}`)
+  return data
 }
 
 // Lấy danh sách khóa học của tôi (đã mua)

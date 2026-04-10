@@ -47,7 +47,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <Card className="w-full max-w-md shadow-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">Tạo tài khoản</CardTitle>
@@ -65,7 +65,7 @@ export default function RegisterPage() {
                 placeholder="Tên"
                 {...register("firstName")}
               />
-              {errors.firstName && <p className="text-xs text-red-500">{errors.firstName.message}</p>}
+              {errors.firstName && <p className="text-xs text-destructive">{errors.firstName.message}</p>}
             </div>
 
             <div className="grid gap-2">
@@ -76,7 +76,7 @@ export default function RegisterPage() {
                 placeholder="Họ"
                 {...register("lastName")}
               />
-              {errors.lastName && <p className="text-xs text-red-500">{errors.lastName.message}</p>}
+              {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
             </div>
 
             <div className="grid gap-2">
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                 placeholder="Tên đăng nhập"
                 {...register("username")}
               />
-              {errors.username && <p className="text-xs text-red-500">{errors.username.message}</p>}
+              {errors.username && <p className="text-xs text-destructive">{errors.username.message}</p>}
             </div>
 
             <div className="grid gap-2">
@@ -98,7 +98,7 @@ export default function RegisterPage() {
                 placeholder="email@example.com"
                 {...register("email")}
               />
-              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
 
             <div className="grid gap-2">
@@ -109,7 +109,7 @@ export default function RegisterPage() {
                 placeholder="Mật khẩu"
                 {...register("password")}
               />
-              {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
+              {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
 
             <Button type="submit" className="w-full mt-2" disabled={isLoading}>

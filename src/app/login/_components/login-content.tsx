@@ -84,7 +84,7 @@ function LoginContent() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-muted/30">
       <Card className="w-full max-w-md shadow-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">Chào mừng trở lại</CardTitle>
@@ -121,7 +121,7 @@ function LoginContent() {
               </svg>
               Google
             </Button>
-            <Button variant="outline" className="w-full text-[#1877F2]">
+            <Button variant="outline" className="w-full border-border hover:bg-accent text-[#1877F2]">
               <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
@@ -130,7 +130,7 @@ function LoginContent() {
           </div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">Hoặc đăng nhập với tài khoản</span>
@@ -138,7 +138,7 @@ function LoginContent() {
           </div>
           <form className="grid gap-4" onSubmit={handleLogin}>
             <div className="grid gap-2">
-              <Label htmlFor="username">Tên đăng nhập</Label>
+              <Label htmlFor="username" className="text-foreground">Tên đăng nhập</Label>
               <Input
                 id="username"
                 type="text"
@@ -146,11 +146,12 @@ function LoginContent() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="border-border"
               />
             </div>
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Mật khẩu</Label>
+                <Label htmlFor="password" className="text-foreground">Mật khẩu</Label>
                 <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline">
                   Quên mật khẩu?
                 </Link>
@@ -161,9 +162,10 @@ function LoginContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="border-border"
               />
             </div>
-            <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+            <Button type="submit" className="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
           </form>

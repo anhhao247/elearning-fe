@@ -119,6 +119,8 @@ export const courseDetailSchema = z.object({
   hasMoneyBackGuarantee: z.boolean().optional(),
   isMobileAccessible: z.boolean().optional(),
   progressPercent: z.number().optional(),
+  resumeContentId: z.number().optional(),
+  resumeContentType: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
   modules: z.array(courseModuleSchema).optional(),

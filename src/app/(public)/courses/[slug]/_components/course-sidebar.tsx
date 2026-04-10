@@ -69,19 +69,40 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
         </div>
 
         <div className="space-y-3">
-          <Button
-            size="lg"
-            className="w-full font-semibold text-base py-6 bg-purple-600 hover:bg-purple-700"
-          >
-            Thêm vào giỏ hàng
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full font-semibold text-base py-6 hover:bg-accent"
-          >
-            Mua ngay
-          </Button>
+          {course.isEnrolled ? (
+            <Button
+              size="lg"
+              className="w-full font-semibold text-base py-6 bg-primary hover:bg-primary/90"
+              onClick={() => {
+                const slug = window.location.pathname.split("/").pop()
+                if (course.resumeContentId) {
+                  window.location.href = `/courses/learning/${slug}/${course.resumeContentId}`
+                } else {
+                  // Fallback: Tới module content đầu tiên hoặc default
+                  const firstContentId = course.modules?.[0]?.contents?.[0]?.id || 1
+                  window.location.href = `/courses/learning/${slug}/${firstContentId}`
+                }
+              }}
+            >
+              Học tiếp khóa học
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="lg"
+                className="w-full font-semibold text-base py-6 bg-purple-600 hover:bg-purple-700"
+              >
+                Thêm vào giỏ hàng
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full font-semibold text-base py-6 hover:bg-accent"
+              >
+                Mua ngay
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="flex items-center justify-evenly py-4 text-muted-foreground text-sm font-medium border-b border-border/80 mt-4">
