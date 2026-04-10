@@ -1,4 +1,5 @@
-import { Course, PageResponse } from '@/types/course'
+import { Course, PageResponse, MyCoursesPageResponse } from '@/types/course'
+import { api } from '@/lib/axios'
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api'
 
@@ -44,4 +45,15 @@ export async function getCourseDetail(id: string | number) {
   }
 
   return response.json()
+}
+
+// Lấy danh sách khóa học của tôi (đã mua)
+export async function getMyCourses(params: {
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortDir?: string
+}): Promise<MyCoursesPageResponse> {
+  const { data } = await api.get('/v1/me/courses', { params })
+  return data
 }

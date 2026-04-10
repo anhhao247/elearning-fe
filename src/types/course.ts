@@ -26,6 +26,30 @@ export interface PageResponse<T> {
   first: boolean
 }
 
+// Interface cho My Course trả về từ API /v1/me/courses
+export interface MyCourse {
+  id: number
+  title: string
+  thumbnail: string | null
+  description: string | null
+  level: string
+  enrolledAt: string
+  progress: number
+}
+
+// Cấu trúc phân trang đặc thù của Spring (nằm ở route /me/courses)
+export interface MyCoursesPageResponse {
+  content: MyCourse[]
+  empty: boolean
+  first: boolean
+  last: boolean
+  number: number // current page (0-based)
+  numberOfElements: number
+  size: number
+  totalElements: number
+  totalPages: number
+}
+
 // Zod Schemas for Course Detail
 export const courseCategorySchema = z.object({
   id: z.number(),

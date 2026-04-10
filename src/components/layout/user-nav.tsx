@@ -63,7 +63,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile" className="cursor-pointer font-medium w-full">Hồ sơ cá nhân</Link>
+            <Link href="/my-profile" className="cursor-pointer font-medium w-full">Hồ sơ cá nhân</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/settings" className="cursor-pointer font-medium w-full">Cài đặt</Link>
