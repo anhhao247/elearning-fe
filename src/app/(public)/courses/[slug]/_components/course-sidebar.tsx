@@ -13,8 +13,23 @@ import {
   ShieldCheck,
   Heart,
   Share2,
-  Gift
+  Gift,
+  Loader2
 } from "lucide-react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/useAuthStore"
+import { createOrder, createPayment } from "@/lib/services/payment.service"
+import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 export function CourseSidebar({ course }: { course: CourseDetail }) {
   const formatPrice = (price: number) => {
@@ -25,6 +40,47 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
   }
 
   const isDiscounted = course.discount && course.discount > 0 && course.discountedPrice
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const user = useAuthStore((state) => state.user)
+  const router = useRouter()
+
+  const handleBuyNow = () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để mua khóa học")
+      router.push("/login")
+      return
+    }
+    setIsModalOpen(true)
+  }
+
+  const confirmPurchase = async () => {
+    try {
+      setIsProcessing(true)
+      const priceToPay = isDiscounted ? course.discountedPrice! : course.price
+      
+      const orderResponse = await createOrder({
+        userId: user!.id,
+        items: [{ courseId: course.id, price: priceToPay }]
+      })
+
+      const paymentResponse = await createPayment({
+        orderId: orderResponse.orderId
+      })
+
+      if (paymentResponse.url) {
+        sessionStorage.setItem('last_purchased_course_url', window.location.pathname)
+        window.location.href = paymentResponse.url
+      } else {
+        throw new Error("Không lấy được link thanh toán")
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi tạo thanh toán")
+      setIsProcessing(false)
+      setIsModalOpen(false)
+    }
+  }
 
   return (
     <div className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border sticky top-24 z-10 transition-all hover:shadow-2xl">
@@ -86,18 +142,26 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
             >
               Học tiếp khóa học
             </Button>
+          ) : course.isFree ? (
+            <Button
+              size="lg"
+              className="w-full font-semibold text-base py-6 bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all hover:scale-[1.02]"
+            >
+              Đăng ký khóa học ngay
+            </Button>
           ) : (
             <>
               <Button
                 size="lg"
-                className="w-full font-semibold text-base py-6 bg-purple-600 hover:bg-purple-700"
+                className="w-full font-semibold text-base py-6 bg-purple-600 hover:bg-purple-700 shadow-md transition-all hover:scale-[1.02]"
               >
                 Thêm vào giỏ hàng
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full font-semibold text-base py-6 hover:bg-accent"
+                className="w-full font-semibold text-base py-6 hover:bg-accent border-2 font-bold"
+                onClick={handleBuyNow}
               >
                 Mua ngay
               </Button>
@@ -159,6 +223,49 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
           </ul>
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={(open) => !isProcessing && setIsModalOpen(open)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Xác nhận thanh toán</DialogTitle>
+            <DialogDescription>
+              Bạn đang tiến hành mua khóa học <span className="font-bold text-foreground">{course.title}</span>.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4 space-y-4">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Giá gốc:</span>
+              <span className={isDiscounted ? "line-through text-muted-foreground" : "font-medium"}>
+                {formatPrice(course.price)}
+              </span>
+            </div>
+            {isDiscounted && (
+              <div className="flex justify-between text-rose-500 font-medium">
+                <span>Giảm giá:</span>
+                <span>-{course.discount}%</span>
+              </div>
+            )}
+            <Separator />
+            <div className="flex justify-between font-bold text-lg">
+              <span>Tổng thanh toán:</span>
+              <span className="text-primary">
+                {formatPrice(isDiscounted ? course.discountedPrice! : course.price)}
+              </span>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)} disabled={isProcessing}>
+              Hủy
+            </Button>
+            <Button onClick={confirmPurchase} disabled={isProcessing}>
+              {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Xác nhận & Thanh toán
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
