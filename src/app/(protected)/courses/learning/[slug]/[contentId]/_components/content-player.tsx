@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import ReactPlayer from "react-player"
 import { ContentDetailResponse } from "@/types/learning"
 
+import { QuizPlayer } from "./quiz-player"
+
 interface ContentPlayerProps {
   content: ContentDetailResponse
 }
@@ -52,16 +54,7 @@ export function ContentPlayer({ content }: ContentPlayerProps) {
     }
 
     if (content.contentType === "QUIZ") {
-      return (
-        <div className="flex flex-col gap-6">
-          <h1 className="text-2xl md:text-3xl font-bold">{content.title}</h1>
-          <div className="p-8 text-center bg-card border rounded-lg min-h-[400px] flex flex-col items-center justify-center shadow-sm">
-            <h3 className="text-xl font-bold mb-2">Bài tập trắc nghiệm</h3>
-            <p className="text-muted-foreground mb-4">Hoàn thành bài tập đánh giá để tiếp tục phần học tiếp theo.</p>
-            <button className="px-6 py-2.5 font-medium bg-primary text-primary-foreground rounded-md shadow hover:bg-primary/90 transition-colors">Bắt đầu Quiz</button>
-          </div>
-        </div>
-      )
+      return <QuizPlayer contentId={content.id} title={content.title} />
     }
 
     return (
