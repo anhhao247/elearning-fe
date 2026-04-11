@@ -41,6 +41,25 @@ export default function LearningPage({
     error: contentError 
   } = useContentDetail(contentId, contentId > 0)
 
+  // Calculate real progress
+  const progressStats = useMemo(() => {
+    if (!syllabus) return { completed: 0, total: 0, percentage: 0 }
+    
+    let total = 0
+    let completed = 0
+    
+    syllabus.modules.forEach(module => {
+      module.contents.forEach(content => {
+        total++
+        if (content.isCompleted) completed++
+      })
+    })
+    
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+    
+    return { completed, total, percentage }
+  }, [syllabus])
+
   if (courseId === 0) {
     return <div className="p-8 text-center text-destructive">URL không hợp lệ. Không tìm thấy ID khóa học.</div>
   }
@@ -77,14 +96,22 @@ export default function LearningPage({
         
         <div className="flex items-center gap-4">
           <div className="hidden lg:flex items-center gap-2 text-sm">
-            <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent flex items-center justify-center text-[10px] font-bold">
-              0%
+            <div 
+              className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent flex items-center justify-center text-[10px] font-bold"
+              style={{ 
+                borderTopColor: progressStats.percentage === 100 ? 'currentColor' : 'transparent',
+                transform: `rotate(${progressStats.percentage * 3.6}deg)` 
+              }}
+            >
+              <span style={{ transform: `rotate(-${progressStats.percentage * 3.6}deg)` }}>
+                {progressStats.percentage}%
+              </span>
             </div>
             {isSyllabusLoading ? (
               <Skeleton className="h-4 w-20 bg-slate-700" />
             ) : (
               <span className="text-slate-300">
-                0 / {syllabus?.modules.reduce((acc, m) => acc + m.contents.length, 0) || 0} bài
+                {progressStats.completed} / {progressStats.total} bài
               </span>
             )}
           </div>
@@ -124,7 +151,7 @@ export default function LearningPage({
               </div>
             ) : (
               <>
-                <ContentPlayer content={contentDetail} />
+                <ContentPlayer content={contentDetail} courseId={courseId} />
                 <ContentTabs content={contentDetail} />
               </>
             )}

@@ -3,7 +3,8 @@ import {
   ContentDetailResponse, 
   QuizFetchResponse, 
   QuizSubmissionPayload, 
-  QuizResultResponse 
+  QuizResultResponse, 
+  CompleteContentResponse
 } from '@/types/learning'
 import { api } from '../axios'
 
@@ -30,5 +31,10 @@ export async function submitQuiz(
   const { data } = await api.post(`/v1/contents/${contentId}/quiz/submit`, payload, {
     params: { userId }
   })
+  return data
+}
+
+export async function completeContent(contentId: number | string): Promise<CompleteContentResponse> {
+  const { data } = await api.post(`/v1/contents/${contentId}/complete`)
   return data
 }

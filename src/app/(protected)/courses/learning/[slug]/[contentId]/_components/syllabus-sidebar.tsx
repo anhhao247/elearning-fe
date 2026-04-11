@@ -48,8 +48,7 @@ export function SyllabusSidebar({ syllabus, currentContentId, courseSlug }: Syll
       <div className="p-4 border-b bg-muted/40">
         <h2 className="font-bold text-lg">Nội dung khóa học</h2>
         <div className="text-sm text-muted-foreground mt-1">
-          {/* Mock progress, can calculate from syllabus if needed */}
-          Hoàn thành 0 / {syllabus.modules.reduce((acc, m) => acc + m.contents.length, 0)} bài học
+          Hoàn thành {syllabus.modules.reduce((acc, m) => acc + m.contents.filter(c => c.isCompleted).length, 0)} / {syllabus.modules.reduce((acc, m) => acc + m.contents.length, 0)} bài học
         </div>
       </div>
 
@@ -65,7 +64,7 @@ export function SyllabusSidebar({ syllabus, currentContentId, courseSlug }: Syll
                 <div className="flex flex-col items-start gap-1 text-left">
                   <span>{module.title}</span>
                   <span className="text-xs font-normal text-muted-foreground">
-                    0/{module.contents.length} bài học
+                    {module.contents.filter(c => c.isCompleted).length}/{module.contents.length} bài học
                   </span>
                 </div>
               </AccordionTrigger>

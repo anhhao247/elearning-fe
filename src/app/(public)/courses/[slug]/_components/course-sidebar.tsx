@@ -21,6 +21,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/useAuthStore"
 import { createOrder, createPayment } from "@/lib/services/payment.service"
+import { enrollFreeCourse } from "@/lib/services/enrollment.service"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -43,6 +44,7 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isEnrolling, setIsEnrolling] = useState(false)
   const user = useAuthStore((state) => state.user)
   const router = useRouter()
 
@@ -53,6 +55,31 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
       return
     }
     setIsModalOpen(true)
+  }
+
+  const handleFreeEnroll = async () => {
+    if (!user) {
+      toast.error("Vui lòng đăng nhập để đăng ký khóa học")
+      router.push("/login")
+      return
+    }
+
+    try {
+      setIsEnrolling(true)
+      const response = await enrollFreeCourse(course.id)
+      
+      toast.success("🎉 Đăng ký khóa học thành công!")
+      
+      // Chuyển hướng tới trang học tập
+      const slug = window.location.pathname.split("/").pop()
+      const contentId = response.resumeContentId || course.modules?.[0]?.contents?.[0]?.id || 1
+      
+      router.push(`/courses/learning/${slug}/${contentId}`)
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi đăng ký khóa học")
+    } finally {
+      setIsEnrolling(false)
+    }
   }
 
   const confirmPurchase = async () => {
@@ -102,27 +129,29 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
       )}
 
       <div className="p-6">
-        <div className="flex flex-col gap-2 mb-6">
-          {course.isFree ? (
-            <span className="text-3xl font-bold text-emerald-600">Miễn phí</span>
-          ) : isDiscounted ? (
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-primary">{formatPrice(course.discountedPrice!)}</span>
-                <Badge variant="destructive" className="bg-rose-500 font-bold px-2 py-0.5 pointer-events-none">
-                  Giảm {course.discount}%
-                </Badge>
+        {!course.isEnrolled && (
+          <div className="flex flex-col gap-2 mb-6">
+            {course.isFree ? (
+              <span className="text-3xl font-bold text-emerald-600">Miễn phí</span>
+            ) : isDiscounted ? (
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-bold text-primary">{formatPrice(course.discountedPrice!)}</span>
+                  <Badge variant="destructive" className="bg-rose-500 font-bold px-2 py-0.5 pointer-events-none">
+                    Giảm {course.discount}%
+                  </Badge>
+                </div>
+                <span className="text-base text-muted-foreground line-through font-medium">
+                  {formatPrice(course.price)}
+                </span>
               </div>
-              <span className="text-base text-muted-foreground line-through font-medium">
+            ) : (
+              <span className="text-3xl font-bold text-foreground">
                 {formatPrice(course.price)}
               </span>
-            </div>
-          ) : (
-            <span className="text-3xl font-bold text-foreground">
-              {formatPrice(course.price)}
-            </span>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         <div className="space-y-3">
           {course.isEnrolled ? (
@@ -146,7 +175,10 @@ export function CourseSidebar({ course }: { course: CourseDetail }) {
             <Button
               size="lg"
               className="w-full font-semibold text-base py-6 bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all hover:scale-[1.02]"
+              onClick={handleFreeEnroll}
+              disabled={isEnrolling}
             >
+              {isEnrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Đăng ký khóa học ngay
             </Button>
           ) : (
