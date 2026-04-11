@@ -63,14 +63,14 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/profile" className="cursor-pointer font-medium w-full">Hồ sơ cá nhân</Link>
+            <Link href="/my-profile" className="cursor-pointer font-medium w-full">Hồ sơ cá nhân</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/settings" className="cursor-pointer font-medium w-full">Cài đặt</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
           Đăng xuất
         </DropdownMenuItem>
       </DropdownMenuContent>
