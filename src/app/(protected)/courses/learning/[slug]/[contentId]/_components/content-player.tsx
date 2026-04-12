@@ -4,13 +4,15 @@ import { useEffect, useState } from "react"
 import ReactPlayer from "react-player"
 import { ContentDetailResponse } from "@/types/learning"
 
+import { CompleteLessonButton } from "./complete-lesson-button"
 import { QuizPlayer } from "./quiz-player"
 
 interface ContentPlayerProps {
   content: ContentDetailResponse
+  courseId: number
 }
 
-export function ContentPlayer({ content }: ContentPlayerProps) {
+export function ContentPlayer({ content, courseId }: ContentPlayerProps) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -23,18 +25,28 @@ export function ContentPlayer({ content }: ContentPlayerProps) {
 
   const renderContent = () => {
     if (content.contentType === "VIDEO" && content.videoDetails?.platform === "YOUTUBE") {
-      const videoUrl = `https://www.youtube.com/watch?v=${content.videoDetails.platformVideoId}`
-      // Bỏ qua cảnh báo type do ReactPlayer chưa hỗ trợ hoàn toàn Next.js 15/React 19 types
-      const Player = ReactPlayer as any
+      const videoId = content.videoDetails.platformVideoId || (content.videoDetails as any).videoId
+      
+      if (!videoId) {
+        return (
+          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border">
+            <p className="text-muted-foreground">Không tìm thấy mã video YouTube.</p>
+          </div>
+        )
+      }
+
       return (
         <div className="flex flex-col gap-4">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
-            <Player
-              url={videoUrl}
+          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-lg">
+            <iframe
               width="100%"
               height="100%"
-              controls
-              playing={false}
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`}
+              title={content.title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="absolute inset-0"
             />
           </div>
           <h1 className="text-2xl md:text-3xl font-bold mt-2">{content.title}</h1>
@@ -68,8 +80,16 @@ export function ContentPlayer({ content }: ContentPlayerProps) {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-8">
       {renderContent()}
+      
+      <div className="flex justify-end pt-4 border-t border-slate-100">
+        <CompleteLessonButton 
+          contentId={content.id}
+          courseId={courseId}
+          isCompleted={content.isCompleted || false}
+        />
+      </div>
     </div>
   )
 }

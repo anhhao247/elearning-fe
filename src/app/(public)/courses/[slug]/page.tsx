@@ -9,6 +9,7 @@ import { CourseSidebar } from "./_components/course-sidebar"
 import { CourseReviews } from "./_components/course-reviews"
 import { Loader2 } from "lucide-react"
 import { extractIdFromSlug } from "@/lib/utils"
+import { AiChatbox } from "@/components/features/ai-chatbox"
 
 export default function CourseDetailPage() {
   const params = useParams()
@@ -76,6 +77,9 @@ export default function CourseDetailPage() {
           
         </div>
       </div>
+
+      {/* AI Chatbox - floating assistant for enrolled students */}
+      {course.isEnrolled && <AiChatbox courseId={Number(idStr)} />}
     </main>
   )
 }

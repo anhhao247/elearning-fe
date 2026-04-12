@@ -3,10 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { AuthInitializer } from "@/components/auth/auth-initializer";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { AppLayoutWrapper } from "@/components/layout/app-layout-wrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -29,9 +28,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <QueryProvider>
           <AuthInitializer />
-          <Header />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
+          <AppLayoutWrapper>{children}</AppLayoutWrapper>
           <Toaster />
         </QueryProvider>
       </body>
