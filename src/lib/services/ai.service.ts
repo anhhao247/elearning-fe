@@ -1,16 +1,21 @@
 import { api } from '@/lib/axios'
 
 export interface AiChatRequest {
-  courseId: number
+  courseId?: number
   contentId?: number
   message: string
   currentLesson?: string
 }
 
+export type AiAction = 'NONE' | 'CONTINUE_LEARNING'
+
 export interface AiChatResponse {
   status: 'success' | 'error'
   reply: string
-  sourcesUsed: number
+  action: AiAction
+  targetId?: number | null
+  target_id?: number | null
+  sources_used: number
 }
 
 export async function sendAiChatMessage(payload: AiChatRequest): Promise<AiChatResponse> {

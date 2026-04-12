@@ -1,9 +1,11 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { Bot, X, Send, Loader2, Sparkles, BookOpen } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Bot, X, Send, Loader2, Sparkles, BookOpen, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { sendAiChatMessage } from "@/lib/services/ai.service"
+import { sendAiChatMessage, AiChatResponse } from "@/lib/services/ai.service"
+import { getCourseDetail } from "@/lib/services/course.service"
 import { toast } from "sonner"
 import { useAuthStore } from "@/store/useAuthStore"
 
@@ -13,27 +15,33 @@ interface Message {
   content: string
   sourcesUsed?: number
   timestamp: Date
+  /** Hiển thị nút CTA khi action === CONTINUE_LEARNING */
+  ctaLabel?: string
+  ctaOnClick?: () => void
 }
 
 interface AiChatboxProps {
-  courseId: number
+  courseId?: number
   contentId?: number
   currentLessonTitle?: string
 }
 
 export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatboxProps) {
   const { user, _hasHydrated } = useAuthStore()
+  const router = useRouter()
+
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ''}! 👋 Tôi là trợ lý AI của khóa học này. Hãy hỏi tôi bất cứ điều gì về nội dung khóa học nhé!`,
+      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ""}! 👋 Tôi là trợ lý AI của EduPlatform. Hãy hỏi tôi về các khóa học hoặc nói "Cho tôi học tiếp" để tôi đưa bạn vào bài học nhé!`,
       timestamp: new Date(),
     },
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isNavigating, setIsNavigating] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -53,9 +61,72 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     scrollToBottom()
   }, [messages, scrollToBottom])
 
+  // --------------------------------------------------------------------------
+  // Handle CONTINUE_LEARNING action
+  // --------------------------------------------------------------------------
+  const handleContinueLearning = useCallback(async (targetCourseId: number) => {
+    setIsNavigating(true)
+    toast.loading("Đang tìm bài học cho bạn...", { id: "navigating" })
+
+    try {
+      const courseData = await getCourseDetail(targetCourseId)
+
+      // Ưu tiên resumeContentId, fallback về content đầu tiên của module đầu tiên
+      const targetContentId: number | undefined =
+        courseData.resumeContentId ??
+        courseData.modules?.[0]?.contents?.[0]?.id
+
+      const slug: string = courseData.slug ?? String(targetCourseId)
+
+      if (!targetContentId) {
+        throw new Error("Không tìm thấy bài học để tiếp tục.")
+      }
+
+      toast.dismiss("navigating")
+      toast.success("Đang mở bài học...")
+      router.push(`/courses/learning/${slug}/${targetContentId}`)
+    } catch (error) {
+      console.error("[AiChatbox] handleContinueLearning error:", error)
+      toast.dismiss("navigating")
+      toast.error("Không thể lấy thông tin bài học. Chuyển tới trang khóa học.")
+      router.push(`/courses/${targetCourseId}`)
+    } finally {
+      setIsNavigating(false)
+    }
+  }, [router])
+
+  // --------------------------------------------------------------------------
+  // Build AI message from response
+  // --------------------------------------------------------------------------
+  const buildAiMessage = useCallback(
+    (response: AiChatResponse): Message => {
+      const base: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: response.reply,
+        sourcesUsed: response.sources_used,
+        timestamp: new Date(),
+      }
+
+      if (response.action === "CONTINUE_LEARNING") {
+        const targetId = response.targetId ?? response.target_id
+        if (targetId) {
+          base.ctaLabel = "Học tiếp ngay →"
+          base.ctaOnClick = () => handleContinueLearning(targetId)
+        }
+      }
+
+      return base
+    },
+    [handleContinueLearning]
+  )
+
+  // --------------------------------------------------------------------------
+  // Send message
+  // --------------------------------------------------------------------------
   const handleSend = async () => {
     const trimmed = input.trim()
-    if (!trimmed || isLoading) return
+    if (!trimmed || isLoading || isNavigating) return
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -69,25 +140,17 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     setIsLoading(true)
 
     try {
-      const response = await sendAiChatMessage({ 
-        courseId, 
-        message: trimmed,
+      const response = await sendAiChatMessage({
+        courseId,
         contentId,
-        currentLesson: currentLessonTitle
+        message: trimmed,
+        currentLesson: currentLessonTitle,
       })
 
-      const aiMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: response.reply,
-        sourcesUsed: response.sourcesUsed,
-        timestamp: new Date(),
-      }
-
+      const aiMessage = buildAiMessage(response)
       setMessages((prev) => [...prev, aiMessage])
     } catch {
       toast.error("Không thể kết nối với AI. Vui lòng thử lại.")
-      // Remove the optimistic user message on failure
       setMessages((prev) => prev.filter((m) => m.id !== userMessage.id))
       setInput(trimmed)
     } finally {
@@ -102,15 +165,17 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     }
   }
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
-  }
+  const formatTime = (date: Date) =>
+    date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
 
+  // Chỉ hiển thị khi đã hydrate và user đã đăng nhập
   if (!_hasHydrated || !user) return null
 
   return (
     <>
-      {/* Chat Window */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Chat Window                                                         */}
+      {/* ------------------------------------------------------------------ */}
       <div
         className={cn(
           "fixed bottom-24 right-4 sm:right-6 z-[1001]",
@@ -162,7 +227,12 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
                   </div>
                 )}
 
-                <div className={cn("flex flex-col gap-1 max-w-[78%]", msg.role === "user" ? "items-end" : "items-start")}>
+                <div
+                  className={cn(
+                    "flex flex-col gap-1 max-w-[78%]",
+                    msg.role === "user" ? "items-end" : "items-start"
+                  )}
+                >
                   {/* Bubble */}
                   <div
                     className={cn(
@@ -175,9 +245,27 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
                     {msg.content}
                   </div>
 
+                  {/* CTA Button for CONTINUE_LEARNING */}
+                  {msg.ctaLabel && msg.ctaOnClick && (
+                    <button
+                      onClick={msg.ctaOnClick}
+                      disabled={isNavigating}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-400/30 rounded-lg px-3 py-1.5 transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-0.5"
+                    >
+                      {isNavigating ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <ExternalLink className="w-3 h-3" />
+                      )}
+                      {isNavigating ? "Đang chuyển trang..." : msg.ctaLabel}
+                    </button>
+                  )}
+
                   {/* Metadata row */}
                   <div className="flex items-center gap-2 px-1">
-                    <span className="text-[10px] text-muted-foreground">{formatTime(msg.timestamp)}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {formatTime(msg.timestamp)}
+                    </span>
                     {msg.sourcesUsed !== undefined && msg.sourcesUsed > 0 && (
                       <span className="flex items-center gap-1 text-[10px] text-indigo-500 font-medium">
                         <BookOpen className="w-2.5 h-2.5" />
@@ -216,18 +304,18 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Hỏi gì về khóa học này..."
+                placeholder={courseId ? "Hỏi gì về khóa học này..." : "Hỏi về khóa học hoặc nói 'Học tiếp'..."}
                 rows={1}
-                disabled={isLoading}
+                disabled={isLoading || isNavigating}
                 className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none outline-none min-h-[20px] max-h-[100px] py-0.5 disabled:opacity-50"
                 style={{ scrollbarWidth: "none" }}
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || isNavigating}
                 className={cn(
                   "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200",
-                  input.trim() && !isLoading
+                  input.trim() && !isLoading && !isNavigating
                     ? "bg-gradient-to-br from-violet-600 to-indigo-600 text-white hover:opacity-90 hover:scale-105 shadow-md"
                     : "bg-muted-foreground/20 text-muted-foreground cursor-not-allowed"
                 )}
@@ -241,13 +329,19 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
               </button>
             </div>
             <p className="text-[10px] text-muted-foreground text-center mt-2">
-              Nhấn <kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Enter</kbd> để gửi · <kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Shift+Enter</kbd> xuống dòng
+              Nhấn{" "}
+              <kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Enter</kbd>{" "}
+              để gửi ·{" "}
+              <kbd className="px-1 py-0.5 rounded bg-muted border border-border text-[9px]">Shift+Enter</kbd>{" "}
+              xuống dòng
             </p>
           </div>
         </div>
       </div>
 
-      {/* FAB Button */}
+      {/* ------------------------------------------------------------------ */}
+      {/* FAB Button                                                          */}
+      {/* ------------------------------------------------------------------ */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
@@ -257,8 +351,7 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
           "bg-gradient-to-br from-violet-600 to-indigo-600",
           "text-white transition-all duration-300",
           "hover:scale-110 hover:shadow-2xl hover:shadow-violet-500/30",
-          "active:scale-95",
-          isOpen && "rotate-0"
+          "active:scale-95"
         )}
         aria-label={isOpen ? "Đóng chat AI" : "Mở chat AI"}
       >
