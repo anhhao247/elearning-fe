@@ -179,7 +179,13 @@ export default function LearningPage({
       </div>
 
       {/* AI Chatbox - floating learning assistant */}
-      {courseId > 0 && <AiChatbox courseId={courseId} />}
+      {courseId > 0 && (
+        <AiChatbox 
+          courseId={courseId} 
+          contentId={contentId}
+          currentLessonTitle={contentDetail?.title}
+        />
+      )}
     </div>
   )
 }

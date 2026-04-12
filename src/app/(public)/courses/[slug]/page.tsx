@@ -78,8 +78,8 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
-      {/* AI Chatbox - floating assistant */}
-      <AiChatbox courseId={Number(idStr)} />
+      {/* AI Chatbox - floating assistant for enrolled students */}
+      {course.isEnrolled && <AiChatbox courseId={Number(idStr)} />}
     </main>
   )
 }

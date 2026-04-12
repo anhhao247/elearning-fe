@@ -5,6 +5,7 @@ import { Bot, X, Send, Loader2, Sparkles, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { sendAiChatMessage } from "@/lib/services/ai.service"
 import { toast } from "sonner"
+import { useAuthStore } from "@/store/useAuthStore"
 
 interface Message {
   id: string
@@ -16,15 +17,18 @@ interface Message {
 
 interface AiChatboxProps {
   courseId: number
+  contentId?: number
+  currentLessonTitle?: string
 }
 
-export function AiChatbox({ courseId }: AiChatboxProps) {
+export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatboxProps) {
+  const { user, _hasHydrated } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: "assistant",
-      content: "Xin chào! 👋 Tôi là trợ lý AI của khóa học này. Hãy hỏi tôi bất cứ điều gì về nội dung khóa học nhé!",
+      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ''}! 👋 Tôi là trợ lý AI của khóa học này. Hãy hỏi tôi bất cứ điều gì về nội dung khóa học nhé!`,
       timestamp: new Date(),
     },
   ])
@@ -65,7 +69,12 @@ export function AiChatbox({ courseId }: AiChatboxProps) {
     setIsLoading(true)
 
     try {
-      const response = await sendAiChatMessage({ courseId, message: trimmed })
+      const response = await sendAiChatMessage({ 
+        courseId, 
+        message: trimmed,
+        contentId,
+        currentLesson: currentLessonTitle
+      })
 
       const aiMessage: Message = {
         id: crypto.randomUUID(),
@@ -96,6 +105,8 @@ export function AiChatbox({ courseId }: AiChatboxProps) {
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
   }
+
+  if (!_hasHydrated || !user) return null
 
   return (
     <>

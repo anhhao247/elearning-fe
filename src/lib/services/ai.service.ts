@@ -2,7 +2,9 @@ import { api } from '@/lib/axios'
 
 export interface AiChatRequest {
   courseId: number
+  contentId?: number
   message: string
+  currentLesson?: string
 }
 
 export interface AiChatResponse {
