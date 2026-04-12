@@ -7,6 +7,7 @@ import { BookOpen, Users, Video, Award, Code, Briefcase, Layout, MonitorPlay, St
 import { getCourses } from "@/lib/services/course.service";
 import { CourseCard } from "@/components/features/courses/course-card";
 import { Course } from "@/types/course";
+import { HomeAiChatbox } from "./_components/home-ai-chatbox";
 
 export default async function Home() {
   // Fetch newest/popular courses
@@ -244,6 +245,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* AI Chatbox - floating assistant for logged-in users */}
+      <HomeAiChatbox />
     </>
   );
 }

@@ -40,6 +40,7 @@ export interface ContentDetailResponse {
   description: string
   contentType: "VIDEO" | "READING" | "QUIZ"
   contentOrder: number
+  isCompleted: boolean
   videoDetails: VideoDetails | null
   readingDetails: ReadingDetails | null
   quizDetails: QuizDetails | null
@@ -81,5 +82,11 @@ export interface QuizResultResponse {
   score: number
   isPassed: boolean
   correctAnswers: QuizResultAnswer[]
+}
+
+export interface CompleteContentResponse {
+  contentId: number
+  isCompleted: boolean
+  newProgressPercent: number
 }
 

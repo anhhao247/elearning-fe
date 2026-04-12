@@ -1,0 +1,45 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/useAuthStore"
+import { toast } from "sonner"
+
+interface RoleGuardProps {
+  children: React.ReactNode
+  allowedRole: string
+}
+
+export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
+  const { user, _hasHydrated } = useAuthStore()
+  const router = useRouter()
+  const [isAuthorized, setIsAuthorized] = useState(false)
+
+  useEffect(() => {
+    if (_hasHydrated) {
+      if (!user) {
+        toast.error("Bạn cần đăng nhập để truy cập trang này")
+        router.push("/login")
+        return
+      }
+
+      if (user.role !== allowedRole) {
+        toast.error("Bạn không có quyền truy cập trang này")
+        router.push("/")
+        return
+      }
+
+      setIsAuthorized(true)
+    }
+  }, [_hasHydrated, user, allowedRole, router])
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  return <>{children}</>
+}
