@@ -16,8 +16,18 @@ function LoginContent() {
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { setToken, setUser } = useAuthStore()
+  const searchParams = useSearchParams()
+
+  const handleRoleBasedRedirect = (role: string) => {
+    if (role === "ADMIN") {
+      router.push("/admin")
+    } else if (role === "INSTRUCTOR") {
+      router.push("/lms")
+    } else {
+      router.push("/")
+    }
+  }
 
   // Handle OAuth errors and Google login callback
   useEffect(() => {
@@ -45,7 +55,7 @@ function LoginContent() {
         .then((res) => {
           setUser(res.data)
           toast.success("Đăng nhập Google thành công!")
-          router.push("/")
+          handleRoleBasedRedirect(res.data.role)
         })
         .catch(() => {
           toast.error("Không lấy được thông tin người dùng từ Google.")
@@ -69,7 +79,7 @@ function LoginContent() {
         setUser(userRes.data)
 
         toast.success("Đăng nhập thành công!")
-        router.push("/")
+        handleRoleBasedRedirect(userRes.data.role)
       }
     } catch (error) {
       toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")

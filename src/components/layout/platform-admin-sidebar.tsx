@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
@@ -15,12 +15,14 @@ import {
   Ticket,
   ShoppingCart,
   ShieldCheck,
+  LogOut,
   Settings,
   Menu,
   X
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/store/useAuthStore"
 
 const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -38,7 +40,14 @@ const menuItems = [
 
 export function PlatformAdminSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { clearAuth } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleLogout = () => {
+    clearAuth()
+    router.push("/login")
+  }
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r">
@@ -73,7 +82,7 @@ export function PlatformAdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t">
+      <div className="p-4 border-t space-y-1">
         <Link
           href="/admin/settings"
           className={cn(
@@ -89,6 +98,13 @@ export function PlatformAdminSidebar() {
           )} />
           <span className="text-sm">Settings</span>
         </Link>
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-destructive hover:bg-destructive/5"
+        >
+          <LogOut className="w-5 h-5 text-destructive/70 group-hover:text-destructive" />
+          <span className="text-sm font-medium">Đăng xuất</span>
+        </button>
       </div>
     </div>
   )

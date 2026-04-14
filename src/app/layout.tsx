@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthInitializer } from "@/components/auth/auth-initializer";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AppLayoutWrapper } from "@/components/layout/app-layout-wrapper";
+import { NotificationProvider } from "@/components/providers/notification-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <QueryProvider>
           <AuthInitializer />
-          <AppLayoutWrapper>{children}</AppLayoutWrapper>
+          <NotificationProvider>
+            <AppLayoutWrapper>{children}</AppLayoutWrapper>
+          </NotificationProvider>
           <Toaster />
         </QueryProvider>
       </body>

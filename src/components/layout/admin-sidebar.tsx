@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
@@ -14,29 +14,35 @@ import {
   Ticket,
   ShoppingCart,
   ShieldCheck,
+  LogOut,
   Settings,
   Menu,
   X
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/store/useAuthStore"
 
 const menuItems = [
   { name: "Dashboard", href: "/lms/dashboard", icon: LayoutDashboard },
-  { name: "Users", href: "/lms/users", icon: Users },
+  { name: "Students", href: "/lms/students", icon: Users },
   { name: "Courses", href: "/lms/courses", icon: BookOpen },
-  { name: "Categories", href: "/lms/categories", icon: Layers },
-  { name: "Blogs", href: "/lms/blogs", icon: FileText },
-  { name: "Comments", href: "/lms/comments", icon: MessageSquare },
   { name: "Media", href: "/lms/media", icon: ImageIcon },
   { name: "Coupons", href: "/lms/coupons", icon: Ticket },
   { name: "Orders", href: "/lms/orders", icon: ShoppingCart },
-  { name: "Roles", href: "/lms/roles", icon: ShieldCheck },
+  { name: "Profile", href: "/lms/profile", icon: ShieldCheck },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { clearAuth } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleLogout = () => {
+    clearAuth()
+    router.push("/login")
+  }
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full bg-white border-r">
@@ -44,7 +50,7 @@ export function AdminSidebar() {
         <div className="bg-black text-white p-2 rounded-lg">
           <BookOpen size={20} />
         </div>
-        <span className="font-bold text-xl tracking-tight">LMS Admin</span>
+        <span className="font-bold text-xl tracking-tight">LMS</span>
       </div>
       
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto pt-4">
@@ -71,7 +77,7 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t">
+      <div className="p-4 border-t space-y-1">
         <Link
           href="/lms/settings"
           className={cn(
@@ -87,6 +93,13 @@ export function AdminSidebar() {
           )} />
           <span className="text-sm">Settings</span>
         </Link>
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group text-destructive hover:bg-destructive/5"
+        >
+          <LogOut className="w-5 h-5 text-destructive/70 group-hover:text-destructive" />
+          <span className="text-sm font-medium">Đăng xuất</span>
+        </button>
       </div>
     </div>
   )
