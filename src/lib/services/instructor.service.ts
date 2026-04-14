@@ -79,6 +79,22 @@ export interface Category {
   parent: Category | null
 }
 
+export interface ApplyInstructorPayload {
+  headline: string
+  bio: string
+  affiliations: string[]
+  websiteUrl?: string
+  facebookUrl?: string
+  twitterUrl?: string
+  linkedinUrl?: string
+}
+
+export interface ApplyInstructorResponse {
+  profileId: number
+  message: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+}
+
 // ─── API Calls ────────────────────────────────────────────────────────────────
 
 export async function createCourse(payload: CreateCoursePayload): Promise<CreatedCourse> {
@@ -111,5 +127,10 @@ export async function updateContentDetails(
 
 export async function getCategories(): Promise<Category[]> {
   const { data } = await api.get('/categories')
+  return data
+}
+
+export async function applyInstructor(payload: ApplyInstructorPayload): Promise<ApplyInstructorResponse> {
+  const { data } = await api.post('/v1/instructors/apply', payload)
   return data
 }
