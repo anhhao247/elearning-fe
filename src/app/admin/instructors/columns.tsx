@@ -39,8 +39,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 // Extend Table Meta to include our handlers
 declare module "@tanstack/react-table" {
   interface TableMeta<TData> {
-    onApprove: (id: number) => Promise<void>
-    onReject: (id: number, reason: string) => Promise<void>
+    onApprove?: (id: number) => Promise<void>
+    onReject?: (id: number, reason: string) => Promise<void>
   }
 }
 
@@ -52,13 +52,13 @@ const ActionCell = ({ row, table }: { row: any, table: any }) => {
   const [rejectReason, setRejectReason] = useState("")
 
   const handleApprove = async () => {
-    await table.options.meta?.onApprove(application.profileId)
+    await table.options.meta?.onApprove?.(application.profileId)
     setIsApproveOpen(false)
   }
 
   const handleReject = async () => {
     if (!rejectReason.trim()) return
-    await table.options.meta?.onReject(application.profileId, rejectReason)
+    await table.options.meta?.onReject?.(application.profileId, rejectReason)
     setIsRejectOpen(false)
     setRejectReason("")
   }

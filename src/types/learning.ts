@@ -18,6 +18,23 @@ export interface SyllabusResponse {
   modules: LearningModule[]
 }
 
+export interface InstructorContent {
+  contentId: number
+  title: string
+  contentType: "VIDEO" | "READING" | "QUIZ"
+  contentOrder: number
+  isPublish: boolean
+}
+
+export interface InstructorModule {
+  moduleId: number
+  title: string
+  description: string
+  moduleOrder: number
+  isPublish: boolean
+  contents: InstructorContent[]
+}
+
 export interface VideoDetails {
   platform: "YOUTUBE" | "VIMEO" | "OTHER"
   platformVideoId: string
