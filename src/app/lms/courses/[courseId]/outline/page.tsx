@@ -28,7 +28,8 @@ import {
   useCreateContent,
   useUpdateContent,
   useUpdateContentDetails,
-  useUpdateModule
+  useUpdateModule,
+  useCreateQuizQuestion
 } from "@/hooks/queries/use-instructor"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -218,6 +219,7 @@ export default function CourseOutlinePage() {
   const updateContent = useUpdateContent()
   const deleteContent = useDeleteContent()
   const updateContentDetails = useUpdateContentDetails()
+  const createQuizQuestion = useCreateQuizQuestion()
 
   // State for Dialogs
   const [moduleDialog, setModuleDialog] = useState<{ open: boolean; mode: "create" | "edit"; data?: any }>({
@@ -352,7 +354,24 @@ export default function CourseOutlinePage() {
         payload: detailsPayload 
       })
 
-      toast.success(lessonDialog.mode === "create" ? "Đã thêm bài giảng và chi tiết nội dung" : "Đã cập nhật bài giảng")
+      // Handle Quiz Questions
+      if (values.contentType === "QUIZ" && values.questions && values.questions.length > 0) {
+        for (const question of values.questions) {
+          await createQuizQuestion.mutateAsync({
+            contentId: currentContentId,
+            payload: {
+              questionText: question.questionText,
+              questionType: question.questionType,
+              options: question.options.map((opt: any) => ({
+                optionText: opt.optionText,
+                isCorrect: opt.isCorrect
+              }))
+            }
+          })
+        }
+      }
+
+      toast.success(lessonDialog.mode === "create" ? "Đã thêm bài giảng và cấu hình chi tiết" : "Đã cập nhật bài giảng")
       setLessonDialog({ ...lessonDialog, open: false })
       refetch()
     } catch (err: any) {
@@ -381,8 +400,8 @@ export default function CourseOutlinePage() {
       <div className="flex items-center justify-between mb-10">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
-            Course Outline
-            <Badge variant="outline" className="text-blue-600 bg-blue-50 border-blue-100">Draft</Badge>
+            {course?.title} - Outline
+            <Badge variant="outline" className="text-blue-600 bg-blue-50 border-blue-100">{course?.isPublish ? "Published" : "Draft"}</Badge>
           </h1>
           <p className="text-slate-500 mt-2 font-medium">Quản lý và tổ chức nội dung học tập theo chương mục.</p>
         </div>

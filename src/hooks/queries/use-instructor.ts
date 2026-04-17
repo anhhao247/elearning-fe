@@ -11,6 +11,7 @@ import {
   deleteModule,
   updateContent,
   deleteContent,
+  createQuizQuestion,
   CreateCoursePayload,
   CreateModulePayload,
   CreateContentPayload,
@@ -57,6 +58,13 @@ export function useUpdateContentDetails() {
       contentId: number
       payload: ContentDetailsPayload
     }) => updateContentDetails(contentId, payload),
+  })
+}
+
+export function useCreateQuizQuestion() {
+  return useMutation({
+    mutationFn: ({ contentId, payload }: { contentId: number; payload: any }) =>
+      createQuizQuestion(contentId, payload),
   })
 }
 

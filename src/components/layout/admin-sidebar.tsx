@@ -114,7 +114,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0">
+      <aside className="hidden lg:flex flex-col w-64 h-screen fixed left-0 top-0 z-40">
         <SidebarContent />
       </aside>
 

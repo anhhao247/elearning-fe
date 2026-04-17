@@ -38,12 +38,16 @@ import { Switch } from "@/components/ui/switch"
 const courseSchema = z.object({
   title: z.string().min(3, "Tên khóa học tối thiểu 3 ký tự"),
   description: z.string().min(10, "Mô tả tối thiểu 10 ký tự"),
-  categoryId: z.number().int().positive("Vui lòng chọn danh mục"),
+  categoryId: z.number({
+    message: "Vui lòng chọn danh mục",
+  }).int().positive("Vui lòng chọn danh mục"),
   price: z.number().min(0, "Giá không được âm"),
   level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"], {
     message: "Vui lòng chọn cấp độ phù hợp",
   }),
-  thumbnail: z.string().url("Vui lòng tải lên ảnh bìa"),
+  thumbnail: z.string({
+    message: "Vui lòng tải lên ảnh bìa",
+  }).url("Vui lòng tải lên ảnh bìa"),
   overview: z.string().min(10, "Nội dung tổng quan tối thiểu 10 ký tự"),
   benefits: z.array(z.string().min(1)).min(1, "Cần ít nhất 1 lợi ích"),
   requirements: z.array(z.string().min(1)).min(1, "Cần ít nhất 1 yêu cầu"),
@@ -177,7 +181,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
 
   return (
     <div className="flex flex-col h-full">
-      <form onSubmit={handleSubmit(onSubmit, (err) => console.error("Form Validation Errors:", err))} className="flex-1 flex flex-col space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, (err) => console.log("Form Validation Errors:", err))} className="flex-1 flex flex-col space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
           {/* Cột trái: Thông tin chính */}
           <div className="space-y-6 col-span-2">
@@ -231,9 +235,13 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                         key={`cat-${field.value}-${categories.length}`}
                         value={field.value ? String(field.value) : undefined}
                         onValueChange={(val) => field.onChange(Number(val))}
+                        onOpenChange={field.onBlur} // Trigger blur/validation when closing
                         disabled={loadingCategories}
                       >
-                        <SelectTrigger className="mt-1.5 border-slate-200 h-11 bg-white rounded-xl w-full focus:ring-black/5">
+                        <SelectTrigger 
+                          ref={field.ref}
+                          className="mt-1.5 border-slate-200 h-11 bg-white rounded-xl w-full focus:ring-black/5"
+                        >
                           <SelectValue placeholder="Chọn danh mục" />
                         </SelectTrigger>
                         <SelectContent>
@@ -263,8 +271,12 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                         key={`level-${field.value}`}
                         value={field.value}
                         onValueChange={field.onChange}
+                        onOpenChange={field.onBlur}
                       >
-                        <SelectTrigger className="mt-1.5 border-slate-200 h-11 bg-white rounded-xl w-full focus:ring-black/5">
+                        <SelectTrigger 
+                          ref={field.ref}
+                          className="mt-1.5 border-slate-200 h-11 bg-white rounded-xl w-full focus:ring-black/5"
+                        >
                           <SelectValue placeholder="Chọn cấp độ" />
                         </SelectTrigger>
                         <SelectContent>
@@ -427,11 +439,11 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
         </div>
 
         {/* Nút hành động */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 sticky bottom-0 bg-white pb-6 z-10 mt-auto">
+        <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 bottom-0 bg-white pb-6 z-10 mt-auto">
           <Button
             type="button"
             variant="outline"
-            className="h-12 px-8 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50"
+            className="h-12 px-8 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 hover:cursor-pointer"
             onClick={onCancel}
             disabled={isSubmitting}
           >
@@ -439,7 +451,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
           </Button>
           <Button
             type="submit"
-            className="h-12 px-10 rounded-xl bg-black hover:bg-black/90 text-white min-w-[180px] font-bold shadow-lg shadow-black/10"
+            className="h-12 px-10 rounded-xl bg-black hover:bg-black/90 text-white min-w-[180px] font-bold shadow-lg shadow-black/10 hover:cursor-pointer"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

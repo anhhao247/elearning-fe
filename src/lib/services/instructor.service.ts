@@ -48,6 +48,17 @@ export interface QuizDetailsPayload {
   passPercent: number
 }
 
+export interface QuizQuestionOptionPayload {
+  optionText: string
+  isCorrect: boolean
+}
+
+export interface QuizQuestionPayload {
+  questionText: string
+  questionType: 'SINGLE_CHOICE' | 'MULTI_CHOICE'
+  options: QuizQuestionOptionPayload[]
+}
+
 export type ContentDetailsPayload =
   | VideoDetailsPayload
   | ReadingDetailsPayload
@@ -154,6 +165,14 @@ export async function updateContentDetails(
   payload: ContentDetailsPayload
 ): Promise<void> {
   await api.put(`/v1/instructor/contents/${contentId}/details`, payload)
+}
+
+export async function createQuizQuestion(
+  contentId: number,
+  payload: QuizQuestionPayload
+): Promise<any> {
+  const { data } = await api.post(`/v1/instructor/contents/${contentId}/questions`, payload)
+  return data
 }
 
 export async function getCourseById(id: number | string): Promise<CreatedCourse> {
