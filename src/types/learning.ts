@@ -37,7 +37,7 @@ export interface InstructorModule {
 
 export interface VideoDetails {
   platform: "YOUTUBE" | "VIMEO" | "OTHER"
-  platformVideoId: string
+  videoId: string
   duration: number
 }
 

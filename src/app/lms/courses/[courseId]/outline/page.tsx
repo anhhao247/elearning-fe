@@ -29,7 +29,9 @@ import {
   useUpdateContent,
   useUpdateContentDetails,
   useUpdateModule,
-  useCreateQuizQuestion
+  useCreateQuizQuestion,
+  useUpdateQuizQuestion,
+  useDeleteQuizQuestion
 } from "@/hooks/queries/use-instructor"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -220,6 +222,8 @@ export default function CourseOutlinePage() {
   const deleteContent = useDeleteContent()
   const updateContentDetails = useUpdateContentDetails()
   const createQuizQuestion = useCreateQuizQuestion()
+  const updateQuizQuestion = useUpdateQuizQuestion()
+  const deleteQuizQuestion = useDeleteQuizQuestion()
 
   // State for Dialogs
   const [moduleDialog, setModuleDialog] = useState<{ open: boolean; mode: "create" | "edit"; data?: any }>({
@@ -284,16 +288,17 @@ export default function CourseOutlinePage() {
   }
 
   const handleEditLesson = (lesson: any) => {
-    const data = {
-      ...lesson,
-      platform: lesson.video?.platform || "YOUTUBE",
-      platformVideoId: lesson.video?.platformVideoId || "",
-      duration: lesson.video?.duration || lesson.quiz?.quizDuration || 0,
-      body: lesson.reading?.body || "",
-      description: lesson.quiz?.description || "",
-      passPercent: lesson.quiz?.passPercent || 80
-    }
-    setLessonDialog({ open: true, mode: "edit", data })
+    const id = lesson.contentId ?? lesson.id
+    setLessonDialog({
+      open: true,
+      mode: "edit",
+      data: {
+        id,
+        contentId: id,
+        contentType: lesson.contentType,
+        questions: []
+      }
+    })
   }
 
   const handleDeleteLesson = async (id: number) => {
@@ -306,7 +311,7 @@ export default function CourseOutlinePage() {
 
   const onLessonSubmit = async (values: any) => {
     try {
-      let currentContentId = lessonDialog.data?.contentId
+      let currentContentId = lessonDialog.data?.id || lessonDialog.data?.contentId
 
       const basePayload = {
         title: values.title,
@@ -320,6 +325,7 @@ export default function CourseOutlinePage() {
           moduleId: lessonDialog.moduleId!,
           payload: {
             ...basePayload,
+            description: values.description,
             contentOrder: (mod?.contents.length || 0) + 1
           }
         })
@@ -330,44 +336,100 @@ export default function CourseOutlinePage() {
           throw new Error("Không thể lấy ID của bài giảng vừa tạo.");
         }
       } else {
-        await updateContent.mutateAsync({
-          contentId: currentContentId,
-          payload: basePayload
-        })
-      }
-
-      console.log("Extracted contentId for details update:", currentContentId);
-      
-      let detailsPayload: any = {}
-      if (values.contentType === "VIDEO") {
-          detailsPayload = { platform: values.platform, platformVideoId: values.platformVideoId, duration: values.duration }
-      } else if (values.contentType === "READING") {
-          detailsPayload = { body: values.body }
-      } else if (values.contentType === "QUIZ") {
-          detailsPayload = { description: values.description, passPercent: values.passPercent, duration: values.duration }
-      }
-      
-      console.log("Sending PUT details payload:", detailsPayload);
-      
-      await updateContentDetails.mutateAsync({ 
-        contentId: currentContentId, 
-        payload: detailsPayload 
-      })
-
-      // Handle Quiz Questions
-      if (values.contentType === "QUIZ" && values.questions && values.questions.length > 0) {
-        for (const question of values.questions) {
-          await createQuizQuestion.mutateAsync({
+        // Optimized Update
+        const original = values._originalData
+        
+        // 1. Check for General Info changes
+        const isGeneralChanged = 
+          values.title !== original?.title ||
+          values.description !== (original?.description || "") ||
+          values.isPublish !== original?.isPublish
+          
+        if (isGeneralChanged) {
+          await updateContent.mutateAsync({
             contentId: currentContentId,
             payload: {
+              title: values.title,
+              description: values.description,
+              isPublish: values.isPublish,
+              contentType: values.contentType,
+              contentOrder: original?.contentOrder || 0
+            }
+          })
+        }
+
+        // 2. Check for Details Info changes
+        let isDetailsChanged = false
+        let detailsPayload: any = {}
+        
+        if (values.contentType === "VIDEO") {
+          isDetailsChanged = 
+            values.platform !== original?.platform ||
+            values.videoId !== original?.videoId ||
+            values.duration !== original?.duration
+          if (isDetailsChanged) {
+            detailsPayload = { platform: values.platform, videoId: values.videoId, duration: values.duration }
+          }
+        } else if (values.contentType === "READING") {
+          isDetailsChanged = values.body !== original?.body
+          if (isDetailsChanged) {
+            detailsPayload = { body: values.body }
+          }
+        } else if (values.contentType === "QUIZ") {
+          isDetailsChanged = 
+            values.description !== original?.description ||
+            values.passPercent !== original?.passPercent ||
+            values.duration !== original?.duration
+          if (isDetailsChanged) {
+            detailsPayload = { description: values.description, passPercent: values.passPercent, duration: values.duration }
+          }
+        }
+
+        if (isDetailsChanged) {
+          await updateContentDetails.mutateAsync({ 
+            contentId: currentContentId, 
+            payload: detailsPayload 
+          })
+        }
+
+        // 3. Handle Quiz Questions Optimized
+        if (values.contentType === "QUIZ" && values.questions) {
+          if (values._originalQuestionIds?.length) {
+            // Delete questions missing from form
+            const currentQuestionIds = values.questions.map((q: any) => q.id).filter(Boolean)
+            for (const originalId of values._originalQuestionIds) {
+              if (!currentQuestionIds.includes(originalId)) {
+                await deleteQuizQuestion.mutateAsync(originalId)
+              }
+            }
+          }
+
+          for (const question of values.questions) {
+            const payload = {
               questionText: question.questionText,
               questionType: question.questionType,
               options: question.options.map((opt: any) => ({
+                ...(opt.id && { id: opt.id }),
                 optionText: opt.optionText,
                 isCorrect: opt.isCorrect
               }))
             }
-          })
+
+            if (question.id) {
+              // Only call PUT if question content changed
+              const originalQ = original?.questions?.find((q: any) => q.id === question.id)
+              const isQuestionChanged = !originalQ || 
+                question.questionText !== originalQ.questionText ||
+                question.questionType !== originalQ.questionType ||
+                JSON.stringify(payload.options) !== JSON.stringify(originalQ.options)
+
+              if (isQuestionChanged) {
+                await updateQuizQuestion.mutateAsync({ questionId: question.id, payload })
+              }
+            } else {
+              await createQuizQuestion.mutateAsync({ contentId: currentContentId, payload })
+            }
+          }
         }
       }
 
@@ -487,7 +549,9 @@ export default function CourseOutlinePage() {
         open={lessonDialog.open}
         onOpenChange={(open) => setLessonDialog({ ...lessonDialog, open })}
         mode={lessonDialog.mode}
-        initialData={lessonDialog.data}
+        initialData={lessonDialog.mode === "create" ? undefined : undefined}
+        contentId={lessonDialog.data?.id ?? lessonDialog.data?.contentId ?? null}
+        contentType={lessonDialog.data?.contentType}
         onSubmit={onLessonSubmit}
         isSubmitting={createContent.isPending || updateContent.isPending}
       />

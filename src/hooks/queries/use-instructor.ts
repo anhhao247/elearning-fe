@@ -7,11 +7,14 @@ import {
   getCategories,
   getCourseById,
   getCourseSyllabus,
+  getContentById,
   updateModule,
   deleteModule,
   updateContent,
   deleteContent,
   createQuizQuestion,
+  updateQuizQuestion,
+  deleteQuizQuestion,
   CreateCoursePayload,
   CreateModulePayload,
   CreateContentPayload,
@@ -68,11 +71,33 @@ export function useCreateQuizQuestion() {
   })
 }
 
+export function useUpdateQuizQuestion() {
+  return useMutation({
+    mutationFn: ({ questionId, payload }: { questionId: number; payload: any }) =>
+      updateQuizQuestion(questionId, payload),
+  })
+}
+
+export function useDeleteQuizQuestion() {
+  return useMutation({
+    mutationFn: (questionId: number) => deleteQuizQuestion(questionId),
+  })
+}
+
 export function useCourse(id: number | string) {
   return useQuery({
     queryKey: ['instructor-course', id],
     queryFn: () => getCourseById(id),
     enabled: !!id,
+  })
+}
+
+export function useInstructorContent(contentId: number | null, contentType?: string) {
+  return useQuery({
+    queryKey: ['instructor-content', contentId, contentType],
+    queryFn: () => getContentById(contentId!, contentType),
+    enabled: !!contentId,
+    staleTime: 0, // Always refetch when editing
   })
 }
 

@@ -25,7 +25,7 @@ export function ContentPlayer({ content, courseId }: ContentPlayerProps) {
 
   const renderContent = () => {
     if (content.contentType === "VIDEO" && content.videoDetails?.platform === "YOUTUBE") {
-      const videoId = content.videoDetails.platformVideoId || (content.videoDetails as any).videoId
+      const videoId = content.videoDetails.videoId || (content.videoDetails as any).platformVideoId
       
       if (!videoId) {
         return (

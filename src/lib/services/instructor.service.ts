@@ -27,6 +27,7 @@ export interface CreateModulePayload {
 
 export interface CreateContentPayload {
   title: string
+  description?: string
   contentType: 'VIDEO' | 'READING' | 'QUIZ'
   contentOrder: number
   isPublish: boolean
@@ -34,7 +35,7 @@ export interface CreateContentPayload {
 
 export interface VideoDetailsPayload {
   platform: 'YOUTUBE' | 'VIMEO'
-  platformVideoId: string
+  videoId: string
   duration: number
 }
 
@@ -49,11 +50,13 @@ export interface QuizDetailsPayload {
 }
 
 export interface QuizQuestionOptionPayload {
+  id?: number
   optionText: string
   isCorrect: boolean
 }
 
 export interface QuizQuestionPayload {
+  id?: number
   questionText: string
   questionType: 'SINGLE_CHOICE' | 'MULTI_CHOICE'
   options: QuizQuestionOptionPayload[]
@@ -175,6 +178,18 @@ export async function createQuizQuestion(
   return data
 }
 
+export async function updateQuizQuestion(
+  questionId: number,
+  payload: QuizQuestionPayload
+): Promise<any> {
+  const { data } = await api.put(`/v1/instructor/questions/${questionId}`, payload)
+  return data
+}
+
+export async function deleteQuizQuestion(questionId: number): Promise<void> {
+  await api.delete(`/v1/instructor/questions/${questionId}`)
+}
+
 export async function getCourseById(id: number | string): Promise<CreatedCourse> {
   const { data } = await api.get(`/v1/instructor/courses/${id}`)
   return data
@@ -207,6 +222,12 @@ export async function updateContent(
 
 export async function deleteContent(contentId: number): Promise<void> {
   await api.delete(`/v1/instructor/contents/${contentId}`)
+}
+
+export async function getContentById(contentId: number | string, contentType?: string): Promise<any> {
+  const params = contentType === 'QUIZ' ? '?includeDetails=true' : ''
+  const { data } = await api.get(`/v1/instructor/contents/${contentId}${params}`)
+  return data
 }
 
 export async function getCategories(): Promise<Category[]> {
