@@ -7,7 +7,6 @@ import { BookOpen, Users, Video, Award, Code, Briefcase, Layout, MonitorPlay, St
 import { getCourses } from "@/lib/services/course.service";
 import { CourseCard } from "@/components/features/courses/course-card";
 import { Course } from "@/types/course";
-import { HomeAiChatbox } from "./_components/home-ai-chatbox";
 
 export default async function Home() {
   // Fetch newest/popular courses
@@ -75,7 +74,7 @@ export default async function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
             </div>
-            
+
             {/* Floating Stat Card */}
             <div className="absolute -bottom-6 -left-6 md:bottom-10 md:-left-10 bg-background rounded-xl p-4 shadow-xl border border-border flex items-center gap-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-300">
               <div className="bg-primary/10 p-3 rounded-lg text-primary">
@@ -167,7 +166,7 @@ export default async function Home() {
               </Link>
             </Button>
           </div>
-          
+
           {popularCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {popularCourses.map((course) => (
@@ -231,7 +230,7 @@ export default async function Home() {
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl"></div>
-          
+
           <div className="relative z-10 max-w-3xl mx-auto space-y-8">
             <h2 className="text-3xl md:text-5xl font-extrabold tracking-tight">Sẵn sàng để bắt đầu hành trình học tập?</h2>
             <p className="text-lg md:text-xl text-primary-foreground/80 leading-relaxed font-medium">
@@ -246,8 +245,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* AI Chatbox - floating assistant for logged-in users */}
-      <HomeAiChatbox />
     </>
   );
 }

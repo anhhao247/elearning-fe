@@ -11,7 +11,6 @@ import { ContentTabs } from "./_components/content-tabs"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { VoiceChatbot } from "@/components/features/voice-chatbot"
 
 export default function LearningPage({
   params,
@@ -184,14 +183,6 @@ export default function LearningPage({
         </div>
       </div>
 
-      {/* Voice Chatbot - floating learning assistant */}
-      {courseId > 0 && (
-        <VoiceChatbot 
-          courseId={courseId} 
-          contentId={contentId}
-          currentLessonTitle={contentDetail?.title}
-        />
-      )}
     </div>
   )
 }

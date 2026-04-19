@@ -7,7 +7,7 @@ export interface AiChatRequest {
   currentLesson?: string
 }
 
-export type AiAction = 'NONE' | 'CONTINUE_LEARNING'
+export type AiAction = 'NONE' | 'CONTINUE_LEARNING' | 'SUGGEST_COURSE'
 
 export interface AiChatResponse {
   status: 'success' | 'error'
@@ -16,6 +16,7 @@ export interface AiChatResponse {
   targetId?: number | null
   target_id?: number | null
   sources_used: number
+  suggestedCourseIds?: number[]
 }
 
 export async function sendAiChatMessage(payload: AiChatRequest): Promise<AiChatResponse> {
