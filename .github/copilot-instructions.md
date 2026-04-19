@@ -48,4 +48,10 @@
 - `/table`: Các thành phần bảng có thể tái sử dụng.
 - `/auth`: Các thành phần xác thực và bảo vệ quyền truy cập.
 - `/forms`: Các thành phần form tái sử dụng.
-- [cite_start]**Page-Specific Components**: Ưu tiên đặt component dùng chung tại `src/components`, component đặc thù cho trang đặt tại _components ngay trong thư mục route đó (ví dụ: app/admin/users/_components/) để tránh nhầm lẫn với route[cite: 29, 62].
+
+# Form Guidelines
+- [cite_start]Luôn sử dụng `Controller` từ `react-hook-form` cho các thành phần UI phức tạp như `Select`, `Switch`, `Checkbox`, và các component custom (ví dụ: `ImageUpload`, `RichTextEditor`)[cite: 20, 53].
+- [cite_start]Đảm bảo ràng buộc đầy đủ `value` và `onChange` (hoặc `onValueChange`) thông qua đối tượng `field` trong render prop của `Controller` để đồng bộ trạng thái form và UI[cite: 20, 53].
+- [cite_start]Thực hiện chuyển đổi kiểu dữ liệu (type conversion) trong `onValueChange` nếu schema yêu cầu (ví dụ: `Number(val)` cho `categoryId` nếu schema định nghĩa là kiểu `number`)[cite: 21, 54].
+- [cite_start]Luôn hiển thị thông báo lỗi ngay dưới component bằng cách sử dụng `{errors.fieldName && <p className="text-xs text-red-500 mt-1">{errors.fieldName.message as string}</p>}`[cite: 20, 53].
+- [cite_start]Khi thực hiện logic chỉnh sửa (Edit), luôn sử dụng hàm `reset()` trong `useEffect` để đổ dữ liệu từ API vào form, đảm bảo tất cả các trường được ánh xạ chính xác (bao gồm cả fallback cho các trường null/undefined)[cite: 23, 56].

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, BookOpen, FileText, Settings, LogOut } from "lucide-react";
+import { User, BookOpen, FileText, Settings, LogOut, GraduationCap, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
@@ -36,8 +36,10 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
     { href: "/my-profile/settings", label: "Cài đặt", icon: Settings },
   ];
 
+  const isInstructor = user?.role === "INSTRUCTOR";
+
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6 max-w-6xl">
+    <div className="container mx-auto py-8 px-4 md:px-6">
       {!_hasHydrated || !user ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
@@ -82,6 +84,26 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
                   </Link>
                 );
               })}
+
+              <div className="mx-6 py-2 border-t border-border/50"></div>
+
+              {isInstructor ? (
+                <Link
+                  href="/lms/courses"
+                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/20"
+                >
+                  <LayoutDashboard className="w-5 h-5" />
+                  Quản lý giảng dạy
+                </Link>
+              ) : (
+                <Link
+                  href="/become-instructor"
+                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/20"
+                >
+                  <GraduationCap className="w-5 h-5" />
+                  Đăng ký trở thành giảng viên
+                </Link>
+              )}
               
               <div className="mx-6 py-2 border-t border-border/50"></div>
               

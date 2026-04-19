@@ -14,6 +14,10 @@ export interface Course {
   instructorName?: string
   createdAt: string
   updatedAt?: string
+  overview?: string
+  requirements?: string[]
+  benefits?: string[]
+  technique?: string[]
 }
 
 export interface PageResponse<T> {
@@ -123,6 +127,10 @@ export const courseDetailSchema = z.object({
   resumeContentType: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string().optional(),
+  overview: z.string().optional(),
+  requirements: z.array(z.string()).optional(),
+  benefits: z.array(z.string()).optional(),
+  technique: z.array(z.string()).optional(),
   modules: z.array(courseModuleSchema).optional(),
   reviews: z.array(courseReviewSchema).optional(),
 })

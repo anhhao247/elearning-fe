@@ -1,5 +1,5 @@
 import { RoleGuard } from "@/components/auth/role-guard"
-import { AdminSidebar } from "@/components/layout/admin-sidebar"
+import { PlatformAdminSidebar } from "@/components/layout/platform-admin-sidebar"
 import { AdminNavbar } from "@/components/layout/admin-navbar"
 
 export default function AdminLayout({
@@ -8,9 +8,9 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <RoleGuard allowedRole="INSTRUCTOR">
+    <RoleGuard allowedRole="ADMIN">
       <div className="flex min-h-screen bg-slate-50/50">
-        <AdminSidebar />
+        <PlatformAdminSidebar />
         <div className="flex-1 flex flex-col lg:pl-64">
           <AdminNavbar />
           <main className="flex-1 p-6 lg:p-8">

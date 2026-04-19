@@ -2,8 +2,11 @@
 
 import { useAuthStore } from "@/store/useAuthStore"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { UserAvatar } from "@/components/layout/user-avatar"
+import { LayoutDashboard, ShieldCheck } from "lucide-react"
 
 export default function MyProfilePage() {
   const { user } = useAuthStore()
@@ -28,19 +31,37 @@ export default function MyProfilePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Hồ sơ cá nhân</h1>
-        <p className="text-muted-foreground mt-2">Quản lý và xem thông tin tài khoản của bạn</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Hồ sơ cá nhân</h1>
+          <p className="text-muted-foreground mt-2">Quản lý và xem thông tin tài khoản của bạn</p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {user.role === "INSTRUCTOR" && (
+            <Button asChild className="rounded-xl px-6 bg-indigo-600 hover:bg-indigo-700">
+              <Link href="/lms">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Đến trang LMS
+              </Link>
+            </Button>
+          )}
+          {user.role === "ADMIN" && (
+            <Button asChild variant="default" className="rounded-xl px-6 bg-amber-600 hover:bg-amber-700">
+              <Link href="/admin">
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Quản trị hệ thống
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
       
       <Card>
         <CardHeader className="pb-4 border-b">
           <CardTitle className="text-base mb-4">Thông tin cơ bản</CardTitle>
           <div className="flex gap-6 items-center">
-            <Avatar className="h-20 w-20 shrink-0">
-              <AvatarImage src={user.avatar || ""} alt={user.username} />
-              <AvatarFallback className="text-2xl">{userInitials}</AvatarFallback>
-            </Avatar>
+            <UserAvatar user={user} className="h-20 w-20" />
             <div>
               <CardTitle className="text-xl">{user.firstName} {user.lastName}</CardTitle>
               <Badge variant="secondary" className="mt-2 uppercase">{user.role}</Badge>

@@ -1,5 +1,5 @@
-import PlaceholderPage from "../_components/placeholder-page"
+import { ComingSoon } from "../_components/coming-soon"
 
 export default function UsersPage() {
-  return <PlaceholderPage title="Users" />
+  return <ComingSoon title="Users" />
 }
