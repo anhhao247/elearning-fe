@@ -35,7 +35,7 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     {
       id: "welcome",
       role: "assistant",
-      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ""}! 👋 Tôi là trợ lý AI của EduPlatform. Hãy hỏi tôi về các khóa học hoặc nói "Cho tôi học tiếp" để tôi đưa bạn vào bài học nhé!`,
+      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ""}! 👋 Tôi là trợ lý AI của Learnly. Hãy hỏi tôi về các khóa học hoặc nói "Cho tôi học tiếp" để tôi đưa bạn vào bài học nhé!`,
       timestamp: new Date(),
     },
   ])

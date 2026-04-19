@@ -2,7 +2,7 @@
 
 import { use, useMemo } from "react"
 import Link from "next/link"
-import { ChevronLeft, Menu } from "lucide-react"
+import { ChevronLeft, Menu, Video } from "lucide-react"
 
 import { useSyllabus, useContentDetail } from "@/hooks/queries/use-learning"
 import { SyllabusSidebar } from "./_components/syllabus-sidebar"
@@ -96,6 +96,12 @@ export default function LearningPage({
         </div>
         
         <div className="flex items-center gap-4">
+          <Link href={`/courses/learning/${slug}/${contentId}/interview`}>
+            <Button variant="secondary" size="sm" className="hidden md:flex gap-2 text-primary">
+              <Video className="w-4 h-4" />
+              Vấn đáp với AI
+            </Button>
+          </Link>
           <div className="hidden lg:flex items-center gap-2 text-sm">
             <div 
               className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent flex items-center justify-center text-[10px] font-bold"

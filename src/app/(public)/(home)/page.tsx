@@ -33,7 +33,7 @@ export default async function Home() {
               🌟 Nền tảng học tập hàng đầu 2026
             </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-foreground">
-              Mở khóa tiềm năng của bạn cùng <span className="text-primary">EduPlatform</span>
+              Mở khóa tiềm năng của bạn cùng <span className="text-primary">Learnly</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               Học hỏi từ các chuyên gia hàng đầu. Nâng cao kỹ năng, đạt được chứng chỉ và thăng tiến trong sự nghiệp với các khóa học thực tế chất lượng cao.
@@ -186,7 +186,7 @@ export default async function Home() {
       <section className="py-20">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">Tại sao chọn EduPlatform?</Badge>
+            <Badge variant="secondary" className="mb-4">Tại sao chọn Learnly?</Badge>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Học tập hiệu quả với phương pháp hiện đại</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               Chúng tôi cung cấp trải nghiệm học tập tốt nhất, giúp bạn tiếp thu kiến thức nhanh chóng và dễ dàng.

@@ -11,7 +11,7 @@ import { NotificationProvider } from "@/components/providers/notification-provid
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "EduPlatform - Hệ thống học trực tuyến",
+  title: "Learnly - Hệ thống học trực tuyến",
   description: "Nền tảng học trực tuyến hiện đại dành cho mọi người",
 };
 
