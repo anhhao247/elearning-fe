@@ -62,6 +62,9 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
   const webcamRef = useRef<HTMLVideoElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<HTMLTextAreaElement>(null)
+  const recognitionRef = useRef<any>(null)
+  const accumulatedTranscriptRef = useRef("")
 
   // Timer
   useEffect(() => {
@@ -95,6 +98,15 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" })
     }
   }, [messages])
+
+  // Auto-expand textarea
+  useEffect(() => {
+    if (chatInputRef.current) {
+      chatInputRef.current.style.height = "20px"
+      const scrollHeight = chatInputRef.current.scrollHeight
+      chatInputRef.current.style.height = `${Math.min(scrollHeight, 100)}px`
+    }
+  }, [inputText])
 
   // Cleanup media stream on unmount
   useEffect(() => {
@@ -263,12 +275,23 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
       return
     }
 
-    if (isRecording) return
+    if (isRecording) {
+      // STOP RECORDING
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+      return
+    }
 
+    // START RECORDING
     const recognition = new SpeechRecognition()
+    recognitionRef.current = recognition
     recognition.lang = "vi-VN"
-    recognition.interimResults = false
+    recognition.continuous = true
+    recognition.interimResults = true
     recognition.maxAlternatives = 1
+
+    accumulatedTranscriptRef.current = ""
 
     recognition.onstart = () => {
       setIsRecording(true)
@@ -281,18 +304,38 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
     }
 
     recognition.onresult = (event: any) => {
-      const text = event.results[0][0].transcript
-      setTranscript(text)
-      handleSendMessage(text)
+      let interim = ""
+      let finalized = ""
+
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalized += event.results[i][0].transcript
+        } else {
+          interim += event.results[i][0].transcript
+        }
+      }
+
+      const totalSoFar = accumulatedTranscriptRef.current + finalized
+      if (finalized) accumulatedTranscriptRef.current = totalSoFar
+      
+      setTranscript(totalSoFar + (interim ? " " + interim : ""))
     }
 
-    recognition.onerror = () => {
-      toast.error("Lỗi thu âm hoặc quyền bị từ chối.")
+    recognition.onerror = (event: any) => {
+      console.error("Speech Recognition Error:", event.error)
+      if (event.error !== "no-speech") {
+        toast.error("Lỗi thu âm hoặc quyền bị từ chối.")
+      }
       setIsRecording(false)
     }
 
     recognition.onend = () => {
       setIsRecording(false)
+      const finalResult = accumulatedTranscriptRef.current.trim()
+      if (finalResult) {
+        handleSendMessage(finalResult)
+      }
+      recognitionRef.current = null
     }
 
     try {
@@ -301,7 +344,7 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
       toast.error("Lỗi khởi tạo micro.")
       setIsRecording(false)
     }
-  }, [isRecording, courseId, contentId, currentQuestion, qaPairs]) // Updated deps
+  }, [isRecording, courseId, contentId, currentQuestion, qaPairs, handleSendMessage])
 
 
   if (!_hasHydrated || !user) return null
@@ -458,7 +501,7 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
                   )}
                 >
                   {isRecording ? <Mic className="w-4 h-4 text-red-500" /> : <MicOff className="w-4 h-4" />}
-                  <span>{isRecording ? "Đang thu" : "Thu âm"}</span>
+                  <span>{isRecording ? "Dừng & Gửi" : "Thu âm"}</span>
                 </button>
               </div>
 
@@ -564,19 +607,23 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
               <div ref={messagesEndRef} className="h-1 text-transparent">-</div>
             </div>
 
-            <div className="p-3 border-t border-slate-100 bg-white flex items-center gap-2 shrink-0 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.02)]">
-              <input
-                type="text"
+            <div className="p-3 border-t border-slate-100 bg-white flex items-end gap-2 shrink-0 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.02)]">
+              <textarea
+                ref={chatInputRef}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && inputText.trim()) {
-                    handleSendMessage(inputText)
-                    setInputText("")
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    if (inputText.trim()) {
+                      handleSendMessage(inputText)
+                      setInputText("")
+                    }
                   }
                 }}
                 placeholder={isLoading ? "Alex đang xem xét..." : "Nhập câu trả lời..."}
-                className="flex-1 bg-slate-50 rounded-full px-4 py-2 border border-slate-200 shadow-inner text-sm outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50"
+                className="flex-1 bg-slate-50 rounded-2xl px-4 py-2 border border-slate-200 shadow-inner text-sm outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 transition-all disabled:opacity-50 resize-none min-h-[38px] max-h-[100px]"
+                rows={1}
                 disabled={isLoading || isRecording || phase !== "interviewing" || !currentQuestion}
               />
               <button
@@ -587,7 +634,7 @@ export function AiInterview({ slug, contentId }: AiInterviewProps) {
                   }
                 }}
                 disabled={!inputText.trim() || isLoading || isRecording || phase !== "interviewing" || !currentQuestion}
-                className="p-2.5 rounded-full bg-primary text-white disabled:opacity-50 transition-all hover:scale-105 active:scale-95 shadow-sm"
+                className="p-2.5 rounded-full bg-primary text-white disabled:opacity-50 transition-all hover:scale-105 active:scale-95 shadow-sm mb-0.5"
               >
                 <Send className="w-4 h-4" />
               </button>

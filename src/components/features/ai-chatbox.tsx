@@ -61,6 +61,15 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     scrollToBottom()
   }, [messages, scrollToBottom])
 
+  // Auto-expand textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "20px" // Reset to calculate correct scrollHeight
+      const scrollHeight = inputRef.current.scrollHeight
+      inputRef.current.style.height = `${Math.min(scrollHeight, 100)}px`
+    }
+  }, [input])
+
   // --------------------------------------------------------------------------
   // Handle CONTINUE_LEARNING action
   // --------------------------------------------------------------------------
