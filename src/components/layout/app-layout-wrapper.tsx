@@ -6,7 +6,7 @@ import { Footer } from "./footer"
 
 export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const isAdminPath = pathname?.startsWith("/admin")
+  const isAdminPath = pathname?.startsWith("/lms") || pathname?.startsWith("/admin")
 
   if (isAdminPath) {
     return <main className="flex-1 flex flex-col">{children}</main>
