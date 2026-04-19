@@ -249,3 +249,70 @@ export async function updateCourse(id: number | string, payload: CreateCoursePay
   const { data } = await api.put(`/v1/instructor/courses/${id}`, payload)
   return data
 }
+export async function syncCourseAI(courseId: number | string): Promise<any> {
+  const { data } = await api.post(`/v1/instructor/courses/${courseId}/sync-ai`)
+  return data
+}
+
+// ─── Dashboard Types ────────────────────────────────────────────────────────
+
+export interface DashboardStats {
+  totalStudents: number
+  activeCourses: number
+  totalRevenue: number
+  pendingSyncContent: number
+  totalStudentsChange: string
+  activeCoursesChange: string
+  totalRevenueChange: string
+  pendingSyncContentChange: string
+}
+
+export interface RecentEnrollment {
+  enrollmentId: number
+  studentName: string
+  studentEmail: string
+  courseName: string
+  enrollmentDate: string
+  progressPercent: number
+}
+
+export interface PendingSyncContent {
+  contentId: number
+  contentTitle: string
+  contentType: 'VIDEO' | 'READING' | 'QUIZ'
+  courseName: string
+  createdAt: string
+}
+
+export interface CourseStat {
+  courseId: number
+  courseName: string
+  studentCount: number
+  revenue: number
+  status: string
+  rating: number
+  reviewCount: number
+  needsAiSync: boolean
+}
+
+// ─── Dashboard API ──────────────────────────────────────────────────────────
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const { data } = await api.get('/v1/instructor/dashboard/stats')
+  return data
+}
+
+export async function getRecentEnrollments(): Promise<RecentEnrollment[]> {
+  const { data } = await api.get('/v1/instructor/dashboard/recent-enrollments')
+  return data
+}
+
+export async function getPendingSync(): Promise<PendingSyncContent[]> {
+  const { data } = await api.get('/v1/instructor/dashboard/pending-sync')
+  return data
+}
+
+export async function getCourseStats(): Promise<CourseStat[]> {
+  const { data } = await api.get('/v1/instructor/dashboard/course-stats')
+  return data
+}

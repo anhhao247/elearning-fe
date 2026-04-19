@@ -22,6 +22,11 @@ import {
   InstructorCourse,
   getInstructorCourses,
   updateCourse,
+  syncCourseAI,
+  getDashboardStats,
+  getRecentEnrollments,
+  getPendingSync,
+  getCourseStats,
 } from '@/lib/services/instructor.service'
 
 export function useCategories() {
@@ -168,5 +173,44 @@ export function useUpdateCourse() {
       queryClient.invalidateQueries({ queryKey: ['instructor-course', id] })
       queryClient.invalidateQueries({ queryKey: ['instructor-course-outline', id] })
     },
+  })
+}
+
+export function useSyncCourseAI() {
+  return useMutation({
+    mutationFn: (courseId: number | string) => syncCourseAI(courseId),
+  })
+}
+
+
+export function useDashboardStats() {
+  return useQuery({
+    queryKey: ['instructor-dashboard-stats'],
+    queryFn: getDashboardStats,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useRecentEnrollments() {
+  return useQuery({
+    queryKey: ['instructor-recent-enrollments'],
+    queryFn: getRecentEnrollments,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function usePendingSync() {
+  return useQuery({
+    queryKey: ['instructor-pending-sync'],
+    queryFn: getPendingSync,
+    staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useCourseStats() {
+  return useQuery({
+    queryKey: ['instructor-course-stats'],
+    queryFn: getCourseStats,
+    staleTime: 1000 * 60 * 5,
   })
 }

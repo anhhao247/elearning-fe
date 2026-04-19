@@ -15,7 +15,9 @@ import {
   Video,
   FileText,
   HelpCircle,
-  GripVertical
+  GripVertical,
+  Sparkles,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -31,7 +33,8 @@ import {
   useUpdateModule,
   useCreateQuizQuestion,
   useUpdateQuizQuestion,
-  useDeleteQuizQuestion
+  useDeleteQuizQuestion,
+  useSyncCourseAI
 } from "@/hooks/queries/use-instructor"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -224,6 +227,7 @@ export default function CourseOutlinePage() {
   const createQuizQuestion = useCreateQuizQuestion()
   const updateQuizQuestion = useUpdateQuizQuestion()
   const deleteQuizQuestion = useDeleteQuizQuestion()
+  const syncAI = useSyncCourseAI()
 
   // State for Dialogs
   const [moduleDialog, setModuleDialog] = useState<{ open: boolean; mode: "create" | "edit"; data?: any }>({
@@ -239,6 +243,16 @@ export default function CourseOutlinePage() {
     open: false,
     mode: "create"
   })
+
+  const handleSyncAI = async () => {
+    try {
+      await syncAI.mutateAsync(courseId as string)
+      toast.success("Đồng bộ AI thành công")
+      refetch()
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Đồng bộ AI thất bại")
+    }
+  }
 
   // Handlers for Module
   const handleAddModule = () => {
@@ -444,7 +458,7 @@ export default function CourseOutlinePage() {
 
   if (loadingCourse || loadingSyllabus) {
     return (
-      <div className="p-8 space-y-8 animate-pulse">
+      <div className="space-y-6 animate-pulse">
         <div className="h-12 w-64 bg-slate-200 rounded-lg mb-8" />
         <div className="grid grid-cols-4 gap-6">
           {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-slate-100 rounded-2xl" />)}
@@ -457,22 +471,37 @@ export default function CourseOutlinePage() {
   const totalLessons = syllabus?.reduce((acc, m) => acc + m.contents.length, 0) || 0
 
   return (
-    <div className="max-w-6xl mx-auto p-8 pb-20">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-3">
-            {course?.title} - Outline
+            {course?.title} | Outline
             <Badge variant="outline" className="text-blue-600 bg-blue-50 border-blue-100">{course?.isPublish ? "Published" : "Draft"}</Badge>
           </h1>
           <p className="text-slate-500 mt-2 font-medium">Quản lý và tổ chức nội dung học tập theo chương mục.</p>
         </div>
-        <Button 
-          className="bg-black hover:bg-black/90 text-white rounded-xl px-6 h-12 font-bold flex items-center gap-2 shadow-lg shadow-black/10 transition-transform active:scale-95"
-          onClick={handleAddModule}
-        >
-          <Plus className="w-5 h-5" /> Add Module
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline"
+            className="border-slate-200 text-slate-700 rounded-xl px-6 h-12 font-bold flex items-center gap-2 transition-transform active:scale-95"
+            onClick={handleSyncAI}
+            disabled={syncAI.isPending}
+          >
+            {syncAI.isPending ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Sparkles className="w-5 h-5 text-blue-500" />
+            )}
+            Đồng bộ AI
+          </Button>
+          <Button 
+            className="bg-black hover:bg-black/90 text-white rounded-xl px-6 h-12 font-bold flex items-center gap-2 shadow-lg shadow-black/10 transition-transform active:scale-95"
+            onClick={handleAddModule}
+          >
+            <Plus className="w-5 h-5" /> Add Module
+          </Button>
+        </div>
       </div>
 
       {/* Stats Section */}

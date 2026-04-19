@@ -82,7 +82,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">Sứ mệnh của chúng tôi</h2>
@@ -150,7 +150,7 @@ export default function AboutPage() {
 
       {/* Stats Section */}
       <section className="bg-primary py-16 text-primary-foreground">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, i) => (
               <div key={i} className="space-y-2">
@@ -164,7 +164,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="container mx-auto px-4 text-center space-y-12">
+      <section className="container mx-auto px-4 md:px-6 text-center space-y-12">
         <div className="space-y-4 max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold">Đội ngũ của chúng tôi</h2>
           <p className="text-muted-foreground">
@@ -203,7 +203,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 mb-8">
+      <section className="container mx-auto px-4 md:px-6 mb-8">
         <Card className="bg-muted border-none p-8 md:p-12 text-center overflow-hidden relative">
           <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 bg-primary/10 rounded-full blur-3xl" />

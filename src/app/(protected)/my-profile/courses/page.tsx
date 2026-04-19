@@ -111,19 +111,19 @@ export default function MyCoursesPage() {
           <TabsList className="bg-transparent space-x-2">
             <TabsTrigger
               value="ALL"
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none"
+              className="px-6 py-3 data-[state=active]:bg-primary/5 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none transition-all border-x-0 border-t-0"
             >
               Tất cả khóa học
             </TabsTrigger>
             <TabsTrigger
               value="ONGOING"
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none"
+              className="px-6 py-3 data-[state=active]:bg-primary/5 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none transition-all border-x-0 border-t-0"
             >
               Đang học
             </TabsTrigger>
             <TabsTrigger
               value="COMPLETED"
-              className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none"
+              className="px-6 py-3 data-[state=active]:bg-primary/5 data-[state=active]:text-primary border-b-2 border-transparent data-[state=active]:border-primary rounded-none shadow-none transition-all border-x-0 border-t-0"
             >
               Đã hoàn thành
             </TabsTrigger>
