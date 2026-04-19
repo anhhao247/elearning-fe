@@ -18,6 +18,7 @@ interface Message {
   /** Hiển thị nút CTA khi action === CONTINUE_LEARNING */
   ctaLabel?: string
   ctaOnClick?: () => void
+  suggestedCourses?: any[]
 }
 
 interface AiChatboxProps {
@@ -35,7 +36,7 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
     {
       id: "welcome",
       role: "assistant",
-      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ""}! 👋 Tôi là trợ lý AI của EduPlatform. Hãy hỏi tôi về các khóa học hoặc nói "Cho tôi học tiếp" để tôi đưa bạn vào bài học nhé!`,
+      content: `Xin chào${user?.firstName ? ` ${user.firstName}` : ""}! 👋 Tôi là trợ lý AI của Learnly. Hãy hỏi tôi về các khóa học hoặc nói "Cho tôi học tiếp" để tôi đưa bạn vào bài học nhé!`,
       timestamp: new Date(),
     },
   ])
@@ -60,6 +61,15 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
   useEffect(() => {
     scrollToBottom()
   }, [messages, scrollToBottom])
+
+  // Auto-expand textarea
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = "20px" // Reset to calculate correct scrollHeight
+      const scrollHeight = inputRef.current.scrollHeight
+      inputRef.current.style.height = `${Math.min(scrollHeight, 100)}px`
+    }
+  }, [input])
 
   // --------------------------------------------------------------------------
   // Handle CONTINUE_LEARNING action
@@ -99,7 +109,7 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
   // Build AI message from response
   // --------------------------------------------------------------------------
   const buildAiMessage = useCallback(
-    (response: AiChatResponse): Message => {
+    async (response: AiChatResponse): Promise<Message> => {
       const base: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
@@ -113,6 +123,19 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
         if (targetId) {
           base.ctaLabel = "Học tiếp ngay →"
           base.ctaOnClick = () => handleContinueLearning(targetId)
+        }
+      }
+
+      if (response.action === "SUGGEST_COURSE" && response.suggestedCourseIds?.length) {
+        // Take only first 3
+        const idsToFetch = response.suggestedCourseIds.slice(0, 3)
+        try {
+          const courseDetails = await Promise.all(
+            idsToFetch.map(id => getCourseDetail(id).catch(() => null))
+          )
+          base.suggestedCourses = courseDetails.filter(Boolean)
+        } catch (err) {
+          console.error("Failed to fetch suggested courses:", err)
         }
       }
 
@@ -147,7 +170,7 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
         currentLesson: currentLessonTitle,
       })
 
-      const aiMessage = buildAiMessage(response)
+      const aiMessage = await buildAiMessage(response)
       setMessages((prev) => [...prev, aiMessage])
     } catch {
       toast.error("Không thể kết nối với AI. Vui lòng thử lại.")
@@ -266,13 +289,55 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
                     <span className="text-[10px] text-muted-foreground">
                       {formatTime(msg.timestamp)}
                     </span>
-                    {msg.sourcesUsed !== undefined && msg.sourcesUsed > 0 && (
-                      <span className="flex items-center gap-1 text-[10px] text-indigo-500 font-medium">
-                        <BookOpen className="w-2.5 h-2.5" />
-                        {msg.sourcesUsed} nguồn
-                      </span>
-                    )}
                   </div>
+
+                  {/* Suggested Courses Cards */}
+                  {msg.suggestedCourses && msg.suggestedCourses.length > 0 && (
+                    <div className="flex flex-col gap-2.5 mt-3 w-full animate-in fade-in slide-in-from-top-4 duration-500">
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Gợi ý cho bạn:</p>
+                      {msg.suggestedCourses.map((course) => (
+                        <div
+                          key={course.id}
+                          onClick={() => router.push(`/courses/${course.slug || course.id}`)}
+                          className="flex items-center gap-3 p-2 bg-white dark:bg-slate-900 rounded-xl border border-border/60 shadow-sm hover:border-violet-400 hover:shadow-md transition-all cursor-pointer group active:scale-[0.98]"
+                        >
+                          <div className="w-16 h-11 rounded-lg overflow-hidden shrink-0 bg-slate-100">
+                            <img
+                              src={course.thumbnail || "/placeholder-course.png"}
+                              alt={course.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-violet-600 transition-colors">
+                              {course.title}
+                            </p>
+
+                            <div className="flex items-center gap-2 mt-0.5 opacity-80">
+                              <span className="text-[10px] text-slate-500 truncate lowercase first-letter:uppercase">
+                                {course.instructor?.fullName || course.instructorName || "Giảng viên Learnly"}
+                              </span>
+                              <span className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
+                              <span className="text-[10px] font-bold text-violet-500">
+                                {course.level || "Tất cả"}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between mt-1.5">
+                              <span className="text-[11px] font-extrabold text-blue-700 dark:text-blue-400">
+                                {course.isFree || course.price === 0
+                                  ? "Miễn phí"
+                                  : new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(course.price)}
+                              </span>
+                              <span className="text-[9px] font-bold text-primary group-hover:underline">
+                                Xem ngay →
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

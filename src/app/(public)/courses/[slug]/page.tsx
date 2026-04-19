@@ -11,7 +11,6 @@ import { CourseInfoTabs } from "./_components/course-info-tabs"
 import { StudentsAlsoBought } from "./_components/students-also-bought"
 import { Loader2 } from "lucide-react"
 import { extractIdFromSlug } from "@/lib/utils"
-import { AiChatbox } from "@/components/features/ai-chatbox"
 
 export default function CourseDetailPage() {
   const params = useParams()
@@ -86,8 +85,6 @@ export default function CourseDetailPage() {
         />
       </div>
 
-      {/* AI Chatbox */}
-      {course.isEnrolled && <AiChatbox courseId={Number(idStr)} />}
     </main>
   )
 }

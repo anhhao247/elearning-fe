@@ -16,8 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata = {
-  title: "Về chúng tôi | EduPlatform",
-  description: "Tìm hiểu về sứ mệnh, tầm nhìn và đội ngũ đằng sau EduPlatform.",
+  title: "Về chúng tôi | Learnly",
+  description: "Tìm hiểu về sứ mệnh, tầm nhìn và đội ngũ đằng sau Learnly.",
 };
 
 const stats = [
@@ -62,7 +62,7 @@ export default function AboutPage() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--primary-foreground)_0%,transparent_100%)] opacity-20" />
         <div className="container mx-auto max-w-5xl text-center space-y-6">
           <Badge variant="outline" className="px-4 py-1 border-primary/20 bg-primary/5 text-primary animate-in fade-in slide-in-from-bottom-3 duration-500">
-            Về EduPlatform
+            Về Learnly
           </Badge>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground animate-in fade-in slide-in-from-bottom-4 duration-700">
             Định nghĩa lại tương lai của <span className="text-primary bg-clip-text">giáo dục trực tuyến</span>
@@ -87,7 +87,7 @@ export default function AboutPage() {
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">Sứ mệnh của chúng tôi</h2>
             <p className="text-lg text-muted-foreground">
-              EduPlatform ra đời với mục tiêu xóa bỏ rào cản về chi phí và địa lý trong giáo dục. Chúng tôi tin rằng bất kỳ ai cũng xứng đáng được học tập từ những chuyên gia hàng đầu thế giới.
+              Learnly ra đời với mục tiêu xóa bỏ rào cản về chi phí và địa lý trong giáo dục. Chúng tôi tin rằng bất kỳ ai cũng xứng đáng được học tập từ những chuyên gia hàng đầu thế giới.
             </p>
             <ul className="space-y-4">
               {[
@@ -211,7 +211,7 @@ export default function AboutPage() {
           <div className="relative space-y-6 max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold">Sẵn sàng bắt đầu hành trình học tập?</h2>
             <p className="text-muted-foreground">
-              Tham gia cùng 50.000+ học viên khác và nâng cao kỹ năng của bạn ngay hôm nay với các khóa học chất lượng từ EduPlatform.
+              Tham gia cùng 50.000+ học viên khác và nâng cao kỹ năng của bạn ngay hôm nay với các khóa học chất lượng từ Learnly.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="rounded-full shadow-lg hover:shadow-primary/20">

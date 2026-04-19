@@ -42,7 +42,7 @@ function AuthLeftPanel() {
           <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
-          <span className="text-white font-bold text-xl tracking-tight">EduPlatform</span>
+          <span className="text-white font-bold text-xl tracking-tight">Learnly</span>
         </div>
 
         {/* Heading */}
@@ -123,7 +123,7 @@ function LoginContent() {
         .then((res) => { setUser(res.data); toast.success("Đăng nhập Google thành công!"); handleRoleBasedRedirect(res.data.role) })
         .catch(() => toast.error("Không lấy được thông tin người dùng từ Google."))
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -157,7 +157,7 @@ function LoginContent() {
         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
           <BookOpen className="w-4 h-4 text-white" />
         </div>
-        <span className="font-bold text-slate-900">EduPlatform</span>
+        <span className="font-bold text-slate-900">Learnly</span>
       </div>
 
       {/* Heading */}
