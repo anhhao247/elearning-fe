@@ -27,6 +27,9 @@ import {
   getRecentEnrollments,
   getPendingSync,
   getCourseStats,
+  InstructorStudent,
+  GetStudentsParams,
+  getInstructorStudents,
 } from '@/lib/services/instructor.service'
 
 export function useCategories() {
@@ -212,5 +215,12 @@ export function useCourseStats() {
     queryKey: ['instructor-course-stats'],
     queryFn: getCourseStats,
     staleTime: 1000 * 60 * 5,
+  })
+}
+
+export function useInstructorStudents(params?: GetStudentsParams) {
+  return useQuery({
+    queryKey: ['instructor-students', params],
+    queryFn: () => getInstructorStudents(params),
   })
 }

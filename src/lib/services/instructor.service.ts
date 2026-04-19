@@ -316,3 +316,63 @@ export async function getCourseStats(): Promise<CourseStat[]> {
   const { data } = await api.get('/v1/instructor/dashboard/course-stats')
   return data
 }
+
+// ─── Students Types ─────────────────────────────────────────────────────────
+
+export interface EnrolledCourse {
+  courseId: number
+  courseName: string
+  progressPercent: number
+  enrolledAt: string
+  pricePaid: number
+}
+
+export interface InstructorStudent {
+  studentId: number
+  studentName: string
+  studentEmail: string
+  enrolledCourses: EnrolledCourse[]
+  totalPaid: number
+  lastEnrolledAt: string
+}
+
+export interface PaginatedResponse<T> {
+  content: T[]
+  empty: boolean
+  first: boolean
+  last: boolean
+  number: number
+  numberOfElements: number
+  pageable: any
+  size: number
+  sort: any
+  totalElements: number
+  totalPages: number
+}
+
+export interface GetStudentsParams {
+  courseId?: number
+  keyword?: string
+  page?: number
+  size?: number
+  sort?: string[]
+}
+
+// ─── Students API ───────────────────────────────────────────────────────────
+
+export async function getInstructorStudents(params?: GetStudentsParams): Promise<PaginatedResponse<InstructorStudent>> {
+  const queryParams = new URLSearchParams()
+  if (params?.courseId) queryParams.append('courseId', params.courseId.toString())
+  if (params?.keyword) queryParams.append('keyword', params.keyword)
+  if (params?.page !== undefined) queryParams.append('page', params.page.toString())
+  if (params?.size !== undefined) queryParams.append('size', params.size.toString())
+  if (params?.sort) {
+    params.sort.forEach(s => queryParams.append('sort', s))
+  }
+
+  const queryString = queryParams.toString()
+  const url = queryString ? `/v1/instructor/students?${queryString}` : '/v1/instructor/students'
+  
+  const { data } = await api.get(url)
+  return data
+}
