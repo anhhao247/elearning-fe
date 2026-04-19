@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Filter } from "lucide-react"
 
 export const metadata = {
-  title: "Danh sách khóa học | EduPlatform",
+  title: "Danh sách khóa học | Learnly",
   description: "Khám phá các khóa học lập trình, kỹ năng mềm từ cơ bản đến nâng cao.",
 }
 

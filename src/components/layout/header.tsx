@@ -11,7 +11,7 @@ export function Header() {
       <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold sm:inline-block text-xl text-primary">EduPlatform</span>
+            <span className="font-bold sm:inline-block text-xl text-primary">Learnly</span>
           </Link>
           <nav className="hidden md:flex gap-6 text-sm font-medium">
             <Link href="/courses" className="transition-colors hover:text-foreground/80 text-foreground/60">Khóa học</Link>

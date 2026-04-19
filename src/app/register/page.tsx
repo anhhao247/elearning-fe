@@ -48,7 +48,7 @@ function AuthLeftPanel() {
           <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
-          <span className="text-white font-bold text-xl tracking-tight">EduPlatform</span>
+          <span className="text-white font-bold text-xl tracking-tight">Learnly</span>
         </div>
 
         <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
@@ -102,7 +102,7 @@ export default function RegisterPage() {
       await api.post("/auth/register", data)
       toast.success("Đăng ký thành công! Đang chuyển hướng...")
       setTimeout(() => router.push("/login"), 1500)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const message = error.response?.data?.message || "Đăng ký thất bại"
       toast.error(message)
@@ -123,7 +123,7 @@ export default function RegisterPage() {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
               <BookOpen className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900">EduPlatform</span>
+            <span className="font-bold text-slate-900">Learnly</span>
           </div>
 
           {/* Heading */}
