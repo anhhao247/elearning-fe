@@ -376,3 +376,63 @@ export async function getInstructorStudents(params?: GetStudentsParams): Promise
   const { data } = await api.get(url)
   return data
 }
+
+// ─── Student Detail Types ───────────────────────────────────────────────────
+
+export interface StudentDetailCourse {
+  courseId: number
+  courseName: string
+  courseThumbnail: string | null
+  progressPercent: number
+  enrolledAt: string
+  completedAt: string | null
+  pricePaid: number
+  status: string
+  lastAccessedContent: string | null
+  rating: number | null
+}
+
+export interface StudentDetail {
+  studentId: number
+  studentName: string
+  studentEmail: string
+  studentAvatar: string | null
+  totalEnrolledCourses: number
+  totalPaid: number
+  averageProgress: number
+  enrolledCourses: StudentDetailCourse[]
+}
+
+export interface StudentQuizHistory {
+  quizTitle: string
+  courseName: string
+  score: number
+  retakeCount: number
+  status: string
+  submittedAt: string
+}
+
+export interface StudentComment {
+  commentId: number
+  commentContent: string
+  contentTitle: string
+  courseName: string
+  createdAt: string
+}
+
+// ─── Student Detail API ─────────────────────────────────────────────────────
+
+export async function getStudentDetail(studentId: number | string): Promise<StudentDetail> {
+  const { data } = await api.get(`/v1/instructor/students/${studentId}`)
+  return data
+}
+
+export async function getStudentQuizzes(studentId: number | string): Promise<StudentQuizHistory[]> {
+  const { data } = await api.get(`/v1/instructor/students/${studentId}/quizzes`)
+  return data
+}
+
+export async function getStudentComments(studentId: number | string): Promise<StudentComment[]> {
+  const { data } = await api.get(`/v1/instructor/students/${studentId}/comments`)
+  return data
+}

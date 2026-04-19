@@ -27,9 +27,11 @@ import {
   getRecentEnrollments,
   getPendingSync,
   getCourseStats,
-  InstructorStudent,
   GetStudentsParams,
   getInstructorStudents,
+  getStudentDetail,
+  getStudentQuizzes,
+  getStudentComments,
 } from '@/lib/services/instructor.service'
 
 export function useCategories() {
@@ -222,5 +224,29 @@ export function useInstructorStudents(params?: GetStudentsParams) {
   return useQuery({
     queryKey: ['instructor-students', params],
     queryFn: () => getInstructorStudents(params),
+  })
+}
+
+export function useStudentDetail(studentId: number | string) {
+  return useQuery({
+    queryKey: ['instructor-student-detail', studentId],
+    queryFn: () => getStudentDetail(studentId),
+    enabled: !!studentId,
+  })
+}
+
+export function useStudentQuizzes(studentId: number | string) {
+  return useQuery({
+    queryKey: ['instructor-student-quizzes', studentId],
+    queryFn: () => getStudentQuizzes(studentId),
+    enabled: !!studentId,
+  })
+}
+
+export function useStudentComments(studentId: number | string) {
+  return useQuery({
+    queryKey: ['instructor-student-comments', studentId],
+    queryFn: () => getStudentComments(studentId),
+    enabled: !!studentId,
   })
 }

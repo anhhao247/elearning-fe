@@ -3,9 +3,16 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown, Mail } from "lucide-react"
+import { ArrowUpDown, Mail, MoreHorizontal } from "lucide-react"
 import { InstructorStudent } from "@/lib/services/instructor.service"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import Link from "next/link"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat("vi-VN", {
@@ -119,6 +126,29 @@ export const columns: ColumnDef<InstructorStudent>[] = [
       if (!dateStr) return <div>-</div>
       const date = new Date(dateStr)
       return <div className="text-sm text-slate-600">{new Intl.DateTimeFormat("vi-VN").format(date)}</div>
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const { studentId } = row.original
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Mở menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={`/lms/students/${studentId}`}>
+                Xem chi tiết
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
     },
   },
 ]
