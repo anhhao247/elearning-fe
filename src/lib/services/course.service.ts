@@ -3,25 +3,26 @@ import { api } from '@/lib/axios'
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api'
 
-export async function getCourses({
-  page = '0',
-  limit = '10',
-  sortBy = 'createdAt',
-  sortDir = 'desc',
-  keyword = '',
-  level = '',
-  isFree = '',
-  categoryId = ''
-}: Record<string, string>): Promise<PageResponse<Course>> {
+export async function getCourses(params: Record<string, string | string[] | undefined>): Promise<PageResponse<Course>> {
   const query = new URLSearchParams()
-  query.set('page', page)
-  query.set('limit', limit)
-  if (sortBy) query.set('sortBy', sortBy)
-  if (sortDir) query.set('sortDir', sortDir)
-  if (keyword) query.set('keyword', keyword)
-  if (level) query.set('level', level)
-  if (isFree !== '') query.set('isFree', isFree)
-  if (categoryId) query.set('categoryId', categoryId)
+  
+  // Default values
+  query.set('page', params.page?.toString() || '0')
+  query.set('limit', params.limit?.toString() || '10')
+  query.set('sortBy', params.sortBy?.toString() || 'createdAt')
+  query.set('sortDir', params.sortDir?.toString() || 'desc')
+
+  Object.entries(params).forEach(([key, val]) => {
+    // Skip defaults we already set and empty values
+    if (['page', 'limit', 'sortBy', 'sortDir'].includes(key)) return
+    if (val === undefined || val === null || val === '') return
+
+    if (Array.isArray(val)) {
+      val.forEach(v => query.append(key, v))
+    } else {
+      query.set(key, val)
+    }
+  })
 
   const response = await fetch(`${baseUrl}/v1/courses?${query.toString()}`, {
     cache: 'no-store', // Tắt cache để search/filter chính xác theo thời gian thực

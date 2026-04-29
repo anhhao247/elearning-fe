@@ -41,6 +41,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { ModuleDialog } from "./_components/module-dialog"
 import { LessonDialog } from "./_components/lesson-dialog"
+import { AiOutlineDialog } from "./_components/ai-outline-dialog"
 
 // ─── Stats Card Component ─────────────────────────────────────────────────────
 
@@ -230,6 +231,7 @@ export default function CourseOutlinePage() {
   const syncAI = useSyncCourseAI()
 
   // State for Dialogs
+  const [aiDialogOpen, setAiDialogOpen] = useState(false)
   const [moduleDialog, setModuleDialog] = useState<{ open: boolean; mode: "create" | "edit"; data?: any }>({
     open: false,
     mode: "create"
@@ -483,6 +485,13 @@ export default function CourseOutlinePage() {
         </div>
         <div className="flex items-center gap-3">
           <Button 
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-xl px-6 h-12 font-bold flex items-center gap-2 shadow-lg shadow-indigo-200 border-none transition-transform active:scale-95"
+            onClick={() => setAiDialogOpen(true)}
+          >
+            <Sparkles className="w-5 h-5" />
+            Tạo nhanh Outline
+          </Button>
+          <Button 
             variant="outline"
             className="border-slate-200 text-slate-700 rounded-xl px-6 h-12 font-bold flex items-center gap-2 transition-transform active:scale-95"
             onClick={handleSyncAI}
@@ -583,6 +592,13 @@ export default function CourseOutlinePage() {
         contentType={lessonDialog.data?.contentType}
         onSubmit={onLessonSubmit}
         isSubmitting={createContent.isPending || updateContent.isPending}
+      />
+
+      <AiOutlineDialog 
+        open={aiDialogOpen} 
+        onOpenChange={setAiDialogOpen}
+        courseId={Number(courseId)}
+        onSuccess={() => refetch()}
       />
     </div>
   )

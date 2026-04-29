@@ -1,0 +1,347 @@
+{
+  "status": "success",
+  "data": {
+    "modules": [
+      {
+        "title": "Chương 1: Nhập môn React.js và Cấu hình Môi trường",
+        "description": "Chương này sẽ giới thiệu tổng quan về React.js, lý do tại sao nó phổ biến, và hướng dẫn bạn cách thiết lập môi trường phát triển để bắt đầu dự án React đầu tiên của mình. Bạn cũng sẽ làm quen với JSX và khái niệm Component cơ bản.",
+        "contents": [
+          {
+            "title": "Bài 1.1: React.js là gì? Tại sao nên học React?",
+            "type": "VIDEO",
+            "description": "Video này sẽ cung cấp cái nhìn tổng quan về React.js, lịch sử phát triển, và những lợi ích chính khi sử dụng framework này trong phát triển web. Bài học cũng sẽ so sánh React với các thư viện/framework JavaScript khác."
+          },
+          {
+            "title": "Bài 1.2: Cài đặt Môi trường Phát triển",
+            "type": "READING",
+            "readingContent": "<h3>Cài đặt Node.js và npm/yarn</h3><p>Để phát triển ứng dụng React, bạn cần cài đặt Node.js, đi kèm với npm (Node Package Manager) hoặc bạn có thể sử dụng yarn. Đây là những công cụ cần thiết để quản lý các gói thư viện JavaScript.</p><ol><li><b>Tải và cài đặt Node.js:</b> Truy cập trang chủ <a href='https://nodejs.org/' target='_blank'>nodejs.org</a> và tải phiên bản LTS (Long Term Support) phù hợp với hệ điều hành của bạn.</li><li><b>Kiểm tra cài đặt:</b> Mở Terminal hoặc Command Prompt và gõ <code>node -v</code> và <code>npm -v</code> để kiểm tra phiên bản đã cài đặt.</li><li><b>Cài đặt Yarn (Tùy chọn):</b> Nếu muốn sử dụng Yarn thay cho npm, bạn có thể cài đặt bằng lệnh <code>npm install -g yarn</code>.</li></ol><h3>Tạo ứng dụng React đầu tiên</h3><p>Cách phổ biến và đơn giản nhất để bắt đầu một dự án React là sử dụng Create React App (CRA) hoặc Vite. Trong khóa học này, chúng ta sẽ tập trung vào CRA để đảm bảo sự nhất quán.</p><p><b>Với Create React App:</b></p><pre><code>npx create-react-app ten-du-an-cua-ban</code></pre><p>Sau khi lệnh chạy xong, bạn có thể vào thư mục dự án và khởi động server phát triển:</p><pre><code>cd ten-du-an-cua-ban\nnpm start</code></pre><p>Ứng dụng của bạn sẽ được mở tự động trên trình duyệt tại địa chỉ <code>http://localhost:3000</code>.</p>"
+          },
+          {
+            "title": "Bài 1.3: Cấu trúc Dự án React cơ bản",
+            "type": "VIDEO",
+            "description": "Tìm hiểu về các thư mục và tệp tin quan trọng trong một dự án React được tạo bởi Create React App, bao gồm public/, src/, package.json và cách chúng hoạt động cùng nhau. Hiểu rõ mục đích của từng phần để dễ dàng quản lý code."
+          },
+          {
+            "title": "Bài 1.4: JSX - Cú pháp mở rộng của JavaScript",
+            "type": "READING",
+            "readingContent": "<h3>JSX là gì?</h3><p>JSX (JavaScript XML) là một phần mở rộng cú pháp của JavaScript, cho phép bạn viết mã HTML trực tiếp trong JavaScript. React sử dụng JSX để mô tả giao diện người dùng. Nó không phải là HTML cũng không phải là string, mà là một cú pháp giúp chúng ta dễ dàng tạo các 'React elements' – những đối tượng nhẹ mô tả những gì chúng ta muốn hiển thị trên màn hình.</p><h3>Ví dụ về JSX</h3><p>Thay vì viết như sau trong JavaScript thuần:</p><pre><code>const element = React.createElement('h1', null, 'Xin chào, React!');</code></pre><p>Với JSX, bạn có thể viết gọn hơn nhiều:</p><pre><code>const element = <h1>Xin chào, React!</h1>;</code></pre><h3>Quy tắc của JSX</h3><ol><li><b>Chỉ trả về một phần tử gốc:</b> Mỗi Component JSX chỉ có thể trả về một phần tử gốc duy nhất. Bạn có thể sử dụng Fragment (<code>&lt;&gt;&lt;/&gt;</code>) để nhóm nhiều phần tử con.</li><li><b>Sử dụng `className` thay vì `class`:</b> Vì `class` là một từ khóa trong JavaScript, JSX sử dụng `className` để định nghĩa lớp CSS.</li><li><b>Sử dụng camelCase cho thuộc tính HTML:</b> Ví dụ, `onClick` thay vì `onclick`.</li><li><b>Đóng tất cả các thẻ:</b> Ngay cả các thẻ tự đóng như `<img>` hoặc `<input>` cũng phải được đóng `/>`.</li><li><b>Nhúng biểu thức JavaScript:</b> Bạn có thể nhúng các biến, hàm, hoặc bất kỳ biểu thức JavaScript nào vào trong JSX bằng cách sử dụng dấu ngoặc nhọn `{}`.</li></ol>"
+          },
+          {
+            "title": "Bài 1.5: Component là gì? Tư duy Component hóa",
+            "type": "VIDEO",
+            "description": "Bài học này giải thích khái niệm Component trong React, cách chúng giúp chia nhỏ giao diện người dùng thành các phần độc lập và tái sử dụng được, từ đó tạo nên cấu trúc ứng dụng chặt chẽ và dễ quản lý."
+          },
+          {
+            "title": "Bài 1.6: Kiểm tra Chương 1: Kiến thức nền tảng",
+            "type": "QUIZ",
+            "quizData": {
+              "questions": [
+                {
+                  "questionText": "Đâu là cú pháp đúng để tạo một ứng dụng React mới sử dụng Create React App?",
+                  "options": [
+                    "npm install create-react-app my-app",
+                    "npx create-react-app my-app",
+                    "create-react-app my-app",
+                    "node create-react-app my-app"
+                  ],
+                  "correctAnswerIndex": 1
+                },
+                {
+                  "questionText": "Trong React, JSX là viết tắt của gì?",
+                  "options": [
+                    "JavaScript eXtension",
+                    "JavaScript XML",
+                    "JSON XML",
+                    "JavaScript X-Code"
+                  ],
+                  "correctAnswerIndex": 1
+                },
+                {
+                  "questionText": "Thuộc tính nào được dùng để định nghĩa lớp CSS cho một phần tử HTML trong JSX?",
+                  "options": [
+                    "class",
+                    "className",
+                    "cssClass",
+                    "htmlClass"
+                  ],
+                  "correctAnswerIndex": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Chương 2: Các Khái niệm Cơ bản về Component",
+        "description": "Chương này sẽ đi sâu vào các loại Component trong React, cách chúng tương tác thông qua Props, và cách quản lý trạng thái nội bộ của Component bằng Hook useState(). Bạn cũng sẽ học cách xử lý sự kiện và render có điều kiện.",
+        "contents": [
+          {
+            "title": "Bài 2.1: Component Hàm và Component Lớp (Giới thiệu)",
+            "type": "VIDEO",
+            "description": "Tìm hiểu sự khác biệt cơ bản giữa Component Hàm (Functional Components) và Component Lớp (Class Components) trong React. Chúng ta sẽ tập trung vào Component Hàm vì sự tiện lợi và là xu hướng phát triển hiện tại."
+          },
+          {
+            "title": "Bài 2.2: Props - Truyền dữ liệu giữa các Components",
+            "type": "READING",
+            "readingContent": "<h3>Props là gì?</h3><p>Props (viết tắt của properties) là một cơ chế trong React để truyền dữ liệu từ Component cha xuống Component con. Props là read-only (chỉ đọc), có nghĩa là Component con không được phép thay đổi giá trị của props mà nó nhận được từ Component cha. Điều này đảm bảo tính nhất quán của dữ liệu (unidirectional data flow).</p><h3>Cách sử dụng Props</h3><p><b>1. Truyền Props từ Component cha:</b></p><pre><code>// Component cha (App.js)\nfunction App() {\n  return (\n    <div>\n      <Welcome name=\"Alice\" />\n      <Welcome name=\"Bob\" />\n    </div>\n  );\n}\n</code></pre><p><b>2. Nhận Props trong Component con:</b></p><pre><code>// Component con (Welcome.js)\nfunction Welcome(props) {\n  return <h1>Xin chào, {props.name}</h1>;\n}\n</code></pre><p>Trong ví dụ trên, Component `App` truyền props `name` cho Component `Welcome`. Component `Welcome` sau đó sử dụng `props.name` để hiển thị lời chào.</p><h3>Default Props (Giá trị mặc định cho Props)</h3><p>Bạn có thể định nghĩa giá trị mặc định cho props để tránh lỗi nếu Component cha không truyền giá trị đó.</p><pre><code>function Welcome(props) {\n  return <h1>Xin chào, {props.name}</h1>;\n}\n\nWelcome.defaultProps = {\n  name: 'Khách'\n};\n</code></pre>"
+          },
+          {
+            "title": "Bài 2.3: State và Hook `useState()`: Quản lý trạng thái nội bộ",
+            "type": "VIDEO",
+            "description": "Học cách sử dụng Hook `useState()` để thêm và quản lý trạng thái (state) trong Component Hàm. State cho phép Component lưu trữ và cập nhật dữ liệu riêng, từ đó làm cho giao diện trở nên tương tác. Bài học sẽ đi kèm ví dụ cụ thể."
+          },
+          {
+            "title": "Bài 2.4: Xử lý Sự kiện (Event Handling) trong React",
+            "type": "READING",
+            "readingContent": "<h3>Xử lý sự kiện trong React</h3><p>Xử lý sự kiện trong React rất giống với xử lý sự kiện trong HTML DOM, nhưng có một vài khác biệt nhỏ:</p><ol><li><b>Tên sự kiện theo camelCase:</b> Các tên sự kiện trong React được viết theo cú pháp camelCase (ví dụ: `onClick` thay vì `onclick`).</li><li><b>Truyền hàm thay vì chuỗi:</b> Trong React, bạn truyền một hàm dưới dạng giá trị cho sự kiện, thay vì một chuỗi lệnh.</li><li><b>`this` context:</b> Đối với Component Lớp, bạn cần cẩn thận với `this` context. Tuy nhiên, với Component Hàm và Hooks, điều này đơn giản hơn nhiều.</li></ol><h3>Ví dụ về xử lý sự kiện với Component Hàm</h3><p>Với Component Hàm, bạn có thể định nghĩa các hàm xử lý sự kiện trực tiếp bên trong Component hoặc bên ngoài.</p><pre><code>function MyButton() {\n  const handleClick = () => {\n    alert('Nút đã được click!');\n  };\n\n  return (\n    <button onClick={handleClick}>\n      Click tôi!\n    </button>\n  );\n}\n</code></pre><h3>Truyền đối số cho hàm xử lý sự kiện</h3><p>Bạn có thể truyền đối số cho hàm xử lý sự kiện bằng cách sử dụng hàm mũi tên hoặc `bind`.</p><pre><code>function ItemList() {\n  const items = ['Táo', 'Chuối', 'Cam'];\n\n  const handleDelete = (itemName) => {\n    alert(`Bạn muốn xóa ${itemName}?`);\n  };\n\n  return (\n    <ul>\n      {items.map((item, index) => (\n        <li key={index}>\n          {item}\n          <button onClick={() => handleDelete(item)}>Xóa</button>\n        </li>\n      ))}\n    </ul>\n  );\n}\n</code></pre>"
+          },
+          {
+            "title": "Bài 2.5: Render có điều kiện (Conditional Rendering)",
+            "type": "VIDEO",
+            "description": "Tìm hiểu các kỹ thuật khác nhau để hiển thị hoặc ẩn các phần tử giao diện dựa trên điều kiện nhất định, sử dụng các toán tử JavaScript như `if/else`, toán tử ba ngôi (ternary operator) và toán tử `&&` để kiểm soát luồng hiển thị."
+          },
+          {
+            "title": "Bài 2.6: Kiểm tra Chương 2: Component và State",
+            "type": "QUIZ",
+            "quizData": {
+              "questions": [
+                {
+                  "questionText": "Trong React, Props được sử dụng để làm gì?",
+                  "options": [
+                    "Thay đổi trạng thái của Component con.",
+                    "Truyền dữ liệu từ Component con lên Component cha.",
+                    "Truyền dữ liệu từ Component cha xuống Component con.",
+                    "Lưu trữ dữ liệu nội bộ của Component."
+                  ],
+                  "correctAnswerIndex": 2
+                },
+                {
+                  "questionText": "Hook nào được dùng để thêm trạng thái (state) vào Component Hàm?",
+                  "options": [
+                    "useEffects",
+                    "useContext",
+                    "useState",
+                    "useReducer"
+                  ],
+                  "correctAnswerIndex": 2
+                },
+                {
+                  "questionText": "Khi xử lý sự kiện onClick trong JSX, bạn nên viết như thế nào?",
+                  "options": [
+                    "<button onclick=\"handleClick()\">",
+                    "<button onClick=\"handleClick\">",
+                    "<button onClick={handleClick}>",
+                    "<button onClick: handleClick>"
+                  ],
+                  "correctAnswerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Chương 3: Quản lý Dữ liệu và Tương tác Nâng cao",
+        "description": "Chương này sẽ khám phá Hook useEffect() để xử lý các hiệu ứng phụ như gọi API, quản lý việc hiển thị danh sách động, và tương tác với các biểu mẫu người dùng một cách hiệu quả.",
+        "contents": [
+          {
+            "title": "Bài 3.1: Hook `useEffect()`: Xử lý hiệu ứng phụ (Side Effects)",
+            "type": "VIDEO",
+            "description": "Video này sẽ giới thiệu Hook `useEffect()`, cách nó hoạt động để xử lý các tác vụ như gọi API, tương tác với DOM, hoặc thiết lập các sự kiện đăng ký/hủy đăng ký, và tầm quan trọng của mảng dependency để kiểm soát khi nào hiệu ứng chạy."
+          },
+          {
+            "title": "Bài 3.2: Gọi API và hiển thị dữ liệu (Data Fetching)",
+            "type": "READING",
+            "readingContent": "<h3>Gọi API trong React</h3><p>Một trong những tác vụ phổ biến nhất khi xây dựng ứng dụng web là tương tác với các API bên ngoài để lấy hoặc gửi dữ liệu. Trong React, chúng ta thường thực hiện việc này bên trong Hook <code>useEffect()</code> để đảm bảo việc gọi API chỉ xảy ra vào đúng thời điểm và quản lý vòng đời của yêu cầu.</p><h3>Ví dụ cơ bản với `fetch` API</h3><p>Giả sử chúng ta muốn lấy danh sách bài viết từ một API công cộng (ví dụ: JSONPlaceholder).</p><pre><code>import React, { useState, useEffect } from 'react';\n\nfunction PostsList() {\n  const [posts, setPosts] = useState([]);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState(null);\n\n  useEffect(() => {\n    const fetchPosts = async () => {\n      try {\n        const response = await fetch('https://jsonplaceholder.typicode.com/posts');\n        if (!response.ok) {\n          throw new Error(`HTTP error! status: ${response.status}`);\n        }\n        const data = await response.json();\n        setPosts(data);\n      } catch (error) {\n        setError(error);\n      } finally {\n        setLoading(false);\n      }\n    };\n\n    fetchPosts();\n  }, []); // Mảng dependency rỗng, chỉ chạy một lần sau render đầu tiên\n\n  if (loading) return <p>Đang tải bài viết...</p>;\n  if (error) return <p>Lỗi: {error.message}</p>;\n\n  return (\n    <div>\n      <h1>Danh sách Bài viết</h1>\n      <ul>\n        {posts.map(post => (\n          <li key={post.id}>\n            <h2>{post.title}</h2>\n            <p>{post.body}</p>\n          </li>\n        ))}\n      </ul>\n    </div>\n  );\n}\n\nexport default PostsList;\n</code></pre><p>Trong ví dụ này, <code>useEffect</code> được sử dụng để gọi API khi Component được render lần đầu (nhờ mảng dependency rỗng <code>[]</code>). Chúng ta cũng quản lý các trạng thái <code>loading</code> và <code>error</code> để cung cấp phản hồi cho người dùng.</p>"
+          },
+          {
+            "title": "Bài 3.3: Render danh sách (Lists) và thuộc tính `key`",
+            "type": "VIDEO",
+            "description": "Học cách render các danh sách dữ liệu động trong React sử dụng phương thức `map()` của JavaScript. Đồng thời, hiểu tầm quan trọng của thuộc tính `key` để giúp React tối ưu hóa việc cập nhật DOM và tránh lỗi phát sinh."
+          },
+          {
+            "title": "Bài 3.4: Tương tác với Form và Controlled Components",
+            "type": "READING",
+            "readingContent": "<h3>Form trong React</h3><p>Trong HTML, các phần tử form như <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, và <code>&lt;select&gt;</code> thường duy trì trạng thái riêng của chúng và cập nhật dựa trên tương tác của người dùng. Trong React, chúng ta sử dụng trạng thái (state) của Component để quản lý giá trị của các phần tử form này, tạo ra cái gọi là 'Controlled Components'.</p><h3>Controlled Components</h3><p>Với một Controlled Component, dữ liệu của form được xử lý bởi Component React. Giá trị của trường input được giữ trong trạng thái của Component, và mỗi khi giá trị thay đổi (qua sự kiện `onChange`), trạng thái sẽ được cập nhật.</p><h3>Ví dụ về Form nhập liệu</h3><pre><code>import React, { useState } from 'react';\n\nfunction MyForm() {\n  const [name, setName] = useState('');\n  const [email, setEmail] = useState('');\n\n  const handleSubmit = (event) => {\n    event.preventDefault(); // Ngăn chặn hành vi mặc định của form\n    alert(`Tên: ${name}, Email: ${email}`);\n    // Thực hiện gửi dữ liệu lên server tại đây\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <div>\n        <label>\n          Tên:\n          <input \n            type=\"text\" \n            value={name} \n            onChange={(e) => setName(e.target.value)} \n          />\n        </label>\n      </div>\n      <div>\n        <label>\n          Email:\n          <input \n            type=\"email\" \n            value={email} \n            onChange={(e) => setEmail(e.target.value)} \n          />\n        </label>\n      </div>\n      <button type=\"submit\">Gửi</button>\n    </form>\n  );\n}\n\nexport default MyForm;\n</code></pre><p>Trong ví dụ này, giá trị của mỗi input được liên kết với một biến trạng thái (`name`, `email`). Khi người dùng gõ vào input, hàm `onChange` sẽ cập nhật trạng thái, từ đó cập nhật lại giá trị hiển thị của input. Điều này cho phép React kiểm soát hoàn toàn dữ liệu form.</p>"
+          },
+          {
+            "title": "Bài 3.5: Thực hành: Xây dựng ứng dụng Todo List cơ bản",
+            "type": "VIDEO",
+            "description": "Áp dụng các kiến thức đã học (State, Props, Event Handling, Conditional Rendering, Lists) để xây dựng một ứng dụng Todo List hoàn chỉnh, cho phép thêm, xóa, và đánh dấu công việc đã hoàn thành. Ví dụ minh họa từng bước để học viên dễ nắm bắt."
+          },
+          {
+            "title": "Bài 3.6: Kiểm tra Chương 3: Quản lý dữ liệu",
+            "type": "QUIZ",
+            "quizData": {
+              "questions": [
+                {
+                  "questionText": "Hook `useEffect()` trong React được sử dụng để làm gì?",
+                  "options": [
+                    "Quản lý trạng thái nội bộ của Component.",
+                    "Truyền dữ liệu giữa các Component.",
+                    "Thực hiện các hiệu ứng phụ (side effects) như gọi API hoặc thao tác DOM.",
+                    "Định nghĩa các props mặc định cho Component."
+                  ],
+                  "correctAnswerIndex": 2
+                },
+                {
+                  "questionText": "Tại sao thuộc tính `key` lại quan trọng khi render danh sách các phần tử trong React?",
+                  "options": [
+                    "Để tạo kiểu dáng (style) cho từng phần tử.",
+                    "Để React có thể xác định các phần tử đã thay đổi, thêm hoặc xóa một cách hiệu quả.",
+                    "Để làm cho danh sách có thể cuộn được.",
+                    "Để khai báo biến cho mỗi phần tử trong danh sách."
+                  ],
+                  "correctAnswerIndex": 1
+                },
+                {
+                  "questionText": "Trong một 'Controlled Component' của React, giá trị của một input form được quản lý bởi yếu tố nào?",
+                  "options": [
+                    "Trình duyệt mặc định.",
+                    "Trạng thái (state) của Component React.",
+                    "Thuộc tính 'value' trong HTML.",
+                    "Thuộc tính 'name' của input."
+                  ],
+                  "correctAnswerIndex": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Chương 4: Định tuyến (Routing) và Tối ưu hóa Giao diện",
+        "description": "Chương này sẽ hướng dẫn bạn cách xây dựng ứng dụng React đa trang bằng React Router DOM và các phương pháp cơ bản để tối ưu hóa giao diện người dùng thông qua các kỹ thuật styling khác nhau.",
+        "contents": [
+          {
+            "title": "Bài 4.1: Giới thiệu React Router DOM: Cài đặt và Cấu hình",
+            "type": "VIDEO",
+            "description": "Tìm hiểu về thư viện React Router DOM, cách cài đặt nó vào dự án React và cấu hình cơ bản để tạo ra các lộ trình (routes) cho ứng dụng của bạn. Bài học sẽ bao gồm các bước khởi tạo và sử dụng `BrowserRouter`."
+          },
+          {
+            "title": "Bài 4.2: Các thành phần chính của React Router",
+            "type": "READING",
+            "readingContent": "<h3>Các thành phần cốt lõi của React Router DOM</h3><p>React Router DOM cung cấp một tập hợp các Component để giúp bạn quản lý định tuyến trong ứng dụng React.</p><ol><li><b><code>BrowserRouter</code>:</b> Đây là Component bao bọc cấp cao nhất cho toàn bộ ứng dụng của bạn, sử dụng HTML5 history API để giữ giao diện người dùng đồng bộ với URL.</li><li><b><code>Routes</code>:</b> Component này được sử dụng để bao bọc tất cả các <code>Route</code> Component của bạn. Nó sẽ render <code>Route</code> đầu tiên khớp với URL hiện tại.</li><li><b><code>Route</code>:</b> Component này định nghĩa một lộ trình (route) cụ thể. Nó có hai thuộc tính chính:<ul><li><code>path</code>: Đường dẫn URL mà route này sẽ khớp (ví dụ: <code>/about</code>).</li><li><code>element</code>: Component sẽ được render khi path khớp.</li></ul></li><li><b><code>Link</code>:</b> Component <code>Link</code> được sử dụng để tạo các liên kết điều hướng giữa các trang trong ứng dụng của bạn, tương tự như thẻ <code>&lt;a&gt;</code> nhưng không tải lại trang.</li><li><b><code>useNavigate</code> (Hook):</b> Một hook cho phép bạn điều hướng người dùng đến một URL khác theo lập trình (ví dụ: sau khi gửi form thành công).</li></ol><h3>Ví dụ cấu hình cơ bản</h3><pre><code>import React from 'react';\nimport { BrowserRouter, Routes, Route, Link } from 'react-router-dom';\n\nconst Home = () => <h1>Trang Chủ</h1>;\nconst About = () => <h1>Về Chúng Tôi</h1>;\nconst Contact = () => <h1>Liên Hệ</h1>;\n\nfunction App() {\n  return (\n    <BrowserRouter>\n      <nav>\n        <Link to=\"/\">Trang Chủ</Link> |\n        <Link to=\"/about\">Về Chúng Tôi</Link> |\n        <Link to=\"/contact\">Liên Hệ</Link>\n      </nav>\n\n      <Routes>\n        <Route path=\"/\" element={<Home />} />\n        <Route path=\"/about\" element={<About />} />\n        <Route path=\"/contact\" element={<Contact />} />\n      </Routes>\n    </BrowserRouter>\n  );\n}\n\nexport default App;\n</code></pre><p>Trong ví dụ trên, chúng ta đã tạo ba trang đơn giản và sử dụng <code>BrowserRouter</code>, <code>Routes</code>, <code>Route</code> và <code>Link</code> để thiết lập định tuyến cho ứng dụng.</p>"
+          },
+          {
+            "title": "Bài 4.3: Styling trong React: Inline Style, CSS Modules, Styled Components",
+            "type": "VIDEO",
+            "description": "Tìm hiểu các phương pháp khác nhau để thêm CSS vào ứng dụng React, bao gồm styling trực tiếp bằng object JavaScript (inline style), sử dụng CSS Modules để tránh xung đột tên lớp, và giới thiệu về thư viện Styled Components cho styling linh hoạt."
+          },
+          {
+            "title": "Bài 4.4: Thực hành: Xây dựng trang web cá nhân với React Router",
+            "type": "VIDEO",
+            "description": "Áp dụng React Router DOM và các kỹ thuật styling để xây dựng một trang web cá nhân đơn giản với nhiều trang (Trang chủ, Giới thiệu, Dự án, Liên hệ), điều hướng giữa chúng và thêm CSS để tạo giao diện người dùng hấp dẫn."
+          },
+          {
+            "title": "Bài 4.5: Kiểm tra Chương 4: Định tuyến và Styling",
+            "type": "QUIZ",
+            "quizData": {
+              "questions": [
+                {
+                  "questionText": "Component nào của React Router DOM được dùng để định nghĩa một đường dẫn (path) cụ thể và Component sẽ được render khi đường dẫn đó khớp?",
+                  "options": [
+                    "Link",
+                    "Routes",
+                    "Route",
+                    "BrowserRouter"
+                  ],
+                  "correctAnswerIndex": 2
+                },
+                {
+                  "questionText": "Để tạo một liên kết điều hướng giữa các trang trong React Router mà không tải lại toàn bộ trang, bạn nên sử dụng Component nào?",
+                  "options": [
+                    "<a href=\"...\">",
+                    "<Link to=\"...\">",
+                    "<NavLink to=\"...\">",
+                    "<Route path=\"...\">"
+                  ],
+                  "correctAnswerIndex": 1
+                },
+                {
+                  "questionText": "Ưu điểm chính của việc sử dụng CSS Modules trong React là gì?",
+                  "options": [
+                    "Cho phép viết CSS bằng JavaScript.",
+                    "Tự động nén mã CSS khi triển khai.",
+                    "Ngăn chặn xung đột tên lớp CSS giữa các Component.",
+                    "Giúp tải CSS nhanh hơn."
+                  ],
+                  "correctAnswerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "Chương 5: Nâng cao và Thực hành Dự án Cuối khóa",
+        "description": "Chương cuối cùng này sẽ giới thiệu một số khái niệm nâng cao như Context API và Custom Hooks để quản lý trạng thái phức tạp hơn và tái sử dụng logic. Bạn sẽ tổng hợp kiến thức để xây dựng một dự án hoàn chỉnh và hiểu về quá trình triển khai.",
+        "contents": [
+          {
+            "title": "Bài 5.1: Context API: Quản lý trạng thái toàn cục đơn giản",
+            "type": "VIDEO",
+            "description": "Khám phá Context API, một cách để chia sẻ dữ liệu qua cây Component mà không cần truyền props thủ công qua từng cấp. Hiểu khi nào nên sử dụng Context API và cách triển khai nó với ví dụ cụ thể."
+          },
+          {
+            "title": "Bài 5.2: Custom Hooks: Tái sử dụng logic trạng thái",
+            "type": "READING",
+            "readingContent": "<h3>Custom Hooks là gì?</h3><p>Custom Hooks là một cơ chế trong React cho phép bạn trích xuất (extract) logic trạng thái có thể tái sử dụng từ các Component. Khi bạn có một đoạn logic mà bạn muốn sử dụng ở nhiều Component khác nhau, bạn có thể đóng gói nó vào một Custom Hook. Tên của Custom Hook luôn bắt đầu bằng chữ 'use' (ví dụ: `useFetch`, `useLocalStorage`).</p><h3>Lợi ích của Custom Hooks</h3><ul><li><b>Tái sử dụng logic:</b> Giúp bạn viết code DRY (Don't Repeat Yourself) bằng cách đóng gói logic phức tạp để sử dụng lại dễ dàng.</li><li><b>Tách biệt quan tâm:</b> Giúp tách biệt logic xử lý trạng thái khỏi logic hiển thị của Component.</li><li><b>Dễ kiểm thử:</b> Các Custom Hook thường dễ kiểm thử hơn các Component lớn có nhiều logic.</li></ul><h3>Ví dụ về Custom Hook: `useCounter`</h3><p>Giả sử bạn muốn có một bộ đếm có thể tăng, giảm và reset ở nhiều nơi.</p><pre><code>// useCounter.js\nimport { useState } from 'react';\n\nfunction useCounter(initialValue = 0) {\n  const [count, setCount] = useState(initialValue);\n\n  const increment = () => setCount(prevCount => prevCount + 1);\n  const decrement = () => setCount(prevCount => prevCount - 1);\n  const reset = () => setCount(initialValue);\n\n  return { count, increment, decrement, reset };\n}\n\nexport default useCounter;\n</code></pre><p><b>Cách sử dụng trong Component:</b></p><pre><code>import React from 'react';\nimport useCounter from './useCounter';\n\nfunction CounterComponent() {\n  const { count, increment, decrement, reset } = useCounter(10);\n\n  return (\n    <div>\n      <p>Số đếm: {count}</p>\n      <button onClick={increment}>Tăng</button>\n      <button onClick={decrement}>Giảm</button>\n      <button onClick={reset}>Đặt lại</button>\n    </div>\n  );\n}\n\nexport default CounterComponent;\n</code></pre><p>Custom Hook `useCounter` cho phép bạn tái sử dụng toàn bộ logic đếm chỉ bằng một dòng code trong bất kỳ Component nào.</p>"
+          },
+          {
+            "title": "Bài 5.3: Giới thiệu về Triển khai ứng dụng React (Deployment)",
+            "type": "VIDEO",
+            "description": "Video này sẽ cung cấp cái nhìn tổng quan về quá trình triển khai một ứng dụng React lên các nền tảng hosting phổ biến như Netlify, Vercel, hoặc GitHub Pages, bao gồm việc tạo bản build và cấu hình cơ bản để ứng dụng có thể hoạt động trực tuyến."
+          },
+          {
+            "title": "Bài 5.4: Thực hành Dự án: Xây dựng một ứng dụng Blog đơn giản",
+            "type": "VIDEO",
+            "description": "Áp dụng tất cả kiến thức đã học từ đầu khóa để xây dựng một ứng dụng blog đơn giản, bao gồm danh sách bài viết, xem chi tiết bài viết, thêm bài viết (tạm thời trong client), và sử dụng routing. Đây là bài tập tổng hợp để củng cố kiến thức và kỹ năng thực tế."
+          },
+          {
+            "title": "Bài 5.5: Tổng kết khóa học và định hướng học tập tiếp theo",
+            "type": "READING",
+            "readingContent": "<h3>Tổng kết các kiến thức đã học</h3><p>Chúc mừng bạn đã hoàn thành khóa học Lập trình React.js cơ bản! Trong khóa học này, bạn đã được trang bị những kiến thức nền tảng quan trọng nhất để bắt đầu hành trình với React:</p><ul><li>Hiểu về React.js, JSX và Component.</li><li>Làm việc với Props và State để quản lý dữ liệu.</li><li>Xử lý sự kiện và render có điều kiện.</li><li>Sử dụng Hook `useEffect()` để quản lý side effects và gọi API.</li><li>Xây dựng danh sách và làm việc với form.</li><li>Triển khai định tuyến với React Router DOM.</li><li>Giới thiệu về Context API và Custom Hooks.</li><li>Thực hành xây dựng các ứng dụng thực tế.</li></ul><h3>Định hướng học tập tiếp theo</h3><p>React là một hệ sinh thái rộng lớn và không ngừng phát triển. Để tiếp tục nâng cao kỹ năng, bạn có thể tham khảo các chủ đề sau:</p><ol><li><b>Quản lý trạng thái nâng cao:</b> Học về Redux, Zustand, hoặc Recoil cho các ứng dụng lớn và phức tạp hơn.</li><li><b>Thư viện UI Component:</b> Khám phá Material-UI, Ant Design, Chakra UI để xây dựng giao diện nhanh chóng và đẹp mắt.</li><li><b>Server-Side Rendering (SSR) / Static Site Generation (SSG):</b> Tìm hiểu về Next.js hoặc Remix để tối ưu SEO và hiệu suất.</li><li><b>Testing trong React:</b> Học cách viết unit test và integration test cho các Component của bạn.</li><li><b>TypeScript:</b> Kết hợp TypeScript với React để xây dựng ứng dụng an toàn và dễ bảo trì hơn.</li><li><b>Thực hành nhiều hơn:</b> Không ngừng xây dựng các dự án cá nhân để củng cố và mở rộng kiến thức.</li></ol><p>Chúc bạn thành công trên con đường trở thành một nhà phát triển React chuyên nghiệp!</p>"
+          },
+          {
+            "title": "Bài 5.6: Kiểm tra Chương 5 và Tổng kết Khóa học",
+            "type": "QUIZ",
+            "quizData": {
+              "questions": [
+                {
+                  "questionText": "Mục đích chính của Context API trong React là gì?",
+                  "options": [
+                    "Thay thế hoàn toàn Redux trong mọi trường hợp.",
+                    "Cung cấp một cách để truyền dữ liệu qua cây Component mà không cần truyền props thủ công qua từng cấp.",
+                    "Quản lý hiệu suất của ứng dụng React.",
+                    "Tạo các hiệu ứng động (animations) cho giao diện."
+                  ],
+                  "correctAnswerIndex": 1
+                },
+                {
+                  "questionText": "Tên của một Custom Hook trong React phải luôn bắt đầu bằng tiền tố nào?",
+                  "options": [
+                    "set",
+                    "get",
+                    "use",
+                    "handle"
+                  ],
+                  "correctAnswerIndex": 2
+                },
+                {
+                  "questionText": "Bước nào là cần thiết trước khi triển khai một ứng dụng React lên môi trường production?",
+                  "options": [
+                    "Chỉ cần sao chép toàn bộ thư mục dự án lên server.",
+                    "Thực hiện lệnh `npm start` trên server.",
+                    "Tạo bản build tối ưu hóa bằng lệnh như `npm run build`.",
+                    "Cài đặt tất cả các thư viện phát triển trên môi trường production."
+                  ],
+                  "correctAnswerIndex": 2
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
