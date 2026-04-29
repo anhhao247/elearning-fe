@@ -32,7 +32,9 @@ import {
   getStudentDetail,
   getStudentQuizzes,
   getStudentComments,
+  saveBulkOutline,
 } from '@/lib/services/instructor.service'
+import { generateOutlineAI, GenerateOutlineRequest } from '@/lib/services/ai.service'
 
 export function useCategories() {
   return useQuery({
@@ -248,5 +250,23 @@ export function useStudentComments(studentId: number | string) {
     queryKey: ['instructor-student-comments', studentId],
     queryFn: () => getStudentComments(studentId),
     enabled: !!studentId,
+  })
+}
+
+export function useGenerateOutlineAI() {
+  return useMutation({
+    mutationFn: (payload: GenerateOutlineRequest) => generateOutlineAI(payload),
+  })
+}
+
+export function useSaveBulkOutline() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ courseId, outlineData }: { courseId: number | string; outlineData: any }) => 
+      saveBulkOutline(courseId, outlineData),
+    onSuccess: (_, { courseId }) => {
+      queryClient.invalidateQueries({ queryKey: ['instructor-course-outline', courseId] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-course', courseId] })
+    }
   })
 }

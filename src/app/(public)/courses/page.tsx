@@ -29,7 +29,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
     if (typeof val === "string") {
       params.append(key, val)
     } else if (Array.isArray(val)) {
-      params.append(key, val[0])
+      val.forEach(v => params.append(key, v))
     }
   })
 
@@ -90,8 +90,21 @@ export default async function CoursesPage({ searchParams }: PageProps) {
 }
 
 async function CourseList({ params }: { params: string }) {
-  // Parse chuỗi params để đưa cho service (nó nhận Record<string, string>)
-  const paramObj = Object.fromEntries(new URLSearchParams(params).entries())
+  // Chuyển URLSearchParams string thành object hỗ trợ multi-value
+  const searchParams = new URLSearchParams(params)
+  const paramObj: Record<string, string | string[]> = {}
+  
+  searchParams.forEach((value, key) => {
+    if (paramObj[key]) {
+      if (Array.isArray(paramObj[key])) {
+        (paramObj[key] as string[]).push(value)
+      } else {
+        paramObj[key] = [paramObj[key] as string, value]
+      }
+    } else {
+      paramObj[key] = value
+    }
+  })
   
   let data
   try {

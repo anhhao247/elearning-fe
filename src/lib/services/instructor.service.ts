@@ -254,6 +254,11 @@ export async function syncCourseAI(courseId: number | string): Promise<any> {
   return data
 }
 
+export async function saveBulkOutline(courseId: number | string, outlineData: any): Promise<any> {
+  const { data } = await api.post(`/v1/instructor/courses/${courseId}/bulk-outline`, outlineData)
+  return data
+}
+
 // ─── Dashboard Types ────────────────────────────────────────────────────────
 
 export interface DashboardStats {

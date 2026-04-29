@@ -70,3 +70,15 @@ export async function evaluateInterviewSession(payload: EvaluateSessionRequest):
   const { data } = await api.post('/v1/ai/qa/evaluate-session', payload)
   return data
 }
+
+export interface GenerateOutlineRequest {
+  topic: string
+  target_audience: string
+  objectives: string
+  additional_requirements?: string
+}
+
+export async function generateOutlineAI(payload: GenerateOutlineRequest): Promise<any> {
+  const { data } = await api.post('/v1/ai/course/generate-outline', payload)
+  return data
+}
