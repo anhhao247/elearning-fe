@@ -31,7 +31,12 @@ export function CourseFilters() {
   const defaultKeyword = searchParams.get("keyword") || ""
   const defaultLevel = searchParams.get("level") || "ALL"
   const defaultIsFree = searchParams.get("isFree") || "ALL"
-  const defaultCategoryId = searchParams.get("categoryId") || "ALL"
+  const catId = searchParams.get("categoryId")
+  const catIds = searchParams.getAll("categoryIds")
+  const selectedCategoryIds = [
+    ...(catId && catId !== "ALL" ? [catId] : []),
+    ...catIds
+  ]
 
   // We leave sort in CourseFilters for now, maybe at the very top or bottom
   const defaultSortBy = searchParams.get("sortBy") || "createdAt"
@@ -46,6 +51,8 @@ export function CourseFilters() {
       const val = updates[key]
       if (val === null || val === "ALL" || val === "") {
         newParams.delete(key)
+        // Nếu xóa categoryId thì xóa luôn cả categoryIds
+        if (key === "categoryId") newParams.delete("categoryIds")
       } else {
         newParams.set(key, val)
       }
@@ -55,6 +62,28 @@ export function CourseFilters() {
     
     router.push(`/courses?${newParams.toString()}`)
   }, [router, searchParams])
+
+  const handleCategoryToggle = (id: string, checked: boolean) => {
+    let nextIds = [...selectedCategoryIds]
+    if (checked) {
+      if (!nextIds.includes(id)) nextIds.push(id)
+    } else {
+      nextIds = nextIds.filter(i => i !== id)
+    }
+
+    const newParams = new URLSearchParams(Array.from(searchParams.entries()))
+    newParams.delete("categoryId")
+    newParams.delete("categoryIds")
+
+    if (nextIds.length > 0) {
+      // Format theo yêu cầu: cái đầu là categoryId, còn lại là categoryIds
+      newParams.set("categoryId", nextIds[0])
+      nextIds.slice(1).forEach(i => newParams.append("categoryIds", i))
+    }
+
+    newParams.set("page", "0")
+    router.push(`/courses?${newParams.toString()}`)
+  }
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -126,7 +155,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="cat-all" 
-              checked={defaultCategoryId === "ALL"}
+              checked={selectedCategoryIds.length === 0}
               onCheckedChange={() => applyFilters({ categoryId: "ALL" })}
             />
             <Label htmlFor="cat-all" className="flex-1 cursor-pointer font-normal">Tất cả danh mục</Label>
@@ -135,8 +164,8 @@ export function CourseFilters() {
             <div key={cat.id} className="flex items-center space-x-2">
               <Checkbox 
                 id={`cat-${cat.id}`} 
-                checked={defaultCategoryId === String(cat.id)}
-                onCheckedChange={(checked) => applyFilters({ categoryId: checked ? String(cat.id) : "ALL" })}
+                checked={selectedCategoryIds.includes(String(cat.id))}
+                onCheckedChange={(checked) => handleCategoryToggle(String(cat.id), checked as boolean)}
               />
               <Label htmlFor={`cat-${cat.id}`} className="flex-1 cursor-pointer font-normal flex justify-between">
                 <span>{cat.name}</span>
