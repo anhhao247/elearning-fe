@@ -107,3 +107,21 @@ export interface CompleteContentResponse {
   newProgressPercent: number
 }
 
+export interface ContentComment {
+  id: number
+  commentContent: string
+  userId: number
+  username: string
+  avatar: string | null
+  contentId: number
+  parentId: number | null
+  createdAt: string
+  updatedAt: string
+  replies: ContentComment[]
+}
+
+export interface CreateCommentPayload {
+  commentContent: string
+  parentId?: number | null
+}
+

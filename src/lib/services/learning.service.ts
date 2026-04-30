@@ -4,7 +4,9 @@ import {
   QuizFetchResponse, 
   QuizSubmissionPayload, 
   QuizResultResponse, 
-  CompleteContentResponse
+  CompleteContentResponse,
+  ContentComment,
+  CreateCommentPayload
 } from '@/types/learning'
 import { api } from '../axios'
 
@@ -36,5 +38,15 @@ export async function submitQuiz(
 
 export async function completeContent(contentId: number | string): Promise<CompleteContentResponse> {
   const { data } = await api.post(`/v1/contents/${contentId}/complete`)
+  return data
+}
+
+export async function getComments(contentId: number | string): Promise<ContentComment[]> {
+  const { data } = await api.get(`/v1/contents/${contentId}/comments`)
+  return data
+}
+
+export async function createComment(contentId: number | string, payload: CreateCommentPayload): Promise<ContentComment> {
+  const { data } = await api.post(`/v1/contents/${contentId}/comments`, payload)
   return data
 }

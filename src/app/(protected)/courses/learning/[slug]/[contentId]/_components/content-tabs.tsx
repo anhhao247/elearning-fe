@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ContentDetailResponse } from "@/types/learning"
+import { CommentSection } from "./comment-section"
 
 interface ContentTabsProps {
   content: ContentDetailResponse
@@ -43,10 +44,7 @@ export function ContentTabs({ content }: ContentTabsProps) {
         </TabsContent>
         
         <TabsContent value="qa" className="mt-6">
-          <div className="text-center p-8 border border-dashed rounded-lg">
-            <h3 className="font-semibold text-lg mb-2">Hỏi đáp</h3>
-            <p className="text-muted-foreground">Tính năng đang cập nhật...</p>
-          </div>
+          <CommentSection contentId={content.id} />
         </TabsContent>
         
         <TabsContent value="resources" className="mt-6">
