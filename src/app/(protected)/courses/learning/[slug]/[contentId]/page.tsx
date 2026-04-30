@@ -1,16 +1,18 @@
 "use client"
 
-import { use, useMemo } from "react"
+import { useState, use, useMemo } from "react"
 import Link from "next/link"
-import { ChevronLeft, Menu, Video } from "lucide-react"
+import { ChevronLeft, Menu, Video, List, PanelRightClose, PanelRightOpen } from "lucide-react"
 
 import { useSyllabus, useContentDetail } from "@/hooks/queries/use-learning"
 import { SyllabusSidebar } from "./_components/syllabus-sidebar"
 import { ContentPlayer } from "./_components/content-player"
 import { ContentTabs } from "./_components/content-tabs"
+import { NotesPanel } from "./_components/notes-panel"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 export default function LearningPage({
   params,
@@ -21,6 +23,7 @@ export default function LearningPage({
   const { slug, contentId: contentIdStr } = unwrappedParams
   
   const contentId = Number(contentIdStr)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   
   // Extract courseId from the end of the slug (e.g., react-course-12 -> 12)
   const courseId = useMemo(() => {
@@ -81,7 +84,7 @@ export default function LearningPage({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* Fake Top Bar (optional, to mimic the image's top navigation if the main header is hidden or just to provide context) */}
+      {/* Fake Top Bar */}
       <div className="h-14 bg-slate-900 text-white flex items-center px-4 justify-between sticky top-0 z-40 shrink-0">
         <div className="flex items-center gap-4">
           <Link href={`/courses/${slug}`} className="hover:text-primary transition-colors flex items-center">
@@ -121,6 +124,17 @@ export default function LearningPage({
               </span>
             )}
           </div>
+
+          {/* Toggle Sidebar Button Desktop */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="hidden lg:flex text-white hover:bg-slate-800 gap-2 border border-slate-700"
+          >
+            {isSidebarOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+            <span className="text-xs">{isSidebarOpen ? "Ẩn nội dung" : "Hiện nội dung"}</span>
+          </Button>
           
           {/* Mobile Menu Trigger for Syllabus */}
           <div className="lg:hidden">
@@ -146,9 +160,12 @@ export default function LearningPage({
 
       {/* Main Layout Area */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Left Side: Main Content (~75%) */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-          <div className="w-full max-w-6xl mx-auto p-4 md:p-6 lg:p-8 flex flex-col h-full">
+        {/* Left Side: Main Content */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-y-auto transition-all duration-300 ease-in-out">
+          <div className={cn(
+            "w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col h-full transition-all duration-300",
+            isSidebarOpen ? "max-w-5xl" : "max-w-6xl"
+          )}>
             {isContentLoading || !contentDetail ? (
               <div className="flex flex-col gap-4">
                 <Skeleton className="w-full aspect-video rounded-lg" />
@@ -164,24 +181,32 @@ export default function LearningPage({
           </div>
         </div>
 
-        {/* Right Side: Syllabus Sidebar (~25%, Fixed width) */}
-        <div className="hidden lg:block w-[360px] xl:w-[400px] shrink-0 border-l bg-card overflow-y-auto z-10 sticky top-0 h-[calc(100vh-3.5rem)]">
-          {isSyllabusLoading || !syllabus ? (
-            <div className="p-4 space-y-4">
-              <Skeleton className="h-6 w-1/2 mb-4" />
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : (
-            <SyllabusSidebar 
-              syllabus={syllabus} 
-              currentContentId={contentId} 
-              courseSlug={slug}
-            />
-          )}
+        {/* Right Side: Syllabus Sidebar */}
+        <div className={cn(
+          "hidden lg:block shrink-0 border-l bg-card overflow-y-auto z-10 sticky top-0 h-[calc(100vh-3.5rem)] transition-all duration-300 ease-in-out",
+          isSidebarOpen ? "w-[360px] xl:w-[400px] opacity-100" : "w-0 opacity-0 border-none overflow-hidden"
+        )}>
+          <div className="min-w-[360px] xl:min-w-[400px]">
+            {isSyllabusLoading || !syllabus ? (
+              <div className="p-4 space-y-4">
+                <Skeleton className="h-6 w-1/2 mb-4" />
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : (
+              <SyllabusSidebar 
+                syllabus={syllabus} 
+                currentContentId={contentId} 
+                courseSlug={slug}
+              />
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Ghi chú cá nhân (NotebookLM style) */}
+      <NotesPanel courseId={courseId} contentId={contentId} />
 
     </div>
   )

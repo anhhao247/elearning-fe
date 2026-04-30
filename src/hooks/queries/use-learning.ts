@@ -4,9 +4,13 @@ import {
   getContentDetail, 
   completeContent, 
   getComments, 
-  createComment 
+  createComment,
+  getNotes,
+  createNote,
+  updateNote,
+  deleteNote
 } from '@/lib/services/learning.service'
-import { CreateCommentPayload } from '@/types/learning'
+import { CreateCommentPayload, CreateNotePayload, UpdateNotePayload } from '@/types/learning'
 
 export function useSyllabus(courseId: number | string, enabled: boolean = true) {
   return useQuery({
@@ -54,6 +58,48 @@ export function useCreateComment(contentId: number | string) {
     mutationFn: (payload: CreateCommentPayload) => createComment(contentId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', contentId] })
+    },
+  })
+}
+
+// Hooks for Notes
+export function useNotes(courseId?: number | string, contentId?: number | string, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ['notes', courseId, contentId],
+    queryFn: () => getNotes(courseId, contentId),
+    enabled: enabled,
+  })
+}
+
+export function useCreateNote() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (payload: CreateNotePayload) => createNote(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] })
+    },
+  })
+}
+
+export function useUpdateNote() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number | string; payload: UpdateNotePayload }) => updateNote(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] })
+    },
+  })
+}
+
+export function useDeleteNote() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (id: number | string) => deleteNote(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] })
     },
   })
 }

@@ -125,3 +125,26 @@ export interface CreateCommentPayload {
   parentId?: number | null
 }
 
+export interface UserNote {
+  id: number
+  userId: number
+  contentId: number
+  courseId: number
+  title: string | null
+  body: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateNotePayload {
+  contentId: number
+  courseId: number
+  title?: string | null
+  body: string
+}
+
+export interface UpdateNotePayload {
+  title?: string | null
+  body: string
+}
+
