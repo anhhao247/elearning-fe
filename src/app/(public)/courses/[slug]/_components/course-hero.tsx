@@ -21,7 +21,7 @@ export function CourseHero({ course }: CourseHeroProps) {
 
   return (
     <div className="bg-[#1c1d1f] dark:bg-zinc-900 text-white">
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="page-container">
         {/* Back link */}
         <div className="pt-6 pb-2">
           <Link

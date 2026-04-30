@@ -47,7 +47,7 @@ export default function CourseDetailPage() {
       <CourseHero course={course} />
 
       {/* Main content + sidebar */}
-      <div className="container mx-auto px-4 md:px-6 pb-24">
+      <div className="page-container pb-24">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 relative items-start">
 
           {/* Main column: 8/12 */}

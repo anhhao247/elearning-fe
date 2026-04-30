@@ -8,7 +8,7 @@ export async function getCourses(params: Record<string, string | string[] | unde
   
   // Default values
   query.set('page', params.page?.toString() || '0')
-  query.set('limit', params.limit?.toString() || '10')
+  query.set('limit', params.limit?.toString() || '9')
   query.set('sortBy', params.sortBy?.toString() || 'createdAt')
   query.set('sortDir', params.sortDir?.toString() || 'desc')
 

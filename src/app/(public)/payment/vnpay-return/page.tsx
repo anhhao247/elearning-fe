@@ -24,7 +24,7 @@ function VNPayReturnContent() {
         }
 
         const data = await verifyVNPayReturn(queryString)
-        
+
         if (data.status === 'SUCCESS') {
           setStatus('SUCCESS')
           setMessage(data.message || 'Thanh toán thành công!')
@@ -42,7 +42,7 @@ function VNPayReturnContent() {
   }, [searchParams])
 
   return (
-    <div className="container max-w-md mx-auto py-20 px-4 min-h-[70vh] flex items-center justify-center">
+    <div className="page-container max-w-md py-20 min-h-[70vh] flex items-center justify-center">
       <Card className="text-center w-full shadow-xl border-border/50">
         <CardHeader className="space-y-6 pt-10">
           <div className="flex justify-center">
@@ -52,9 +52,9 @@ function VNPayReturnContent() {
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl md:text-3xl font-bold">
-              {status === 'LOADING' ? 'Đang xử lý kết quả...' : 
-               status === 'SUCCESS' ? 'Thanh toán thành công' : 
-               'Thanh toán thất bại'}
+              {status === 'LOADING' ? 'Đang xử lý kết quả...' :
+                status === 'SUCCESS' ? 'Thanh toán thành công' :
+                  'Thanh toán thất bại'}
             </CardTitle>
             <CardDescription className="text-base md:text-lg text-muted-foreground mt-2">
               {message}
