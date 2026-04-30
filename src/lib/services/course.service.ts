@@ -51,3 +51,8 @@ export async function getMyCourses(params: {
   const { data } = await api.get('/v1/me/courses', { params })
   return data
 }
+
+export async function addReview(courseId: number | string, payload: { rating: number, comment: string }) {
+  const { data } = await api.post(`/v1/courses/${courseId}/reviews`, payload)
+  return data
+}

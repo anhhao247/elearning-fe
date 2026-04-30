@@ -69,6 +69,9 @@ export default function CourseDetailPage() {
               ratingDistribution={course.ratingDistribution}
               avgRating={course.avgRating}
               totalReviews={course.totalReviews}
+              isEnrolled={course.isEnrolled}
+              courseId={course.id}
+              courseTitle={course.title}
             />
           </div>
 
