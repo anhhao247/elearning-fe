@@ -10,7 +10,7 @@ export interface User {
   avatar: string | null
   role: string
   dob: string | null
-  sex: string | null
+  sex: string | boolean | null
   createdAt: string
 }
 
