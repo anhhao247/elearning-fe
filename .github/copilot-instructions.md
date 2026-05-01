@@ -55,3 +55,79 @@
 - [cite_start]Thực hiện chuyển đổi kiểu dữ liệu (type conversion) trong `onValueChange` nếu schema yêu cầu (ví dụ: `Number(val)` cho `categoryId` nếu schema định nghĩa là kiểu `number`)[cite: 21, 54].
 - [cite_start]Luôn hiển thị thông báo lỗi ngay dưới component bằng cách sử dụng `{errors.fieldName && <p className="text-xs text-red-500 mt-1">{errors.fieldName.message as string}</p>}`[cite: 20, 53].
 - [cite_start]Khi thực hiện logic chỉnh sửa (Edit), luôn sử dụng hàm `reset()` trong `useEffect` để đổ dữ liệu từ API vào form, đảm bảo tất cả các trường được ánh xạ chính xác (bao gồm cả fallback cho các trường null/undefined)[cite: 23, 56].
+
+# Design System & UI Consistency
+
+## Layout Rules
+- Use a consistent layout system across all pages:
+  - Main layout: Header + Content + optional Sidebar
+  - Max width: 1200px–1280px centered
+  - Use container padding: px-4 md:px-6 lg:px-8
+
+- Page structure:
+  - Page header (title + actions)
+  - Content section (cards or tables)
+
+## Spacing System
+- Use consistent spacing scale:
+  - xs: 4px
+  - sm: 8px
+  - md: 12px
+  - lg: 16px
+  - xl: 24px
+  - 2xl: 32px
+
+- NEVER use random spacing values
+
+## Typography
+- Title (h1): text-2xl font-semibold
+- Section title: text-lg font-medium
+- Body: text-sm text-muted-foreground
+- Label: text-xs text-muted-foreground
+
+## Card Design
+- Use consistent card style:
+  - rounded-xl border bg-background shadow-sm
+  - hover: shadow-md transition
+
+## Color Rules
+- Primary: used for CTA only
+- Muted: for secondary text
+- Danger: destructive actions only
+
+- NEVER mix dark/light themes in same flow
+
+# E-learning UX Rules
+
+## Course Card MUST include:
+- thumbnail (16:9)
+- title (max 2 lines)
+- instructor
+- rating + reviews
+- price
+- level badge
+
+## Course Detail Page:
+- Left: course info
+- Right: sticky purchase/continue card
+
+## Learning Page:
+- Left: video player
+- Right: lesson list (sticky)
+
+## Lesson States:
+- completed
+- current
+- locked
+- preview
+
+## CTA Rules:
+- Primary CTA must be visible above the fold
+- Use clear action labels:
+  - "Enroll now"
+  - "Continue learning"
+
+## Feedback:
+- Always show loading skeleton
+- Always show empty state
+- Always show error state

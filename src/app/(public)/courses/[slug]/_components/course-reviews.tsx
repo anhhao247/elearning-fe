@@ -4,12 +4,17 @@ import { CourseReview } from "@/types/course"
 import { Star, Filter, Edit3 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { ReviewDialog } from "./review-dialog"
 
 interface CourseReviewsProps {
   reviews: CourseReview[]
   ratingDistribution?: Record<string, number>
   avgRating: number
   totalReviews: number
+  isEnrolled?: boolean
+  courseId: number
+  courseTitle: string
 }
 
 export function CourseReviews({
@@ -17,15 +22,33 @@ export function CourseReviews({
   ratingDistribution,
   avgRating,
   totalReviews,
+  isEnrolled,
+  courseId,
+  courseTitle,
 }: CourseReviewsProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   if (!reviews || reviews.length === 0) {
     return (
       <section className="bg-card rounded-xl p-8 border text-center">
         <h2 className="text-2xl font-bold mb-2">Đánh giá học viên</h2>
         <p className="text-muted-foreground mb-6">Khóa học này chưa có đánh giá nào.</p>
-        <Button variant="outline" className="gap-2">
-          <Edit3 className="w-4 h-4" /> Viết đánh giá đầu tiên
-        </Button>
+        {isEnrolled && (
+          <Button 
+            variant="outline" 
+            className="gap-2 border-primary text-primary hover:bg-primary/5"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Edit3 className="w-4 h-4" /> Viết đánh giá đầu tiên
+          </Button>
+        )}
+
+        <ReviewDialog
+          courseId={courseId}
+          courseTitle={courseTitle}
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+        />
       </section>
     )
   }
@@ -44,10 +67,16 @@ export function CourseReviews({
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <h2 className="text-2xl font-bold tracking-tight">Đánh giá học viên</h2>
         <div className="flex gap-3">
-          <Button variant="default" className="font-semibold shadow-sm">
-            <Edit3 className="w-4 h-4 mr-2" />
-            Viết đánh giá
-          </Button>
+          {isEnrolled && (
+            <Button 
+              variant="default" 
+              className="font-semibold shadow-sm bg-indigo-600 hover:bg-indigo-700"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <Edit3 className="w-4 h-4 mr-2" />
+              Viết đánh giá
+            </Button>
+          )}
           <Button variant="outline" className="font-semibold">
             <Filter className="w-4 h-4 mr-2" />
             Lọc đánh giá
@@ -148,6 +177,12 @@ export function CourseReviews({
           ))}
         </div>
       </div>
+      <ReviewDialog
+        courseId={courseId}
+        courseTitle={courseTitle}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </section>
   )
 }

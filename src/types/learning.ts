@@ -107,3 +107,44 @@ export interface CompleteContentResponse {
   newProgressPercent: number
 }
 
+export interface ContentComment {
+  id: number
+  commentContent: string
+  userId: number
+  username: string
+  avatar: string | null
+  contentId: number
+  parentId: number | null
+  createdAt: string
+  updatedAt: string
+  replies: ContentComment[]
+}
+
+export interface CreateCommentPayload {
+  commentContent: string
+  parentId?: number | null
+}
+
+export interface UserNote {
+  id: number
+  userId: number
+  contentId: number
+  courseId: number
+  title: string | null
+  body: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CreateNotePayload {
+  contentId: number
+  courseId: number
+  title?: string | null
+  body: string
+}
+
+export interface UpdateNotePayload {
+  title?: string | null
+  body: string
+}
+

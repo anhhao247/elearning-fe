@@ -12,6 +12,8 @@ export interface Course {
   categoryId?: number
   categoryName?: string
   instructorName?: string
+  avgRating?: number
+  totalReviews?: number
   createdAt: string
   updatedAt?: string
   overview?: string
