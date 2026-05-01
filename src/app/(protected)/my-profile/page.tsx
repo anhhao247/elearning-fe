@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { UserAvatar } from "@/components/layout/user-avatar"
-import { LayoutDashboard, ShieldCheck } from "lucide-react"
+import { LayoutDashboard, ShieldCheck, Edit2 } from "lucide-react"
+import { EditProfileDialog } from "@/components/features/profile/edit-profile-dialog"
 
 export default function MyProfilePage() {
   const { user } = useAuthStore()
@@ -29,6 +30,13 @@ export default function MyProfilePage() {
     }).format(date)
   }
 
+  const getGenderLabel = (sex: string | null | boolean) => {
+    if (sex === null || sex === undefined || sex === "") return "N/A"
+    if (sex === "MALE" || sex === "true" || sex === true) return "Nam"
+    if (sex === "FEMALE" || sex === "false" || sex === false) return "Nữ"
+    return sex.toString()
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -38,6 +46,15 @@ export default function MyProfilePage() {
         </div>
         
         <div className="flex items-center gap-3">
+          <EditProfileDialog 
+            user={user} 
+            trigger={
+              <Button variant="outline" className="rounded-xl px-6 border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                <Edit2 className="mr-2 h-4 w-4" />
+                Chỉnh sửa
+              </Button>
+            }
+          />
           {user.role === "INSTRUCTOR" && (
             <Button asChild className="rounded-xl px-6 bg-indigo-600 hover:bg-indigo-700">
               <Link href="/lms">
@@ -88,7 +105,7 @@ export default function MyProfilePage() {
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Giới tính</p>
-              <p className="font-medium">{user.sex || "N/A"}</p>
+              <p className="font-medium">{getGenderLabel(user.sex)}</p>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Ngày sinh</p>
@@ -103,4 +120,4 @@ export default function MyProfilePage() {
       </Card>
     </div>
   )
-}
+}

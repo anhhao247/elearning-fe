@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function BecomeInstructorPage() {
   return (
-    <div className="container py-12 px-4 max-w-6xl mx-auto space-y-16 animate-in fade-in duration-700">
+    <div className="page-container py-12 max-w-6xl space-y-16 animate-in fade-in duration-700">
       {/* Hero Section */}
       <section className="text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-sm font-semibold rounded-full mb-2">

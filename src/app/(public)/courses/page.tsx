@@ -38,17 +38,17 @@ export default async function CoursesPage({ searchParams }: PageProps) {
     <>
       {/* Hero Banner Section */}
       <div className="bg-primary/5 py-12 md:py-16 border-b border-border">
-        <div className="container mx-auto px-4 md:px-6 text-center lg:text-left flex flex-col items-center lg:items-start space-y-4">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
+        <div className="page-container text-center lg:text-left flex flex-col items-center lg:items-start space-y-4">
+          <h1 className="text-page-title text-3xl md:text-4xl">
             Khám phá các khóa học thú vị
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl">
+          <p className="text-body text-base max-w-2xl">
             Nâng cao kỹ năng với hàng ngàn khóa học chất lượng từ các chuyên gia hàng đầu.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-6 py-8">
+      <div className="page-container py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Filter Trigger */}
           <div className="lg:hidden flex justify-between items-center bg-card p-4 rounded-lg border">
@@ -111,9 +111,10 @@ async function CourseList({ params }: { params: string }) {
     data = await getCourses(paramObj)
   } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-destructive/5 text-destructive border-destructive/20">
-        <p>Lỗi kết nối tới máy chủ: Không thể lấy danh sách khóa học.</p>
-        <p className="text-sm mt-2 opacity-80">Vui lòng thử lại sau.</p>
+      /* Error state */
+      <div className="card-base flex flex-col items-center justify-center p-12 text-center border-destructive/20 bg-destructive/5">
+        <p className="font-semibold text-destructive">Lỗi kết nối tới máy chủ</p>
+        <p className="text-body mt-2">Không thể lấy danh sách khóa học. Vui lòng thử lại sau.</p>
       </div>
     )
   }
@@ -122,9 +123,10 @@ async function CourseList({ params }: { params: string }) {
 
   if (!courses || courses.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg">
-        <p className="text-xl font-medium">Không tìm thấy khóa học nào</p>
-        <p className="text-muted-foreground mt-2">Hãy thử đổi từ khóa hoặc bộ lọc khác.</p>
+      /* Empty state */
+      <div className="card-base flex flex-col items-center justify-center p-16 text-center">
+        <p className="font-semibold text-foreground">Không tìm thấy khóa học nào</p>
+        <p className="text-body mt-2">Hãy thử đổi từ khóa hoặc bộ lọc khác.</p>
       </div>
     )
   }
@@ -153,16 +155,26 @@ async function CourseList({ params }: { params: string }) {
 function CoursesSkeleton() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="h-14 bg-card rounded-lg border animate-pulse" />
+      {/* Header skeleton */}
+      <div className="h-14 bg-card rounded-xl border animate-pulse" />
+      {/* Card skeletons matching CourseCard structure */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className="flex flex-col h-full overflow-hidden rounded-xl border bg-card">
+          <div key={i} className="card-base flex flex-col overflow-hidden">
+            {/* Thumbnail 16:9 */}
             <Skeleton className="aspect-video w-full rounded-none" />
-            <div className="p-6 flex-1 flex flex-col gap-3">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-2/3" />
-              <div className="mt-auto pt-4 flex justify-between">
+            <div className="p-4 flex flex-col gap-2">
+              {/* Category tag */}
+              <Skeleton className="h-3.5 w-20" />
+              {/* Title */}
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-3/4" />
+              {/* Instructor */}
+              <Skeleton className="h-4 w-32" />
+              {/* Stars */}
+              <Skeleton className="h-4 w-28" />
+              {/* Price */}
+              <div className="pt-2 border-t border-border/50 mt-1">
                 <Skeleton className="h-5 w-24" />
               </div>
             </div>

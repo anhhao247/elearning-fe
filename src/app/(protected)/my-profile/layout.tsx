@@ -39,7 +39,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
   const isInstructor = user?.role === "INSTRUCTOR";
 
   return (
-    <div className="container mx-auto py-8 px-4 md:px-6">
+    <div className="page-container py-8">
       {!_hasHydrated || !user ? (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
@@ -104,9 +104,9 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
                   Đăng ký trở thành giảng viên
                 </Link>
               )}
-              
+
               <div className="mx-6 py-2 border-t border-border/50"></div>
-              
+
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors text-left"
@@ -117,12 +117,12 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
             </nav>
           </aside>
 
-        {/* Main Content Area */}
-        <main className="flex-1">
-          {children}
-        </main>
-      </div>
-        )}
+          {/* Main Content Area */}
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
+      )}
     </div>
   );
 }

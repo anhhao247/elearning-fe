@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function SuccessPage() {
   return (
-    <div className="container flex items-center justify-center min-h-[70vh] px-4 py-16">
+    <div className="page-container flex items-center justify-center min-h-[70vh] py-16">
       <div className="max-w-lg w-full text-center space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
         <div className="flex flex-col items-center space-y-6">
           <div className="relative group">
@@ -18,7 +18,7 @@ export default function SuccessPage() {
               <CheckCircle2 className="size-16" />
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <h1 className="text-3xl font-extrabold tracking-tight">Cảm ơn bạn!</h1>
             <p className="text-xl text-muted-foreground">
@@ -30,12 +30,12 @@ export default function SuccessPage() {
         <div className="bg-card border border-border/50 rounded-2xl p-8 space-y-6 shadow-sm">
           <div className="flex items-start gap-4 text-left">
             <div className="p-2 bg-primary/10 rounded-lg text-primary shrink-0">
-               <Sparkles className="size-5" />
+              <Sparkles className="size-5" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Bước tiếp theo?</h3>
               <p className="text-muted-foreground">
-                Đội ngũ của chúng tôi sẽ xem xét hồ sơ của bạn trong vòng <span className="font-bold text-foreground">2-3 ngày làm việc</span>. 
+                Đội ngũ của chúng tôi sẽ xem xét hồ sơ của bạn trong vòng <span className="font-bold text-foreground">2-3 ngày làm việc</span>.
                 Bạn sẽ nhận được thông báo qua email ngay khi có kết quả.
               </p>
             </div>
