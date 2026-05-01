@@ -20,34 +20,34 @@ export function NotesPanel({ courseId, contentId }: NotesPanelProps) {
   
   return (
     <>
-      {/* Floating Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* Floating Button - Positioned higher to avoid overlapping with chatbot */}
+      <div className="fixed bottom-24 right-6 z-50">
         <Button 
           onClick={() => setIsOpen(!isOpen)} 
-          className="rounded-full shadow-xl bg-slate-900 hover:bg-slate-800 text-white gap-2 px-6 py-6"
+          className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground gap-2.5 px-5 h-12 font-semibold text-sm transition-all hover:scale-105"
         >
-          <FileText className="w-5 h-5" />
-          <span className="font-semibold">Ghi chú của tôi</span>
+          <FileText className="w-4 h-4" />
+          Ghi chú của tôi
         </Button>
       </div>
 
       {/* Sliding Panel */}
       <div 
-        className={`fixed top-0 right-0 h-screen w-full sm:w-[400px] bg-slate-950 text-slate-100 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 right-0 h-screen w-full sm:w-[420px] bg-background border-l shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 backdrop-blur-md">
-          <h2 className="font-bold text-lg flex items-center gap-2">
-            <StickyNote className="w-5 h-5 text-indigo-400" />
+        <div className="px-5 py-4 border-b flex justify-between items-center bg-muted/30 shrink-0">
+          <h2 className="font-bold text-base flex items-center gap-2 text-foreground">
+            <StickyNote className="w-4.5 h-4.5 text-primary" />
             Studio Ghi Chú
           </h2>
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white hover:bg-slate-800">
-            <X className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-muted-foreground hover:text-foreground rounded-lg">
+            <X className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
           <NotesContent courseId={courseId} contentId={contentId} />
         </div>
       </div>
@@ -130,7 +130,7 @@ function NotesContent({ courseId, contentId }: { courseId: number, contentId: nu
   }
 
   if (isLoading) {
-    return <div className="flex justify-center p-10"><Loader2 className="w-6 h-6 animate-spin text-indigo-400" /></div>
+    return <div className="flex justify-center p-10"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
   }
 
   return (
@@ -139,35 +139,35 @@ function NotesContent({ courseId, contentId }: { courseId: number, contentId: nu
         <>
           <Button 
             onClick={() => setIsEditing(true)} 
-            className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
+            className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
           >
             <Plus className="w-4 h-4" /> Thêm ghi chú mới
           </Button>
 
           <div className="space-y-4 mt-6">
             {courseNotes.length === 0 ? (
-              <div className="text-center p-8 border border-dashed border-slate-800 rounded-xl">
-                <p className="text-slate-400 text-sm">Chưa có ghi chú nào cho khóa học này.</p>
+              <div className="text-center p-8 border border-dashed rounded-xl bg-muted/20">
+                <p className="text-muted-foreground text-sm">Chưa có ghi chú nào cho khóa học này.</p>
               </div>
             ) : (
               courseNotes.map((note) => (
-                <div key={note.id} className="bg-slate-900 border border-slate-800 rounded-xl p-4 group">
+                <div key={note.id} className="bg-card border rounded-xl p-4 group shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-slate-100 line-clamp-1">{note.title || "Ghi chú không tên"}</h3>
+                    <h3 className="font-semibold text-foreground line-clamp-1">{note.title || "Ghi chú không tên"}</h3>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleEdit(note)} className="p-1.5 text-slate-400 hover:text-indigo-400 bg-slate-800 rounded-md">
+                      <button onClick={() => handleEdit(note)} className="p-1.5 text-muted-foreground hover:text-primary bg-muted rounded-md">
                         <Edit2 className="w-3 h-3" />
                       </button>
-                      <button onClick={() => handleDelete(note.id)} className="p-1.5 text-slate-400 hover:text-red-400 bg-slate-800 rounded-md">
+                      <button onClick={() => handleDelete(note.id)} className="p-1.5 text-muted-foreground hover:text-destructive bg-muted rounded-md">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
                   <div 
-                    className="text-sm text-slate-300 prose prose-invert prose-sm max-w-none line-clamp-3 mb-3"
+                    className="text-sm text-muted-foreground prose prose-sm max-w-none line-clamp-3 mb-3 ql-editor px-0 py-0 min-h-0"
                     dangerouslySetInnerHTML={{ __html: note.body }}
                   />
-                  <div className="flex justify-between items-center text-xs text-slate-500">
+                  <div className="flex justify-between items-center text-xs text-muted-foreground pt-3 border-t">
                     <span>Bài học #{note.contentId}</span>
                     <span>
                       {formatDistanceToNow(new Date(note.updatedAt), { addSuffix: true, locale: vi })}
@@ -181,19 +181,19 @@ function NotesContent({ courseId, contentId }: { courseId: number, contentId: nu
       ) : (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Tiêu đề (không bắt buộc)</label>
+            <label className="text-sm font-medium text-foreground">Tiêu đề (không bắt buộc)</label>
             <input 
               type="text" 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Nhập tiêu đề ghi chú..."
-              className="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-indigo-500"
+              className="w-full bg-background border rounded-lg p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
           </div>
           
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Nội dung</label>
-            <div className="bg-white rounded-lg overflow-hidden">
+            <label className="text-sm font-medium text-foreground">Nội dung</label>
+            <div className="bg-background rounded-lg overflow-hidden border focus-within:ring-2 focus-within:ring-primary/50">
               <RichTextEditor 
                 value={body}
                 onChange={setBody}
@@ -206,14 +206,14 @@ function NotesContent({ courseId, contentId }: { courseId: number, contentId: nu
             <Button 
               variant="outline" 
               onClick={resetForm}
-              className="flex-1 rounded-xl border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+              className="flex-1 rounded-xl"
             >
               Hủy
             </Button>
             <Button 
               onClick={handleSave}
               disabled={createNoteMutation.isPending || updateNoteMutation.isPending}
-              className="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
+              className="flex-1 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               {(createNoteMutation.isPending || updateNoteMutation.isPending) ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
