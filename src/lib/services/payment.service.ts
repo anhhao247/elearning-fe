@@ -7,6 +7,7 @@ export interface OrderItem {
 
 export interface OrderPayload {
   userId: number
+  couponId?: number
   items: OrderItem[]
 }
 
@@ -44,3 +45,25 @@ export async function verifyVNPayReturn(queryString: string): Promise<VerifyPaym
   const { data } = await api.get(`/v1/payments/vnpay-return${sanitizedQuery}`)
   return data
 }
+
+export interface ValidateCouponPayload {
+  code: string
+  courseId: number
+}
+
+export interface ValidateCouponResponse {
+  code: string
+  couponId: number
+  discountAmount: number
+  discountType: string
+  discountValue: number
+  finalPrice: number
+  message: string
+  originalPrice: number
+}
+
+export async function validateCoupon(payload: ValidateCouponPayload): Promise<ValidateCouponResponse> {
+  const { data } = await api.post('/v1/coupons/validate', payload)
+  return data
+}
+

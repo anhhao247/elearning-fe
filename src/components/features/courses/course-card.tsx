@@ -124,7 +124,14 @@ export function CourseCard({ course }: { course: Course }) {
             {course.isFree || course.price === 0 ? (
               <span className="font-bold text-base text-primary">Miễn phí</span>
             ) : (
-              <span className="font-bold text-base text-foreground">{formatMoney(course.price)}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-base text-foreground">{formatMoney(course.price)}</span>
+                {course.oldPrice && course.oldPrice > course.price && (
+                  <span className="text-sm font-medium text-muted-foreground line-through">
+                    {formatMoney(course.oldPrice)}
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>

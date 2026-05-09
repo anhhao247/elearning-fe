@@ -7,6 +7,7 @@ export interface Course {
   shortDescription?: string
   thumbnail?: string | null
   price: number
+  oldPrice?: number
   isFree?: boolean
   level: string
   categoryId?: number
@@ -104,8 +105,7 @@ export const courseDetailSchema = z.object({
   description: z.string().nullable().optional(),
   thumbnail: z.string().nullable().optional(),
   price: z.number(),
-  discount: z.number().optional(),
-  discountedPrice: z.number().optional(),
+  oldPrice: z.number().optional(),
   isFree: z.boolean(),
   level: z.string(),
   category: courseCategorySchema,
