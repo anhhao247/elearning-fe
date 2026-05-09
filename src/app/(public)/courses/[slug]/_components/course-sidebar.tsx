@@ -18,6 +18,7 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react"
+import Link from "next/link"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -297,14 +298,14 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               <div className="flex flex-col justify-center">
                 <span className="text-[10px] font-bold tracking-wider text-blue-500 uppercase mb-1.5">COURSE</span>
                 <h3 className="font-semibold text-[#1a233a] leading-snug mb-3 line-clamp-2">{course.title}</h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200">
-                    {course.instructor.avatar ? (
-                      <img src={course.instructor.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : null}
-                  </div>
-                  <span className="text-xs font-medium text-slate-500">{course.instructor.fullName || course.instructor.username}</span>
-                </div>
+                  <Link href={`/instructors/${course.instructor.id}`} className="flex items-center gap-2 group/instructor">
+                    <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200 group-hover/instructor:ring-2 group-hover/instructor:ring-primary/30 transition-all">
+                      {course.instructor.avatar ? (
+                        <img src={course.instructor.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : null}
+                    </div>
+                    <span className="text-xs font-medium text-slate-500 group-hover:text-primary transition-colors">{course.instructor.fullName || course.instructor.username}</span>
+                  </Link>
               </div>
             </div>
 

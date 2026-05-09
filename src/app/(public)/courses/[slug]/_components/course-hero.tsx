@@ -88,18 +88,20 @@ export function CourseHero({ course }: CourseHeroProps) {
             </div>
 
             {/* Instructor */}
-            <div className="flex items-center gap-3 pt-1">
-              <Avatar className="w-10 h-10 border-2 border-zinc-600 ring-2 ring-white/10">
-                <AvatarImage src={course.instructor?.avatar || ""} alt={course.instructor?.fullName} />
-                <AvatarFallback className="bg-primary/20 text-primary font-bold text-sm">
-                  {course.instructor?.fullName?.charAt(0) || "GV"}
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex items-center gap-3 pt-1 group/instructor">
+              <Link href={`/instructors/${course.instructor?.id}`}>
+                <Avatar className="w-10 h-10 border-2 border-zinc-600 ring-2 ring-white/10 group-hover/instructor:ring-primary/50 transition-all">
+                  <AvatarImage src={course.instructor?.avatar || undefined} alt={course.instructor?.fullName} />
+                  <AvatarFallback className="bg-primary/20 text-primary font-bold text-sm">
+                    {course.instructor?.fullName?.charAt(0) || "GV"}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <div>
                 <p className="text-xs text-zinc-400">Giảng viên hướng dẫn</p>
-                <p className="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
+                <Link href={`/instructors/${course.instructor?.id}`} className="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
                   {course.instructor?.fullName}
-                </p>
+                </Link>
               </div>
             </div>
 

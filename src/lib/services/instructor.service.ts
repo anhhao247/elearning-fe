@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios'
 import { SyllabusResponse, InstructorModule } from '@/types/learning'
+import { InstructorProfile, InstructorPublicCourse } from '@/types/instructor'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -488,4 +489,16 @@ export async function updateInstructorCoupon(couponId: number | string, payload:
 
 export async function deleteInstructorCoupon(couponId: number | string): Promise<void> {
   await api.delete(`/v1/instructor/coupons/${couponId}`)
+}
+
+// ─── Public Instructor API ──────────────────────────────────────────────────
+
+export async function getInstructorProfile(instructorId: number | string): Promise<InstructorProfile> {
+  const { data } = await api.get(`/v1/instructors/${instructorId}/profile`)
+  return data
+}
+
+export async function getInstructorPublicCourses(instructorId: number | string): Promise<InstructorPublicCourse[]> {
+  const { data } = await api.get(`/v1/instructors/${instructorId}/courses`)
+  return data
 }

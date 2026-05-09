@@ -25,7 +25,7 @@ export function Header() {
             </Link>
             {user && (
               <Link
-                href="/my-profile"
+                href="/my-profile/courses"
                 className="transition-colors hover:text-foreground text-foreground/60"
               >
                 Khóa học của tôi
