@@ -63,9 +63,9 @@ export function ContentPlayer({ content, courseId }: ContentPlayerProps) {
     /* ── READING ── */
     if (content.contentType === "READING") {
       return (
-        <div className="w-full">
+        <div className="w-full flex justify-center lg:justify-start">
           <div
-            className="prose prose-sm md:prose-base max-w-none ql-editor px-0"
+            className="prose prose-sm md:prose-base max-w-[65ch] w-full ql-editor px-0 whitespace-pre-wrap"
             dangerouslySetInnerHTML={{
               __html:
                 content.readingDetails?.body ||

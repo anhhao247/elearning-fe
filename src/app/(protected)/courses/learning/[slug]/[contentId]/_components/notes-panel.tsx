@@ -13,24 +13,13 @@ import { UserNote } from "@/types/learning"
 interface NotesPanelProps {
   courseId: number
   contentId: number
+  isOpen: boolean
+  setIsOpen: (open: boolean) => void
 }
 
-export function NotesPanel({ courseId, contentId }: NotesPanelProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  
+export function NotesPanel({ courseId, contentId, isOpen, setIsOpen }: NotesPanelProps) {
   return (
     <>
-      {/* Floating Button - Positioned higher to avoid overlapping with chatbot */}
-      <div className="fixed bottom-24 right-6 z-50">
-        <Button 
-          onClick={() => setIsOpen(!isOpen)} 
-          className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground gap-2.5 px-5 h-12 font-semibold text-sm transition-all hover:scale-105"
-        >
-          <FileText className="w-4 h-4" />
-          Ghi chú của tôi
-        </Button>
-      </div>
-
       {/* Sliding Panel */}
       <div 
         className={`fixed top-0 right-0 h-screen w-full sm:w-[420px] bg-background border-l shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
@@ -63,7 +52,7 @@ export function NotesPanel({ courseId, contentId }: NotesPanelProps) {
   )
 }
 
-function NotesContent({ courseId, contentId }: { courseId: number, contentId: number }) {
+export function NotesContent({ courseId, contentId }: { courseId: number, contentId: number }) {
   const { data: notes, isLoading } = useNotes(courseId, contentId)
   const createNoteMutation = useCreateNote()
   const updateNoteMutation = useUpdateNote()

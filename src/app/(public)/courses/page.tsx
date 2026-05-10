@@ -37,18 +37,22 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   return (
     <>
       {/* Hero Banner Section */}
-      <div className="bg-primary/5 py-12 md:py-16 border-b border-border">
-        <div className="page-container text-center lg:text-left flex flex-col items-center lg:items-start space-y-4">
-          <h1 className="text-page-title text-3xl md:text-4xl">
+      <div className="relative bg-gradient-to-b from-primary/10 via-primary/5 to-transparent section-spacing border-b border-border/50 overflow-hidden">
+        {/* Subtle decorative element */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-50" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary/5 rounded-full blur-3xl opacity-50" />
+        
+        <div className="page-container relative text-center lg:text-left flex flex-col items-center lg:items-start space-y-5">
+          <h1 className="text-hero text-foreground tracking-tight">
             Khám phá các khóa học thú vị
           </h1>
-          <p className="text-body text-base max-w-2xl">
-            Nâng cao kỹ năng với hàng ngàn khóa học chất lượng từ các chuyên gia hàng đầu.
+          <p className="text-body text-xl max-w-2xl text-muted-foreground/80 leading-relaxed">
+            Nâng cao kỹ năng với hàng ngàn khóa học chất lượng từ các chuyên gia hàng đầu. Khởi đầu hành trình chinh phục tri thức ngay hôm nay.
           </p>
         </div>
       </div>
 
-      <div className="page-container py-8">
+      <div className="page-container section-spacing">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Filter Trigger */}
           <div className="lg:hidden flex justify-between items-center bg-card p-4 rounded-lg border">

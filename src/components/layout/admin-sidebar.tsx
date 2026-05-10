@@ -17,7 +17,8 @@ import {
   LogOut,
   Settings,
   Menu,
-  X
+  X,
+  RotateCcw
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,7 @@ const menuItems = [
   { name: "Media", href: "/lms/media", icon: ImageIcon },
   { name: "Coupons", href: "/lms/coupons", icon: Ticket },
   { name: "Orders", href: "/lms/orders", icon: ShoppingCart },
+  { name: "Refunds", href: "/lms/refunds", icon: RotateCcw },
   { name: "Profile", href: "/lms/profile", icon: ShieldCheck },
 ]
 

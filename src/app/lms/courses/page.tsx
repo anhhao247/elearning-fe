@@ -53,21 +53,15 @@ export default function AdminCoursesPage() {
       {/* Create Course Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          showCloseButton={false}
-          className="min-w-3xl max-w-6xl w-full max-h-[90vh] flex flex-col p-0 gap-0"
+          className="min-w-3xl max-w-4xl w-full max-h-[90vh] flex flex-col p-0 gap-0 bg-white"
         >
-          <DialogHeader className="px-6 pt-6 pb-4 border-b border-slate-100 flex-shrink-0">
-            <DialogTitle className="text-xl font-bold">
-              {editingCourseId ? "Chỉnh sửa khóa học" : "Tạo khóa học mới"}
+          <DialogHeader className="px-8 pt-8 pb-4 flex-shrink-0">
+            <DialogTitle className="text-2xl font-bold text-slate-900">
+              {editingCourseId ? "Edit Course" : "Create New Course"}
             </DialogTitle>
-            <DialogDescription className="text-slate-500">
-              {editingCourseId 
-                ? "Cập nhật thông tin và cấu trúc nội dung cho khóa học của bạn."
-                : "Điền thông tin và cấu trúc nội dung cho khóa học của bạn."}
-            </DialogDescription>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="flex-1 overflow-y-auto px-8 pb-8">
             <CreateCourseWizard
               courseId={editingCourseId ?? undefined}
               onSuccess={() => setOpen(false)}

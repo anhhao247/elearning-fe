@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios'
 import { SyllabusResponse, InstructorModule } from '@/types/learning'
+import { InstructorProfile, InstructorPublicCourse } from '@/types/instructor'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -8,6 +9,7 @@ export interface CreateCoursePayload {
   description: string
   categoryId: number
   price: number
+  oldPrice?: number
   level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED'
   thumbnail: string
   overview: string
@@ -72,6 +74,7 @@ export interface CreatedCourse {
   title: string
   description: string
   price: number
+  oldPrice?: number
   level: string
   thumbnail: string
   overview: string
@@ -134,6 +137,7 @@ export interface InstructorCourse {
   thumbnail: string
   categoryName: string
   price: number
+  oldPrice?: number
   isFree: boolean
   isPublish: boolean
   level: string
@@ -377,7 +381,7 @@ export async function getInstructorStudents(params?: GetStudentsParams): Promise
 
   const queryString = queryParams.toString()
   const url = queryString ? `/v1/instructor/students?${queryString}` : '/v1/instructor/students'
-  
+
   const { data } = await api.get(url)
   return data
 }
@@ -439,5 +443,62 @@ export async function getStudentQuizzes(studentId: number | string): Promise<Stu
 
 export async function getStudentComments(studentId: number | string): Promise<StudentComment[]> {
   const { data } = await api.get(`/v1/instructor/students/${studentId}/comments`)
+  return data
+}
+
+// ─── Coupons API ────────────────────────────────────────────────────────────
+
+export interface CreateCouponPayload {
+  code: string
+  discountType: 'PERCENTAGE' | 'FIXED_AMOUNT'
+  discountValue: number
+  maxUses?: number | null
+  expiresAt?: string | null
+  courseId?: number | null
+}
+
+export interface InstructorCoupon {
+  code: string
+  courseId: number | null
+  createdAt: string
+  discountType: 'PERCENTAGE' | 'FIXED_AMOUNT'
+  discountValue: number
+  expiresAt: string | null
+  id: number
+  instructorId: number
+  isActive: boolean
+  maxUses: number | null
+  updatedAt: string
+  usedCount: number
+}
+
+export async function getInstructorCoupons(): Promise<InstructorCoupon[]> {
+  const { data } = await api.get('/v1/instructor/coupons')
+  return data
+}
+
+export async function createInstructorCoupon(payload: CreateCouponPayload): Promise<InstructorCoupon> {
+  const { data } = await api.post('/v1/instructor/coupons', payload)
+  return data
+}
+
+export async function updateInstructorCoupon(couponId: number | string, payload: CreateCouponPayload): Promise<InstructorCoupon> {
+  const { data } = await api.put(`/v1/instructor/coupons/${couponId}`, payload)
+  return data
+}
+
+export async function deleteInstructorCoupon(couponId: number | string): Promise<void> {
+  await api.delete(`/v1/instructor/coupons/${couponId}`)
+}
+
+// ─── Public Instructor API ──────────────────────────────────────────────────
+
+export async function getInstructorProfile(instructorId: number | string): Promise<InstructorProfile> {
+  const { data } = await api.get(`/v1/instructors/${instructorId}/profile`)
+  return data
+}
+
+export async function getInstructorPublicCourses(instructorId: number | string): Promise<InstructorPublicCourse[]> {
+  const { data } = await api.get(`/v1/instructors/${instructorId}/courses`)
   return data
 }

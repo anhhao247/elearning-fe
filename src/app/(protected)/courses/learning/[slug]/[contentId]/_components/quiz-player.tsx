@@ -253,7 +253,7 @@ export function QuizPlayer({ contentId, title }: QuizPlayerProps) {
             <Card key={q.questionId} className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-colors">
               <CardHeader className="bg-muted/20">
                 <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center font-bold text-sm shrink-0 border border-slate-200 dark:border-slate-700">
                     {idx + 1}
                   </div>
                   <div className="space-y-1">
