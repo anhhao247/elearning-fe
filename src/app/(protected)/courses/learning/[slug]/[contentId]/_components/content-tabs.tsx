@@ -13,21 +13,22 @@ export function ContentTabs({ content }: ContentTabsProps) {
   return (
     <div className="mt-2 mb-16 md:mb-8">
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-1">
+        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-8 sm:gap-12 md:gap-16">
           {[
-            { value: "overview", label: "Tổng quan", icon: <BookText className="w-3.5 h-3.5" /> },
-            { value: "qa", label: "Hỏi đáp", icon: <MessageSquare className="w-3.5 h-3.5" /> },
-            { value: "resources", label: "Tài liệu", icon: <FileText className="w-3.5 h-3.5" /> },
+            { value: "overview", label: "Tổng quan", icon: <BookText className="w-4 h-4" /> },
+            { value: "qa", label: "Hỏi đáp", icon: <MessageSquare className="w-4 h-4" /> },
+            { value: "resources", label: "Tài liệu", icon: <FileText className="w-4 h-4" /> },
           ].map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
               className="
-                flex items-center gap-1.5 rounded-none border-b-2 border-transparent
-                py-3 px-4 text-sm font-medium text-muted-foreground
+                flex items-center gap-2 rounded-none border-b-2 border-transparent
+                py-3 px-4 text-sm font-normal text-muted-foreground
                 data-[state=active]:border-primary
-                data-[state=active]:text-foreground
-                data-[state=active]:bg-transparent
+                data-[state=active]:text-primary
+                data-[state=active]:bg-primary/5
+                data-[state=active]:font-medium
                 data-[state=active]:shadow-none
                 hover:text-foreground
                 transition-colors

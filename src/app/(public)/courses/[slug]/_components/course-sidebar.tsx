@@ -54,7 +54,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
   const [appliedCoupon, setAppliedCoupon] = useState<ValidateCouponResponse | null>(null)
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("vnpay")
-  
+
   const user = useAuthStore((state) => state.user)
   const router = useRouter()
 
@@ -143,7 +143,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
           {!course.isEnrolled && (
             <div>
               {course.isFree ? (
-                <span className="text-3xl font-black text-emerald-600">Miễn phí</span>
+                <span className="text-3xl font-black text-free">Miễn phí</span>
               ) : hasOldPrice ? (
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-3xl font-black text-foreground">
@@ -190,13 +190,6 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               </Button>
             ) : (
               <>
-                <Button
-                  size="lg"
-                  className="w-full font-bold text-base h-12 bg-violet-600 hover:bg-violet-700 shadow-md transition-all hover:scale-[1.01]"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Thêm vào giỏ hàng
-                </Button>
                 <Button
                   size="lg"
                   variant="outline"
@@ -288,7 +281,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
           <DialogHeader className="px-6 py-5 bg-white border-b border-slate-100 flex-shrink-0">
             <DialogTitle className="text-xl font-bold text-[#0a1128]">Thanh toán khóa học</DialogTitle>
           </DialogHeader>
-          
+
           <div className="p-6 overflow-y-auto max-h-[75vh] space-y-6">
             {/* Course Info Card */}
             <div className="bg-[#f0f5ff] rounded-xl p-4 flex gap-5 border border-blue-100/40 shadow-sm">
@@ -298,14 +291,14 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               <div className="flex flex-col justify-center">
                 <span className="text-[10px] font-bold tracking-wider text-blue-500 uppercase mb-1.5">COURSE</span>
                 <h3 className="font-semibold text-[#1a233a] leading-snug mb-3 line-clamp-2">{course.title}</h3>
-                  <Link href={`/instructors/${course.instructor.id}`} className="flex items-center gap-2 group/instructor">
-                    <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200 group-hover/instructor:ring-2 group-hover/instructor:ring-primary/30 transition-all">
-                      {course.instructor.avatar ? (
-                        <img src={course.instructor.avatar} alt="Avatar" className="w-full h-full object-cover" />
-                      ) : null}
-                    </div>
-                    <span className="text-xs font-medium text-slate-500 group-hover:text-primary transition-colors">{course.instructor.fullName || course.instructor.username}</span>
-                  </Link>
+                <Link href={`/instructors/${course.instructor.id}`} className="flex items-center gap-2 group/instructor">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200 group-hover/instructor:ring-2 group-hover/instructor:ring-primary/30 transition-all">
+                    {course.instructor.avatar ? (
+                      <img src={course.instructor.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : null}
+                  </div>
+                  <span className="text-xs font-medium text-slate-500 group-hover:text-primary transition-colors">{course.instructor.fullName || course.instructor.username}</span>
+                </Link>
               </div>
             </div>
 
@@ -315,14 +308,14 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-slate-700">Mã giảm giá</h4>
                   <div className="flex gap-2">
-                    <Input 
-                      placeholder="Nhập mã..." 
-                      className="h-11 bg-white rounded-lg border-slate-200 focus-visible:ring-[#0a1128]" 
+                    <Input
+                      placeholder="Nhập mã..."
+                      className="h-11 bg-white rounded-lg border-slate-200 focus-visible:ring-[#0a1128]"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value)}
                     />
-                    <Button 
-                      onClick={handleApplyCoupon} 
+                    <Button
+                      onClick={handleApplyCoupon}
                       disabled={isValidatingCoupon || !couponCode.trim()}
                       className="h-11 px-6 bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-medium rounded-lg"
                     >
@@ -334,13 +327,12 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
                 <div className="space-y-3">
                   <h4 className="text-sm font-semibold text-slate-700">Phương thức thanh toán</h4>
                   <div className="space-y-3">
-                    <button 
+                    <button
                       onClick={() => setPaymentMethod("vnpay")}
-                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                        paymentMethod === "vnpay" 
-                          ? "border-[#6be3ab] bg-[#eefbfa]" 
+                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${paymentMethod === "vnpay"
+                          ? "border-[#6be3ab] bg-[#eefbfa]"
                           : "border-slate-200 bg-white hover:border-slate-300"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-7 bg-[#1756a8] rounded text-[11px] text-white font-black flex items-center justify-center tracking-wide">
@@ -353,13 +345,12 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
                       ) : <div className="w-5 h-5 rounded-full border-2 border-slate-200" />}
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => setPaymentMethod("card")}
-                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
-                        paymentMethod === "card" 
-                          ? "border-[#6be3ab] bg-[#eefbfa]" 
+                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${paymentMethod === "card"
+                          ? "border-[#6be3ab] bg-[#eefbfa]"
                           : "border-slate-200 bg-white hover:border-slate-300"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <CreditCard className="w-6 h-6 text-slate-400 ml-3 mr-1" />
@@ -390,9 +381,9 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="my-5 border-t-2 border-dashed border-slate-100" />
-                  
+
                   <div className="space-y-2">
                     <span className="text-[13px] text-slate-500 font-medium block">Tổng thanh toán</span>
                     <div className="text-2xl font-black text-[#0a1128]">
@@ -414,10 +405,10 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
           <div className="bg-[#f0f4f9] px-6 py-5 border-t border-[#e2e8f0] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 text-[11px] text-slate-500 font-medium leading-tight">
               <Lock className="w-5 h-5 text-[#29b674]" />
-              <span>Secure transaction with 256-bit SSL<br/>encryption</span>
+              <span>Secure transaction with 256-bit SSL<br />encryption</span>
             </div>
-            <Button 
-              onClick={confirmPurchase} 
+            <Button
+              onClick={confirmPurchase}
               disabled={isProcessing}
               className="w-full sm:w-auto min-w-[220px] h-12 bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all text-sm"
             >

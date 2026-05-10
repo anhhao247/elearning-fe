@@ -67,3 +67,68 @@ export async function validateCoupon(payload: ValidateCouponPayload): Promise<Va
   return data
 }
 
+export interface PaymentCourse {
+  courseId: number
+  price: number
+  thumbnail: string
+  title: string
+}
+
+export interface PaymentHistoryItem {
+  amount: number
+  bankCode: string
+  courses: PaymentCourse[]
+  orderId: number
+  orderStatus: string
+  orderTotalPrice: number
+  paymentDate: string
+  paymentId: number
+  status: string
+  transactionNo: string
+}
+
+export interface PageResponse<T> {
+  content: T[]
+  empty: boolean
+  first: boolean
+  last: boolean
+  number: number
+  numberOfElements: number
+  pageable: {
+    offset: number
+    pageNumber: number
+    pageSize: number
+    paged: boolean
+    sort: {
+      empty: boolean
+      sorted: boolean
+      unsorted: boolean
+    }
+    unpaged: boolean
+  }
+  size: number
+  sort: {
+    empty: boolean
+    sorted: boolean
+    unsorted: boolean
+  }
+  totalElements: number
+  totalPages: number
+}
+
+export interface PaymentHistoryParams {
+  keyword?: string
+  status?: string
+  startDate?: string
+  endDate?: string
+  page?: number
+  size?: number
+  sortBy?: string
+  sortDir?: string
+}
+
+export async function getPaymentHistory(params?: PaymentHistoryParams): Promise<PageResponse<PaymentHistoryItem>> {
+  const { data } = await api.get('/v1/payments/history', { params })
+  return data
+}
+
