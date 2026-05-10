@@ -30,6 +30,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
@@ -45,11 +46,14 @@ import {
   Download,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  RotateCcw
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { useDebounce } from "@/hooks/use-debounce"
+import { useDebounce } from "@/hooks/useDebounce"
+import { RefundDialog } from "./_components/refund-dialog"
+import { PaymentHistoryItem } from "@/lib/services/payment.service"
 
 // We need a useDebounce hook. Let's check if it exists.
 // If not, I'll implement a simple one or use a timeout.
@@ -63,6 +67,8 @@ export default function PaymentHistoryPage() {
   })
 
   const [keyword, setKeyword] = React.useState("")
+  const [selectedOrderId, setSelectedOrderId] = React.useState<number | null>(null)
+  const [isRefundDialogOpen, setIsRefundDialogOpen] = React.useState(false)
   const debouncedKeyword = useDebounce(keyword, 500)
 
   React.useEffect(() => {
@@ -109,6 +115,20 @@ export default function PaymentHistoryPage() {
       default:
         return <Badge variant="secondary" className="rounded-full px-4 py-1 font-medium">{status}</Badge>
     }
+  }
+
+  const canRefund = (payment: PaymentHistoryItem) => {
+    if (payment.status !== "SUCCESS" || payment.refunded) return false
+    const paymentDate = new Date(payment.paymentDate)
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - paymentDate.getTime()) / (1000 * 3600 * 24))
+    const progress = payment.progress || 0
+    return diffDays <= 30 && progress < 30
+  }
+
+  const handleRefundClick = (orderId: number) => {
+    setSelectedOrderId(orderId)
+    setIsRefundDialogOpen(true)
   }
 
   const columns: ColumnDef<any>[] = [
@@ -206,6 +226,17 @@ export default function PaymentHistoryPage() {
             <DropdownMenuItem className="gap-2 cursor-pointer">
               <Download className="h-4 w-4" /> Tải về PDF
             </DropdownMenuItem>
+            {canRefund(row.original) && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="gap-2 cursor-pointer text-amber-600 focus:text-amber-700 focus:bg-amber-50"
+                  onClick={() => handleRefundClick(row.original.orderId)}
+                >
+                  <RotateCcw className="h-4 w-4" /> Yêu cầu hoàn tiền
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -353,6 +384,12 @@ export default function PaymentHistoryPage() {
           </div>
         )}
       </div>
+
+      <RefundDialog 
+        orderId={selectedOrderId}
+        isOpen={isRefundDialogOpen}
+        onClose={() => setIsRefundDialogOpen(false)}
+      />
     </div>
   )
 }

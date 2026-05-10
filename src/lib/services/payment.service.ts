@@ -85,6 +85,73 @@ export interface PaymentHistoryItem {
   paymentId: number
   status: string
   transactionNo: string
+  progress?: number
+  refunded?: boolean
+}
+
+export interface RefundRequestPayload {
+  orderId: number
+  reason: string
+}
+
+export async function requestRefund(payload: RefundRequestPayload): Promise<{ message: string }> {
+  const { data } = await api.post('/v1/refunds/request', payload)
+  return data
+}
+
+export interface RefundItem {
+  adminNote: string | null
+  createdAt: string
+  id: number
+  orderId: number
+  reason: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  updatedAt: string
+  userId: number
+  username?: string
+  studentName?: string
+  email?: string
+  courses?: {
+    courseId: number
+    price: number
+    progressPercent: number
+    thumbnail: string
+    title: string
+  }[]
+  order?: {
+    cartStatus: string
+    createdAt: string
+    discountAmount: number
+    totalPrice: number
+  }
+  payment?: {
+    amount: number
+    bankCode: string
+    paymentDate: string
+    paymentId: number
+    status: string
+    transactionNo: string
+  }
+}
+
+export async function getRefundDetail(refundId: number | string): Promise<RefundItem> {
+  const { data } = await api.get(`/v1/refunds/${refundId}`)
+  return data
+}
+
+export async function getPendingRefunds(params?: any): Promise<PageResponse<RefundItem>> {
+  const { data } = await api.get('/v1/refunds/pending', { params })
+  return data
+}
+
+export interface ProcessRefundPayload {
+  status: 'APPROVED' | 'REJECTED'
+  note: string
+}
+
+export async function processRefund(refundId: number, payload: ProcessRefundPayload): Promise<RefundItem> {
+  const { data } = await api.put(`/v1/refunds/${refundId}/process`, payload)
+  return data
 }
 
 export interface PageResponse<T> {

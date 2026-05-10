@@ -85,7 +85,7 @@ export default function InstructorApplicationsPage() {
   }
 
   return (
-    <div className="page-container py-8 space-y-6">
+    <div className="py-8 space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Đơn đăng ký Giảng viên</h1>
         <p className="text-muted-foreground">
