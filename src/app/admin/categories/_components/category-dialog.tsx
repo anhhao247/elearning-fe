@@ -37,7 +37,7 @@ import { useAdminCategories } from "@/hooks/queries/use-admin-categories"
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
   parentId: z.string().optional().nullable(),
 })
 
