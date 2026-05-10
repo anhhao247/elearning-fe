@@ -10,14 +10,14 @@ interface CourseHeroProps {
   course: CourseDetail
 }
 
-const LEVEL_MAP: Record<string, string> = {
-  BEGINNER: "Cơ bản",
-  INTERMEDIATE: "Trung cấp",
-  ADVANCED: "Nâng cao",
+const LEVEL_CONFIG: Record<string, { label: string; className: string }> = {
+  BEGINNER: { label: "Cơ bản", className: "bg-success/10 text-success border-success/30" },
+  INTERMEDIATE: { label: "Trung cấp", className: "bg-warning/10 text-warning border-warning/30" },
+  ADVANCED: { label: "Nâng cao", className: "bg-danger/10 text-danger border-danger/30" },
 }
 
 export function CourseHero({ course }: CourseHeroProps) {
-  const levelLabel = LEVEL_MAP[course.level] || course.level
+  const levelConfig = LEVEL_CONFIG[course.level] || { label: course.level, className: "bg-muted text-muted-foreground border-border" }
 
   return (
     <div className="bg-[#1c1d1f] dark:bg-zinc-900 text-white">
@@ -45,19 +45,19 @@ export function CourseHero({ course }: CourseHeroProps) {
             )}
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight tracking-tight text-white">
+            <h1 className="text-hero text-white">
               {course.title}
             </h1>
 
             {/* Description */}
             {course.description && (
-              <p className="text-base text-zinc-300 max-w-2xl leading-relaxed">
+              <p className="text-body text-zinc-300 max-w-2xl">
                 {course.description}
               </p>
             )}
 
             {/* Stats row */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-300">
+            <div className="flex flex-wrap items-center gap-4 text-caption-meta text-zinc-300">
               {/* Rating */}
               <div className="flex items-center gap-1.5">
                 <div className="flex text-yellow-400">
@@ -88,23 +88,25 @@ export function CourseHero({ course }: CourseHeroProps) {
             </div>
 
             {/* Instructor */}
-            <div className="flex items-center gap-3 pt-1">
-              <Avatar className="w-10 h-10 border-2 border-zinc-600 ring-2 ring-white/10">
-                <AvatarImage src={course.instructor?.avatar || ""} alt={course.instructor?.fullName} />
-                <AvatarFallback className="bg-primary/20 text-primary font-bold text-sm">
-                  {course.instructor?.fullName?.charAt(0) || "GV"}
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex items-center gap-3 pt-1 group/instructor">
+              <Link href={`/instructors/${course.instructor?.id}`}>
+                <Avatar className="w-10 h-10 border-2 border-zinc-600 ring-2 ring-white/10 group-hover/instructor:ring-primary/50 transition-all">
+                  <AvatarImage src={course.instructor?.avatar || undefined} alt={course.instructor?.fullName} />
+                  <AvatarFallback className="bg-primary/20 text-primary font-bold text-sm">
+                    {course.instructor?.fullName?.charAt(0) || "GV"}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <div>
-                <p className="text-xs text-zinc-400">Giảng viên hướng dẫn</p>
-                <p className="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
+                <p className="text-caption-meta text-zinc-400">Giảng viên hướng dẫn</p>
+                <Link href={`/instructors/${course.instructor?.id}`} className="text-sm font-bold text-white hover:text-primary transition-colors cursor-pointer">
                   {course.instructor?.fullName}
-                </p>
+                </Link>
               </div>
             </div>
 
             {/* Meta row */}
-            <div className="flex flex-wrap items-center gap-5 text-sm text-zinc-400 pt-2 border-t border-white/10">
+            <div className="flex flex-wrap items-center gap-5 text-caption-meta text-zinc-400 pt-2 border-t border-white/10">
               <div className="flex items-center gap-1.5">
                 <Globe className="w-4 h-4" />
                 <span>Tiếng Việt</span>
@@ -119,8 +121,8 @@ export function CourseHero({ course }: CourseHeroProps) {
                   })}
                 </span>
               </div>
-              <Badge className="bg-zinc-700 hover:bg-zinc-700 text-zinc-200 border-none font-semibold text-xs">
-                {levelLabel}
+              <Badge className={`${levelConfig.className} border text-label-badge`}>
+                {levelConfig.label}
               </Badge>
             </div>
           </div>

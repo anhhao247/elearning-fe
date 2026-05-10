@@ -14,10 +14,10 @@ interface StudentsAlsoBoughtProps {
   currentCourseId: number
 }
 
-const LEVEL_LABEL: Record<string, string> = {
-  BEGINNER: "Cơ bản",
-  INTERMEDIATE: "Trung cấp",
-  ADVANCED: "Nâng cao",
+const LEVEL_CONFIG: Record<string, { label: string; className: string }> = {
+  BEGINNER: { label: "Cơ bản", className: "bg-success/10 text-success border border-success/30" },
+  INTERMEDIATE: { label: "Trung cấp", className: "bg-warning/10 text-warning border border-warning/30" },
+  ADVANCED: { label: "Nâng cao", className: "bg-danger/10 text-danger border border-danger/30" },
 }
 
 export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlsoBoughtProps) {
@@ -64,7 +64,7 @@ export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlso
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {relatedCourses.map((course) => {
           const isDiscounted = course.isFree
-          const levelLabel = LEVEL_LABEL[course.level] || course.level
+          const levelConfig = LEVEL_CONFIG[course.level] || { label: course.level, className: "bg-muted text-muted-foreground border border-border" }
 
           return (
             <Link
@@ -89,12 +89,12 @@ export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlso
                 )}
                 {/* Overlay badges */}
                 <div className="absolute inset-x-3 top-3 flex items-start justify-between">
-                  <Badge className="bg-black/70 hover:bg-black/70 text-white font-semibold text-xs border-none backdrop-blur-sm">
-                    {levelLabel}
+                  <Badge className={`${levelConfig.className} font-semibold text-xs backdrop-blur-sm`}>
+                    {levelConfig.label}
                   </Badge>
                   {course.isFree && (
-                    <Badge className="bg-emerald-500 hover:bg-emerald-500 text-white font-bold text-xs border-none">
-                      FREE
+                    <Badge className="bg-free/10 text-free border border-free/30 font-bold text-xs">
+                      MIỄN PHÍ
                     </Badge>
                   )}
                 </div>
@@ -134,7 +134,7 @@ export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlso
                 <div className="mt-auto pt-3 border-t border-border/40 flex items-center justify-between">
                   <span className="font-bold text-base text-foreground">
                     {course.isFree || course.price === 0 ? (
-                      <span className="text-emerald-600">Miễn phí</span>
+                      <span className="text-free">Miễn phí</span>
                     ) : (
                       new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(course.price)
                     )}

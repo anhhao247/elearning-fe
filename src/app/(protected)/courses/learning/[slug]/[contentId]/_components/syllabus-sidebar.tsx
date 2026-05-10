@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { CheckCircle2, Circle, PlayCircle, BookOpenText, HelpCircle } from "lucide-react"
+import { CheckCircle2, Circle, CircleDot, PlayCircle, BookOpenText, HelpCircle } from "lucide-react"
 import { SyllabusResponse, LearningContentItem } from "@/types/learning"
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
@@ -39,9 +39,9 @@ export function SyllabusSidebar({ syllabus, currentContentId, courseSlug }: Syll
     <div className="flex flex-col h-full bg-card overflow-hidden">
       {/* Header */}
       <div className="px-5 py-4 border-b space-y-3 bg-muted/30 shrink-0">
-        <h2 className="font-bold text-base">Nội dung khóa học</h2>
+        <h2 className="text-card-module">Nội dung khóa học</h2>
         <div className="space-y-1.5">
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-caption-meta text-muted-foreground">
             <span>Hoàn thành {totalCompleted}/{totalLessons} bài</span>
             <span className="text-primary font-semibold">{pct}%</span>
           </div>
@@ -61,10 +61,10 @@ export function SyllabusSidebar({ syllabus, currentContentId, courseSlug }: Syll
             const modCompleted = module.contents.filter(c => c.isCompleted).length
             return (
               <AccordionItem key={module.id} value={`module-${module.id}`} className="border-b-0 border-t">
-                <AccordionTrigger className="px-5 py-3.5 hover:bg-muted/50 bg-muted/20 text-sm font-semibold sticky top-0 bg-card/95 backdrop-blur z-10 data-[state=open]:border-b">
+                <AccordionTrigger className="px-5 py-3.5 hover:bg-muted/50 bg-muted/20 sticky top-0 bg-card/95 backdrop-blur z-10 data-[state=open]:border-b">
                   <div className="flex flex-col items-start gap-0.5 text-left">
-                    <span className="line-clamp-2 leading-snug">{module.title}</span>
-                    <span className="text-[11px] font-normal text-muted-foreground">
+                    <span className="text-card-module line-clamp-2 leading-snug">{module.title}</span>
+                    <span className="text-caption-meta font-normal text-muted-foreground">
                       {modCompleted}/{module.contents.length} bài
                     </span>
                   </div>
@@ -87,19 +87,22 @@ export function SyllabusSidebar({ syllabus, currentContentId, courseSlug }: Syll
                             )}
                           >
                             <div className="mt-0.5 shrink-0">
-                              {content.isCompleted
-                                ? <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                : <Circle className={cn("w-4 h-4", isActive ? "text-primary" : "text-muted-foreground")} />
-                              }
+                              {content.isCompleted ? (
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                              ) : isActive ? (
+                                <CircleDot className="w-4 h-4 text-primary" />
+                              ) : (
+                                <Circle className="w-4 h-4 text-muted-foreground" />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0 space-y-1">
                               <p className={cn(
-                                "text-sm line-clamp-2 leading-snug",
-                                isActive ? "font-semibold text-foreground" : "text-muted-foreground"
+                                "text-card-module line-clamp-2 leading-snug",
+                                isActive ? "text-primary" : "text-muted-foreground font-normal"
                               )}>
                                 {content.title}
                               </p>
-                              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                              <div className="flex items-center gap-1 text-caption-meta text-muted-foreground">
                                 {info.icon}<span>{info.label}</span>
                               </div>
                             </div>

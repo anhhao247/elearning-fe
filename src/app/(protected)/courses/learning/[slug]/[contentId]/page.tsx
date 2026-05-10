@@ -10,7 +10,7 @@ import { useSyllabus, useContentDetail } from "@/hooks/queries/use-learning"
 import { SyllabusSidebar } from "./_components/syllabus-sidebar"
 import { ContentPlayer } from "./_components/content-player"
 import { ContentTabs } from "./_components/content-tabs"
-import { NotesPanel } from "./_components/notes-panel"
+import { NotesContent } from "./_components/notes-panel"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -25,7 +25,7 @@ export default function LearningPage({
   const { slug, contentId: contentIdStr } = unwrappedParams
 
   const contentId = Number(contentIdStr)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [activePanel, setActivePanel] = useState<'syllabus' | 'notes' | null>('syllabus')
 
   const courseId = useMemo(() => {
     const parts = slug.split("-")
@@ -69,9 +69,16 @@ export default function LearningPage({
           {isContentLoading ? <Skeleton className="h-4 w-48 bg-slate-700" /> : contentDetail?.title}
         </h1>
 
-        {/* Progress */}
-        <div className="hidden lg:flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1.5">
+        {/* Progress & AI Action */}
+        <div className="flex items-center gap-3 shrink-0">
+          <Link href={`/courses/learning/${slug}/${contentId}/interview`}>
+            <Button size="sm" className="hidden md:flex gap-2 bg-primary hover:bg-primary/90 text-white text-xs rounded-lg px-4 font-semibold shadow-sm">
+              <Video className="w-3.5 h-3.5" />
+              Vấn đáp AI
+            </Button>
+          </Link>
+
+          <div className="hidden lg:flex items-center gap-2 bg-slate-800 rounded-full px-3 py-1.5 border border-slate-700/50">
             <div className="relative w-5 h-5 shrink-0">
               <svg className="w-5 h-5 -rotate-90" viewBox="0 0 20 20">
                 <circle cx="10" cy="10" r="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2.5" />
@@ -93,25 +100,9 @@ export default function LearningPage({
               </span>
             )}
           </div>
+
+
         </div>
-
-        {/* AI Interview */}
-        <Link href={`/courses/learning/${slug}/${contentId}/interview`} className="shrink-0">
-          <Button variant="secondary" size="sm" className="hidden md:flex gap-2 text-primary bg-slate-800 hover:bg-slate-700 border-0 text-xs rounded-lg">
-            <Video className="w-3.5 h-3.5" />
-            Vấn đáp AI
-          </Button>
-        </Link>
-
-        {/* Toggle sidebar */}
-        <Button
-          variant="ghost" size="icon"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="hidden lg:flex text-slate-400 hover:text-white hover:bg-slate-800 shrink-0"
-          title={isSidebarOpen ? "Ẩn nội dung" : "Hiện nội dung"}
-        >
-          {isSidebarOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
-        </Button>
 
         {/* Mobile menu */}
         <div className="lg:hidden shrink-0">
@@ -131,12 +122,12 @@ export default function LearningPage({
       </header>
 
       {/* ── MAIN ───────────────────────────────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Content area */}
-        <main className="flex-1 min-w-0 overflow-y-auto bg-background">
+        <main className="flex-1 min-w-0 overflow-y-auto bg-background pb-24">
           <div className={cn(
             "mx-auto px-4 sm:px-6 lg:px-10 py-8 transition-all duration-300",
-            isSidebarOpen ? "max-w-4xl" : "max-w-5xl"
+            activePanel ? "max-w-4xl" : "max-w-5xl"
           )}>
             {isContentLoading || !contentDetail ? (
               <div className="space-y-5">
@@ -155,26 +146,67 @@ export default function LearningPage({
           </div>
         </main>
 
-        {/* Sidebar */}
-        <aside className={cn(
-          "hidden lg:flex flex-col shrink-0 border-l bg-card overflow-hidden sticky top-0 h-[calc(100vh-3.5rem)] transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "w-[340px] xl:w-[380px] opacity-100" : "w-0 opacity-0 pointer-events-none"
-        )}>
-          <div className="min-w-[340px] xl:min-w-[380px] h-full overflow-y-auto">
-            {isSyllabusLoading || !syllabus ? (
-              <div className="p-5 space-y-3">
-                <Skeleton className="h-5 w-1/2 rounded" />
-                {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}
+        {/* Sidebar: Panel + Rail */}
+        <aside className="hidden lg:flex shrink-0 border-l bg-card h-[calc(100vh-3.5rem)] sticky top-0 transition-all duration-300">
+
+          {/* Expanded Panel */}
+          <div className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out border-r border-border/50 bg-card",
+            activePanel ? "w-[340px] xl:w-[380px] opacity-100" : "w-0 opacity-0 border-transparent pointer-events-none"
+          )}>
+            <div className="w-[340px] xl:w-[380px] h-full overflow-y-auto bg-card">
+              {activePanel === 'syllabus' && (
+                isSyllabusLoading || !syllabus ? (
+                  <div className="p-5 space-y-3">
+                    <Skeleton className="h-5 w-1/2 rounded" />
+                    {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-lg" />)}
+                  </div>
+                ) : (
+                  <SyllabusSidebar syllabus={syllabus} currentContentId={contentId} courseSlug={slug} />
+                )
+              )}
+              {activePanel === 'notes' && (
+                <div className="h-full bg-card overflow-y-auto custom-scrollbar">
+                  <NotesContent courseId={courseId} contentId={contentId} />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Icon Rail */}
+          <div className="w-16 shrink-0 flex flex-col items-center py-6 bg-muted/10 gap-6">
+            {/* Mini Progress */}
+            <div className="flex flex-col items-center gap-1.5 mb-2" title={`Hoàn thành ${progressStats.percentage}%`}>
+              <span className="text-[10px] font-bold text-primary">{progressStats.percentage}%</span>
+              <div className="w-8 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-primary transition-all duration-700" style={{ width: `${progressStats.percentage}%` }} />
               </div>
-            ) : (
-              <SyllabusSidebar syllabus={syllabus} currentContentId={contentId} courseSlug={slug} />
-            )}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn("rounded-xl transition-all w-11 h-11", activePanel === 'syllabus' ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
+              onClick={() => setActivePanel(p => p === 'syllabus' ? null : 'syllabus')}
+              title="Danh sách bài học"
+            >
+              <Menu className="w-5 h-5" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn("rounded-xl transition-all w-11 h-11", activePanel === 'notes' ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted")}
+              onClick={() => setActivePanel(p => p === 'notes' ? null : 'notes')}
+              title="Ghi chú của tôi"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><line x1="16" x2="8" y1="13" y2="13" /><line x1="16" x2="8" y1="17" y2="17" /><line x1="10" x2="8" y1="9" y2="9" /></svg>
+            </Button>
           </div>
         </aside>
-      </div>
 
-      {/* Notes — offset lên để không đè chatbot */}
-      <NotesPanel courseId={courseId} contentId={contentId} />
+
+      </div>
     </div>
   )
 }

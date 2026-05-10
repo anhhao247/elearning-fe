@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, BookOpen, FileText, Settings, LogOut, GraduationCap, LayoutDashboard } from "lucide-react";
+import { User, BookOpen, FileText, Settings, LogOut, GraduationCap, LayoutDashboard, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
@@ -33,6 +33,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
     { href: "/my-profile", label: "Tài khoản", icon: User },
     { href: "/my-profile/courses", label: "Khóa học của tôi", icon: BookOpen },
     { href: "/my-profile/posts", label: "Bài viết", icon: FileText },
+    { href: "/my-profile/payments", label: "Lịch sử thanh toán", icon: CreditCard },
     { href: "/my-profile/settings", label: "Cài đặt", icon: Settings },
   ];
 
@@ -75,7 +76,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
                     className={cn(
                       "flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors hover:bg-muted/50",
                       isActive
-                        ? "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-200"
+                        ? "bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-400"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -90,7 +91,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
               {isInstructor ? (
                 <Link
                   href="/lms/courses"
-                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/20"
+                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-primary hover:bg-primary/5"
                 >
                   <LayoutDashboard className="w-5 h-5" />
                   Quản lý giảng dạy
@@ -98,7 +99,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
               ) : (
                 <Link
                   href="/become-instructor"
-                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-amber-600 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/20"
+                  className="flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors text-warning hover:bg-warning/5"
                 >
                   <GraduationCap className="w-5 h-5" />
                   Đăng ký trở thành giảng viên
@@ -109,7 +110,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 transition-colors text-left"
+                className="flex items-center gap-3 px-6 py-4 text-sm font-medium text-danger hover:bg-danger/5 transition-colors text-left"
               >
                 <LogOut className="w-5 h-5" />
                 Đăng xuất
@@ -118,7 +119,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
           </aside>
 
           {/* Main Content Area */}
-          <main className="flex-1">
+          <main className="flex-1 min-w-0">
             {children}
           </main>
         </div>

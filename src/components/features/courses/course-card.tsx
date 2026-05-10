@@ -20,13 +20,13 @@ interface LevelConfig {
 function getLevelConfig(level: string): LevelConfig {
   switch (level) {
     case "BEGINNER":
-      return { label: "Cơ bản", className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400" }
+      return { label: "Cơ bản", className: "bg-success/10 text-success border border-success/30 dark:bg-success/20" }
     case "INTERMEDIATE":
-      return { label: "Trung cấp", className: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400" }
+      return { label: "Trung cấp", className: "bg-warning/10 text-warning border border-warning/30 dark:bg-warning/20" }
     case "ADVANCED":
-      return { label: "Nâng cao", className: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400" }
+      return { label: "Nâng cao", className: "bg-danger/10 text-danger border border-danger/30 dark:bg-danger/20" }
     default:
-      return { label: level, className: "bg-muted text-muted-foreground" }
+      return { label: level, className: "bg-muted text-muted-foreground border border-border" }
   }
 }
 
@@ -50,7 +50,7 @@ function StarRating({ rating, total }: { rating: number; total?: number }) {
         {rating.toFixed(1)}
       </span>
       {total !== undefined && (
-        <span className="text-xs text-muted-foreground">({total.toLocaleString()})</span>
+        <span className="text-xs text-muted-foreground">({total.toLocaleString()} đánh giá)</span>
       )}
     </div>
   )
@@ -82,8 +82,8 @@ export function CourseCard({ course }: { course: Course }) {
             </div>
           )}
           {/* Level badge — overlay on thumbnail */}
-          <div className="absolute top-2 left-2">
-            <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${levelConfig.className}`}>
+          <div className="absolute top-2 left-2 flex gap-1.5">
+            <span className={`${levelConfig.className} inline-flex items-center rounded-md px-2 py-0.5 text-label-badge`}>
               {levelConfig.label}
             </span>
           </div>
@@ -94,37 +94,37 @@ export function CourseCard({ course }: { course: Course }) {
 
           {/* Category tag */}
           {course.categoryName && (
-            <span className="text-label">{course.categoryName}</span>
+            <span className="text-caption-meta text-muted-foreground">{course.categoryName}</span>
           )}
 
           {/* Title — max 2 lines */}
-          <h3 className="font-semibold text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200 flex-1">
+          <h3 className="text-card-module line-clamp-2 group-hover:text-primary transition-colors duration-200 flex-1">
             {course.title}
           </h3>
 
           {/* Instructor */}
-          <p className="text-body truncate">
+          <p className="text-caption-meta text-muted-foreground truncate">
             {course.instructorName || "Giảng viên"}
           </p>
 
           {/* Rating + Reviews */}
-          {course.avgRating !== undefined && course.avgRating > 0 ? (
-            <StarRating rating={course.avgRating} total={course.totalReviews} />
-          ) : (
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} className="h-3.5 w-3.5 fill-muted text-muted" />
-              ))}
-              <span className="text-label ml-1">Chưa có đánh giá</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5">
+            <StarRating rating={course.avgRating || 0} total={course.totalReviews || 0} />
+          </div>
 
           {/* Price */}
           <div className="pt-1 border-t border-border/50 mt-auto">
             {course.isFree || course.price === 0 ? (
-              <span className="font-bold text-base text-primary">Miễn phí</span>
+              <span className="font-bold text-base text-free">Miễn phí</span>
             ) : (
-              <span className="font-bold text-base text-foreground">{formatMoney(course.price)}</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-base text-foreground">{formatMoney(course.price)}</span>
+                {course.oldPrice && course.oldPrice > course.price && (
+                  <span className="text-sm font-medium text-muted-foreground line-through">
+                    {formatMoney(course.oldPrice)}
+                  </span>
+                )}
+              </div>
             )}
           </div>
         </div>

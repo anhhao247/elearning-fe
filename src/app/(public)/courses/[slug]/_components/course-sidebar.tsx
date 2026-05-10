@@ -18,12 +18,15 @@ import {
   ShoppingCart,
   Zap,
 } from "lucide-react"
+import Link from "next/link"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/useAuthStore"
-import { createOrder, createPayment } from "@/lib/services/payment.service"
+import { createOrder, createPayment, validateCoupon, ValidateCouponResponse } from "@/lib/services/payment.service"
 import { enrollFreeCourse } from "@/lib/services/enrollment.service"
+import { Input } from "@/components/ui/input"
+import { Lock, CheckCircle2, CreditCard } from "lucide-react"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -42,13 +45,33 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price)
 
-  const isDiscounted = course.discount && course.discount > 0 && course.discountedPrice
+  const hasOldPrice = course.oldPrice && course.oldPrice > course.price
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
   const [isEnrolling, setIsEnrolling] = useState(false)
+  const [couponCode, setCouponCode] = useState("")
+  const [appliedCoupon, setAppliedCoupon] = useState<ValidateCouponResponse | null>(null)
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState("vnpay")
+
   const user = useAuthStore((state) => state.user)
   const router = useRouter()
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return
+    try {
+      setIsValidatingCoupon(true)
+      const res = await validateCoupon({ code: couponCode, courseId: course.id })
+      setAppliedCoupon(res)
+      toast.success(res.message || "Áp dụng mã giảm giá thành công!")
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Mã giảm giá không hợp lệ")
+      setAppliedCoupon(null)
+    } finally {
+      setIsValidatingCoupon(false)
+    }
+  }
 
   const handleBuyNow = () => {
     if (!user) {
@@ -82,10 +105,10 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
   const confirmPurchase = async () => {
     try {
       setIsProcessing(true)
-      const priceToPay = isDiscounted ? course.discountedPrice! : course.price
       const orderResponse = await createOrder({
         userId: user!.id,
-        items: [{ courseId: course.id, price: priceToPay }],
+        couponId: appliedCoupon?.couponId,
+        items: [{ courseId: course.id, price: appliedCoupon ? appliedCoupon.finalPrice : course.price }],
       })
       const paymentResponse = await createPayment({ orderId: orderResponse.orderId })
       if (paymentResponse.url) {
@@ -120,17 +143,17 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
           {!course.isEnrolled && (
             <div>
               {course.isFree ? (
-                <span className="text-3xl font-black text-emerald-600">Miễn phí</span>
-              ) : isDiscounted ? (
+                <span className="text-3xl font-black text-free">Miễn phí</span>
+              ) : hasOldPrice ? (
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-3xl font-black text-foreground">
-                    {formatPrice(course.discountedPrice!)}
-                  </span>
-                  <span className="text-lg font-medium text-muted-foreground line-through">
                     {formatPrice(course.price)}
                   </span>
+                  <span className="text-lg font-medium text-muted-foreground line-through">
+                    {formatPrice(course.oldPrice!)}
+                  </span>
                   <Badge className="bg-rose-500 hover:bg-rose-500 text-white font-bold text-xs px-2 py-0.5 pointer-events-none">
-                    {course.discount}% OFF
+                    {Math.round(((course.oldPrice! - course.price) / course.oldPrice!) * 100)}% OFF
                   </Badge>
                 </div>
               ) : (
@@ -167,13 +190,6 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               </Button>
             ) : (
               <>
-                <Button
-                  size="lg"
-                  className="w-full font-bold text-base h-12 bg-violet-600 hover:bg-violet-700 shadow-md transition-all hover:scale-[1.01]"
-                >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Thêm vào giỏ hàng
-                </Button>
                 <Button
                   size="lg"
                   variant="outline"
@@ -252,49 +268,154 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
       </div>
 
       {/* Purchase confirmation dialog */}
-      <Dialog open={isModalOpen} onOpenChange={(open) => !isProcessing && setIsModalOpen(open)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Xác nhận thanh toán</DialogTitle>
-            <DialogDescription>
-              Bạn đang tiến hành mua khóa học{" "}
-              <span className="font-bold text-foreground">{course.title}</span>.
-            </DialogDescription>
+      <Dialog open={isModalOpen} onOpenChange={(open) => {
+        if (!isProcessing) {
+          setIsModalOpen(open)
+          if (!open) {
+            setCouponCode("")
+            setAppliedCoupon(null)
+          }
+        }
+      }}>
+        <DialogContent className="sm:max-w-3xl p-0 overflow-hidden bg-[#fafcff]">
+          <DialogHeader className="px-6 py-5 bg-white border-b border-slate-100 flex-shrink-0">
+            <DialogTitle className="text-xl font-bold text-[#0a1128]">Thanh toán khóa học</DialogTitle>
           </DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Giá gốc:</span>
-              <span className={isDiscounted ? "line-through text-muted-foreground" : "font-medium"}>
-                {formatPrice(course.price)}
-              </span>
-            </div>
-            {isDiscounted && (
-              <div className="flex justify-between text-rose-500 font-medium">
-                <span>Giảm giá:</span>
-                <span>-{course.discount}%</span>
+
+          <div className="p-6 overflow-y-auto max-h-[75vh] space-y-6">
+            {/* Course Info Card */}
+            <div className="bg-[#f0f5ff] rounded-xl p-4 flex gap-5 border border-blue-100/40 shadow-sm">
+              <div className="w-36 h-24 rounded-lg overflow-hidden shrink-0 bg-white">
+                <img src={course.thumbnail || "/placeholder.jpg"} alt={course.title} className="w-full h-full object-cover" />
               </div>
-            )}
-            <Separator />
-            <div className="flex justify-between font-bold text-lg">
-              <span>Tổng thanh toán:</span>
-              <span className="text-primary">
-                {formatPrice(isDiscounted ? course.discountedPrice! : course.price)}
-              </span>
+              <div className="flex flex-col justify-center">
+                <span className="text-[10px] font-bold tracking-wider text-blue-500 uppercase mb-1.5">COURSE</span>
+                <h3 className="font-semibold text-[#1a233a] leading-snug mb-3 line-clamp-2">{course.title}</h3>
+                <Link href={`/instructors/${course.instructor.id}`} className="flex items-center gap-2 group/instructor">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-200 group-hover/instructor:ring-2 group-hover/instructor:ring-primary/30 transition-all">
+                    {course.instructor.avatar ? (
+                      <img src={course.instructor.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : null}
+                  </div>
+                  <span className="text-xs font-medium text-slate-500 group-hover:text-primary transition-colors">{course.instructor.fullName || course.instructor.username}</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-8">
+              {/* Left Column */}
+              <div className="space-y-7">
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-700">Mã giảm giá</h4>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Nhập mã..."
+                      className="h-11 bg-white rounded-lg border-slate-200 focus-visible:ring-[#0a1128]"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                    />
+                    <Button
+                      onClick={handleApplyCoupon}
+                      disabled={isValidatingCoupon || !couponCode.trim()}
+                      className="h-11 px-6 bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-medium rounded-lg"
+                    >
+                      {isValidatingCoupon ? <Loader2 className="w-4 h-4 animate-spin" /> : "Áp dụng"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-slate-700">Phương thức thanh toán</h4>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setPaymentMethod("vnpay")}
+                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${paymentMethod === "vnpay"
+                          ? "border-[#6be3ab] bg-[#eefbfa]"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-7 bg-[#1756a8] rounded text-[11px] text-white font-black flex items-center justify-center tracking-wide">
+                          VNPay
+                        </div>
+                        <span className="font-medium text-slate-700 text-sm">Thanh toán qua VNPay</span>
+                      </div>
+                      {paymentMethod === "vnpay" ? (
+                        <CheckCircle2 className="w-5 h-5 text-[#29b674]" />
+                      ) : <div className="w-5 h-5 rounded-full border-2 border-slate-200" />}
+                    </button>
+
+                    <button
+                      onClick={() => setPaymentMethod("card")}
+                      className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${paymentMethod === "card"
+                          ? "border-[#6be3ab] bg-[#eefbfa]"
+                          : "border-slate-200 bg-white hover:border-slate-300"
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="w-6 h-6 text-slate-400 ml-3 mr-1" />
+                        <span className="font-medium text-slate-700 text-sm">Thanh toán thẻ Quốc tế</span>
+                      </div>
+                      {paymentMethod === "card" ? (
+                        <CheckCircle2 className="w-5 h-5 text-[#29b674]" />
+                      ) : <div className="w-5 h-5 rounded-full border-2 border-slate-200" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Summary */}
+              <div>
+                <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+                  <div className="space-y-4">
+                    <div className="flex justify-between text-[13px]">
+                      <span className="text-slate-500 font-medium">Tạm tính</span>
+                      <span className="font-bold text-slate-700">{formatPrice(course.price)}</span>
+                    </div>
+                    {appliedCoupon && (
+                      <div className="flex justify-between text-[13px]">
+                        <span className="text-slate-500 font-medium">Giảm giá</span>
+                        <span className="font-bold text-[#eb7724]">
+                          -{formatPrice(appliedCoupon.discountAmount)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="my-5 border-t-2 border-dashed border-slate-100" />
+
+                  <div className="space-y-2">
+                    <span className="text-[13px] text-slate-500 font-medium block">Tổng thanh toán</span>
+                    <div className="text-2xl font-black text-[#0a1128]">
+                      {formatPrice(appliedCoupon ? appliedCoupon.finalPrice : course.price)}
+                    </div>
+                  </div>
+
+                  {appliedCoupon && (
+                    <div className="mt-5 bg-[#7af1ba] text-[#0d5934] p-3.5 rounded-lg flex gap-2.5 items-start text-[11px] leading-relaxed font-semibold">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 opacity-80" />
+                      <span>Tiết kiệm {appliedCoupon.discountValue}{appliedCoupon.discountType === "PERCENTAGE" ? "%" : "đ"} với chương trình ưu đãi {appliedCoupon.code}.</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-          <DialogFooter>
+
+          <div className="bg-[#f0f4f9] px-6 py-5 border-t border-[#e2e8f0] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500 font-medium leading-tight">
+              <Lock className="w-5 h-5 text-[#29b674]" />
+              <span>Secure transaction with 256-bit SSL<br />encryption</span>
+            </div>
             <Button
-              variant="outline"
-              onClick={() => setIsModalOpen(false)}
+              onClick={confirmPurchase}
               disabled={isProcessing}
+              className="w-full sm:w-auto min-w-[220px] h-12 bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all text-sm"
             >
-              Hủy
+              {isProcessing ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : null}
+              Thanh toán ngay
             </Button>
-            <Button onClick={confirmPurchase} disabled={isProcessing}>
-              {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Xác nhận & Thanh toán
-            </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </>
