@@ -45,15 +45,16 @@ export function CourseHero({ course }: CourseHeroProps) {
             )}
 
             {/* Title */}
-            <h1 className="text-hero text-white">
+            <h1 className="text-hero text-white max-w-[800px]">
               {course.title}
             </h1>
 
             {/* Description */}
             {course.description && (
-              <p className="text-body text-zinc-300 max-w-2xl">
-                {course.description}
-              </p>
+              <div 
+                className="text-body text-zinc-300 max-w-[600px] lg:max-w-[650px] prose prose-invert prose-sm"
+                dangerouslySetInnerHTML={{ __html: course.description }}
+              />
             )}
 
             {/* Stats row */}

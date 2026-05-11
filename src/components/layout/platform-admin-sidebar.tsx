@@ -26,16 +26,16 @@ import { useAuthStore } from "@/store/useAuthStore"
 
 const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Users", href: "/admin/users", icon: Users },
+  // { name: "Users", href: "/admin/users", icon: Users },
   { name: "Instructors", href: "/admin/instructors", icon: UserCheck },
-  { name: "Courses", href: "/admin/courses", icon: BookOpen },
+  // { name: "Courses", href: "/admin/courses", icon: BookOpen },
   { name: "Categories", href: "/admin/categories", icon: Layers },
-  { name: "Blogs", href: "/admin/blogs", icon: FileText },
-  { name: "Comments", href: "/admin/comments", icon: MessageSquare },
-  { name: "Media", href: "/admin/media", icon: ImageIcon },
-  { name: "Coupons", href: "/admin/coupons", icon: Ticket },
-  { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
-  { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
+  // { name: "Blogs", href: "/admin/blogs", icon: FileText },
+  // { name: "Comments", href: "/admin/comments", icon: MessageSquare },
+  // { name: "Media", href: "/admin/media", icon: ImageIcon },
+  // { name: "Coupons", href: "/admin/coupons", icon: Ticket },
+  // { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  // { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
 ]
 
 export function PlatformAdminSidebar() {

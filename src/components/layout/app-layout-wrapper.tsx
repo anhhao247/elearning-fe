@@ -10,6 +10,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAdminPath = pathname?.startsWith("/lms") || pathname?.startsWith("/admin")
   const isAuthPath = pathname?.startsWith("/login") || pathname?.startsWith("/register")
   const isLearningPath = pathname?.includes("/courses/learning")
+  const isInterviewPath = pathname?.includes("/interview")
 
   if (isAdminPath) {
     return <main className="flex-1 flex flex-col">{children}</main>
@@ -19,9 +20,11 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
     return (
       <>
         <main className="flex-1 flex flex-col">{children}</main>
-        <div className="hidden sm:block">
-          <VoiceChatbot />
-        </div>
+        {!isInterviewPath && (
+          <div className="hidden sm:block">
+            <VoiceChatbot />
+          </div>
+        )}
       </>
     )
   }
@@ -30,7 +33,7 @@ export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
     <>
       <Header />
       <main className="flex-1 flex flex-col">{children}</main>
-      {!isAuthPath && (
+      {!isAuthPath && !isInterviewPath && (
         <div className="hidden sm:block">
            <VoiceChatbot />
         </div>

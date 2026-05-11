@@ -164,7 +164,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="page-container text-center space-y-12">
+      {/* <section className="page-container text-center space-y-12">
         <div className="space-y-4 max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold">Đội ngũ của chúng tôi</h2>
           <p className="text-muted-foreground">
@@ -200,7 +200,7 @@ export default function AboutPage() {
             </Card>
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="page-container mb-8">

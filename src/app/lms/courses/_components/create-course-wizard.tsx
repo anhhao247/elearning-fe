@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, FieldErrors } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
@@ -85,10 +85,15 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
     watch,
     setValue,
     control,
+    trigger,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(courseSchema),
     defaultValues: {
+      title: "",
+      description: "",
+      thumbnail: "",
+      overview: "",
       benefits: [""],
       requirements: [""],
       technique: [""],
@@ -175,6 +180,37 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
     }
   }
 
+  const onInvalid = (errors: FieldErrors<CourseFormValues>) => {
+    const errorKeys = Object.keys(errors) as (keyof CourseFormValues)[];
+    if (errorKeys.length > 0) {
+      const firstError = errorKeys[0];
+      const elementMap: Record<string, string> = {
+        title: "course-title",
+        description: "course-description",
+        categoryId: "course-category",
+        level: "course-level",
+        price: "course-price",
+        oldPrice: "course-old-price",
+        thumbnail: "course-thumbnail",
+        overview: "course-overview",
+        benefits: "course-benefits",
+        requirements: "course-requirements",
+        technique: "course-technique",
+      };
+
+      const elementId = elementMap[firstError];
+      if (elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          // Focus if it's focusable
+          const focusable = element.querySelector('button, input, textarea, [tabindex="0"]') as HTMLElement || element;
+          focusable?.focus();
+        }
+      }
+    }
+  };
+
   if (loadingCourse) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -203,7 +239,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
               {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title.message}</p>}
             </div>
 
-            <div>
+            <div id="course-description">
               <Label className="text-sm font-semibold text-slate-600 mb-2 block">
                 Short Description
               </Label>
@@ -238,6 +274,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                       disabled={loadingCategories}
                     >
                       <SelectTrigger 
+                        id="course-category"
                         ref={field.ref}
                         className="h-11 border-slate-200 rounded-lg text-sm bg-white"
                       >
@@ -265,6 +302,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                   name="level"
                   render={({ field }) => (
                     <ToggleGroup
+                      id="course-level"
                       type="single"
                       value={field.value}
                       onValueChange={(val) => val && field.onChange(val)}
@@ -348,11 +386,17 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                 control={control}
                 name="thumbnail"
                 render={({ field }) => (
-                  <div className="relative border-2 border-dashed border-slate-200 rounded-xl overflow-hidden bg-[#f9fafb]">
+                  <div id="course-thumbnail" className="relative border-2 border-dashed border-slate-200 rounded-xl overflow-hidden bg-[#f9fafb]">
                     <ImageUpload
-                      value={field.value}
-                      onChange={(url) => field.onChange(url)}
-                      onRemove={() => field.onChange("")}
+                      value={field.value || ""}
+                      onChange={(url) => {
+                        field.onChange(url);
+                        trigger("thumbnail");
+                      }}
+                      onRemove={() => {
+                        field.onChange("");
+                        trigger("thumbnail");
+                      }}
                     />
                   </div>
                 )}
@@ -365,7 +409,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
 
           {/* Bottom Section (Detailed data) */}
           <div className="space-y-6">
-            <div>
+            <div id="course-overview">
               <Label className="text-sm font-semibold text-slate-600 mb-2 block">
                 Detailed Overview
               </Label>
@@ -388,36 +432,42 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                 control={control}
                 name="benefits"
                 render={({ field }) => (
-                  <DynamicListInput
-                    label="What students will learn"
-                    items={field.value}
-                    onChange={field.onChange}
-                    placeholder="e.g. Master React Hooks"
-                  />
+                  <div id="course-benefits">
+                    <DynamicListInput
+                      label="What students will learn"
+                      items={field.value}
+                      onChange={field.onChange}
+                      placeholder="e.g. Master React Hooks"
+                    />
+                  </div>
                 )}
               />
               <Controller
                 control={control}
                 name="requirements"
                 render={({ field }) => (
-                  <DynamicListInput
-                    label="Requirements"
-                    items={field.value}
-                    onChange={field.onChange}
-                    placeholder="e.g. Basic JS Knowledge"
-                  />
+                  <div id="course-requirements">
+                    <DynamicListInput
+                      label="Requirements"
+                      items={field.value}
+                      onChange={field.onChange}
+                      placeholder="e.g. Basic JS Knowledge"
+                    />
+                  </div>
                 )}
               />
               <Controller
                 control={control}
                 name="technique"
                 render={({ field }) => (
-                  <DynamicListInput
-                    label="Techniques/Tools"
-                    items={field.value}
-                    onChange={field.onChange}
-                    placeholder="e.g. Next.js, Tailwind"
-                  />
+                  <div id="course-technique">
+                    <DynamicListInput
+                      label="Techniques/Tools"
+                      items={field.value}
+                      onChange={field.onChange}
+                      placeholder="e.g. Next.js, Tailwind"
+                    />
+                  </div>
                 )}
               />
             </div>
@@ -433,7 +483,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
             className="h-11 px-6 rounded-lg text-slate-600 hover:bg-slate-50 font-semibold"
             onClick={() => {
               setValue("isPublish", false)
-              handleSubmit(onSubmit)()
+              handleSubmit(onSubmit, onInvalid)()
             }}
             disabled={isSubmitting}
           >
@@ -444,7 +494,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
             className="h-11 px-8 rounded-lg bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-semibold"
             onClick={() => {
               setValue("isPublish", true)
-              handleSubmit(onSubmit)()
+              handleSubmit(onSubmit, onInvalid)()
             }}
             disabled={isSubmitting}
           >

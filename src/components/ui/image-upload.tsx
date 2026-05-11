@@ -56,6 +56,7 @@ export function ImageUpload({ value, onChange, onRemove, disabled }: ImageUpload
       }
 
       const data = await response.json()
+      console.log("[ImageUpload] Cloudinary response:", data)
       onChange(data.secure_url)
       toast.success("Tải ảnh lên thành công!")
     } catch (error) {
