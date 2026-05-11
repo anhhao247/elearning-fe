@@ -351,6 +351,35 @@ export default function CourseOutlinePage() {
           console.error("Created content response:", createdContent);
           throw new Error("Không thể lấy ID của bài giảng vừa tạo.");
         }
+
+        // ─── NEW: Also save details immediately after create ─────────────────
+        let detailsPayload: any = {}
+        if (values.contentType === "VIDEO") {
+          detailsPayload = { platform: values.platform, videoId: values.videoId, duration: values.duration }
+          await updateContentDetails.mutateAsync({ contentId: currentContentId, payload: detailsPayload })
+        } else if (values.contentType === "READING") {
+          detailsPayload = { body: values.body }
+          await updateContentDetails.mutateAsync({ contentId: currentContentId, payload: detailsPayload })
+        } else if (values.contentType === "QUIZ") {
+          // Save quiz base details
+          detailsPayload = { description: values.description, passPercent: values.passPercent, duration: values.duration }
+          await updateContentDetails.mutateAsync({ contentId: currentContentId, payload: detailsPayload })
+          
+          // Save quiz questions if any
+          if (values.questions && values.questions.length > 0) {
+            for (const question of values.questions) {
+              const qPayload = {
+                questionText: question.questionText,
+                questionType: question.questionType,
+                options: question.options.map((opt: any) => ({
+                  optionText: opt.optionText,
+                  isCorrect: opt.isCorrect
+                }))
+              }
+              await createQuizQuestion.mutateAsync({ contentId: currentContentId, payload: qPayload })
+            }
+          }
+        }
       } else {
         // Optimized Update
         const original = values._originalData

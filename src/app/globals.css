@@ -207,3 +207,48 @@
     @apply rounded-lg border border-border/50 bg-background shadow-none transition-all duration-200 hover:shadow-sm hover:border-border;
   }
 }
+
+/* ─── Rich Text (Quill) Content Styling ─── */
+@layer base {
+  .prose .ql-syntax {
+    background-color: #1e293b;
+    color: #f8fafc;
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .prose table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+    border: 1px solid var(--border);
+  }
+
+  .prose table td,
+  .prose table th {
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.9375rem;
+  }
+
+  .prose table th {
+    background-color: color-mix(in srgb, var(--background), var(--foreground) 3%);
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .prose blockquote {
+    border-left: 4px solid var(--primary);
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: var(--muted-foreground);
+    margin: 1.5rem 0;
+  }
+}
