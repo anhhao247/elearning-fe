@@ -8,6 +8,7 @@ import { sendAiChatMessage, AiChatResponse } from "@/lib/services/ai.service"
 import { getCourseDetail } from "@/lib/services/course.service"
 import { toast } from "sonner"
 import { useAuthStore } from "@/store/useAuthStore"
+import { MarkdownContent } from "@/components/ui/markdown-content"
 
 interface Message {
   id: string
@@ -265,7 +266,16 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
                         : "bg-muted text-foreground rounded-tl-sm shadow-sm border border-border/40"
                     )}
                   >
-                    {msg.content}
+                    {msg.role === "assistant" ? (
+                      <MarkdownContent
+                        content={msg.content}
+                        className={cn(
+                          "prose-p:m-0 prose-pre:my-2 prose-pre:max-w-full overflow-hidden"
+                        )}
+                      />
+                    ) : (
+                      msg.content
+                    )}
                   </div>
 
                   {/* CTA Button for CONTINUE_LEARNING */}

@@ -32,7 +32,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: "/my-profile", label: "Tài khoản", icon: User },
     { href: "/my-profile/courses", label: "Khóa học của tôi", icon: BookOpen },
-    { href: "/my-profile/posts", label: "Bài viết", icon: FileText },
+    // { href: "/my-profile/posts", label: "Bài viết", icon: FileText },
     { href: "/my-profile/payments", label: "Lịch sử thanh toán", icon: CreditCard },
     { href: "/my-profile/settings", label: "Cài đặt", icon: Settings },
   ];

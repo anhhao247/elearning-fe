@@ -1,8 +1,12 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '@/store/useAuthStore'
 
+const isServer = typeof window === 'undefined'
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: isServer 
+    ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL)
+    : process.env.NEXT_PUBLIC_API_BASE_URL,
   withCredentials: true,
 })
 

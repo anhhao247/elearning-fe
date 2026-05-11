@@ -1,7 +1,10 @@
 import { Course, PageResponse, MyCoursesPageResponse } from '@/types/course'
 import { api } from '@/lib/axios'
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api'
+const isServer = typeof window === 'undefined'
+const baseUrl = isServer 
+  ? (process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080/api')
 
 export async function getCourses(params: Record<string, string | string[] | undefined>): Promise<PageResponse<Course>> {
   const query = new URLSearchParams()

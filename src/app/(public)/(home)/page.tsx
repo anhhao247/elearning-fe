@@ -56,7 +56,7 @@ export default async function Home() {
                   <div className="w-8 h-8 rounded-full bg-red-100 border-2 border-background z-20" />
                   <div className="w-8 h-8 rounded-full bg-green-100 border-2 border-background z-10" />
                 </div>
-                <span>Hơn 10,000 học viên</span>
+                <span>Hơn 1,000 học viên</span>
               </div>
               <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
@@ -96,9 +96,9 @@ export default async function Home() {
       <section className="border-y border-border/50 bg-card py-10">
         <div className="page-container grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-border/50 text-center">
           {[
-            { value: "500+", label: "Khóa học" },
-            { value: "10K+", label: "Học viên" },
-            { value: "100+", label: "Giảng viên" },
+            { value: "50+", label: "Khóa học" },
+            { value: "1K+", label: "Học viên" },
+            { value: "20+", label: "Giảng viên" },
             { value: "98%",  label: "Hài lòng" },
           ].map(({ value, label }) => (
             <div key={label} className="flex flex-col items-center justify-center space-y-2">
