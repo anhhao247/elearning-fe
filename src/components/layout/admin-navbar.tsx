@@ -54,7 +54,7 @@ export function AdminNavbar() {
               <UserAvatar user={user} />
               <div className="lg:flex flex-col hidden">
                 <span className="text-sm font-semibold leading-none">{user?.username}</span>
-                <span className="text-xs text-slate-500 mt-1 uppercase tracking-wider">{user?.role}</span>
+                <span className="text-xs text-slate-500 mt-1 uppercase tracking-wider">{user?.adminRole}</span>
               </div>
               <ChevronDown className="h-4 w-4 text-slate-400 lg:block hidden" />
             </div>

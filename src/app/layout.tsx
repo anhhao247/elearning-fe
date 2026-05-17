@@ -7,6 +7,7 @@ import { AuthInitializer } from "@/components/auth/auth-initializer";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AppLayoutWrapper } from "@/components/layout/app-layout-wrapper";
 import { NotificationProvider } from "@/components/providers/notification-provider";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Toaster />
         </QueryProvider>
       </body>
+      <GoogleAnalytics gaId="G-PYTTX0T8RK" />
     </html>
   );
 }
