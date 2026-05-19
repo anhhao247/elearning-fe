@@ -24,7 +24,7 @@ export interface CreateModulePayload {
   title: string
   description: string
   moduleOrder: number
-  isPublish: boolean
+  isPublish?: boolean
 }
 
 export interface CreateContentPayload {
@@ -32,11 +32,11 @@ export interface CreateContentPayload {
   description?: string
   contentType: 'VIDEO' | 'READING' | 'QUIZ'
   contentOrder: number
-  isPublish: boolean
+  isPublish?: boolean
 }
 
 export interface VideoDetailsPayload {
-  platform: 'YOUTUBE' | 'VIMEO'
+  platform: 'YOUTUBE' | 'CLOUDFLARE'
   videoId: string
   duration: number
 }
@@ -87,6 +87,13 @@ export interface CreatedCourse {
   instructor: { id: number; username: string; email: string }
   isFree: boolean
   isPublish: boolean
+  is_publish?: boolean
+  approvalStatus?: string
+  approval_status?: string
+  hasPendingUpdate?: boolean
+  has_pending_update?: boolean
+  contentModified?: boolean
+  content_modified?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -142,12 +149,13 @@ export interface InstructorCourse {
   isPublish: boolean
   level: string
   updatedAt: string
+  approvalStatus?: string
 }
 
 // ─── API Calls ────────────────────────────────────────────────────────────────
 
-export async function createCourse(payload: CreateCoursePayload): Promise<CreatedCourse> {
-  const { data } = await api.post('/v1/instructor/courses', payload)
+export async function createCourse(): Promise<CreatedCourse> {
+  const { data } = await api.post('/v1/instructor/courses')
   return data
 }
 
@@ -155,7 +163,8 @@ export async function createModule(
   courseId: number,
   payload: CreateModulePayload
 ): Promise<CreatedModule> {
-  const { data } = await api.post(`/v1/instructor/courses/${courseId}/modules`, payload)
+  const { isPublish, ...restPayload } = payload
+  const { data } = await api.post(`/v1/instructor/courses/${courseId}/modules`, restPayload)
   return data
 }
 
@@ -253,6 +262,17 @@ export async function updateCourse(id: number | string, payload: CreateCoursePay
   const { data } = await api.put(`/v1/instructor/courses/${id}`, payload)
   return data
 }
+
+export async function submitCourse(id: number | string): Promise<any> {
+  const { data } = await api.post(`/v1/instructor/courses/${id}/submit`)
+  return data
+}
+
+export async function publishCourse(id: number | string): Promise<any> {
+  const { data } = await api.put(`/v1/instructor/courses/${id}/publish`)
+  return data
+}
+
 export async function syncCourseAI(courseId: number | string): Promise<any> {
   const { data } = await api.post(`/v1/instructor/courses/${courseId}/sync-ai`)
   return data

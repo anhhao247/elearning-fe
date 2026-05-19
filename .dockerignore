@@ -5,3 +5,7 @@ npm-debug.log
 yarn-error.log
 .DS_Store
 .vscode
+.env
+.env.local
+.env.development
+.env.test

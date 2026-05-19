@@ -55,14 +55,14 @@ export default function MyProfilePage() {
               </Button>
             }
           />
-          {user.role === "INSTRUCTOR" && (
+          {user.role === "INSTRUCTOR" || user.instructorStatus === "PENDING" ? (
             <Button asChild className="rounded-xl px-6 bg-indigo-600 hover:bg-indigo-700">
               <Link href="/lms">
                 <LayoutDashboard className="mr-2 h-4 w-4" />
                 Đến trang LMS
               </Link>
             </Button>
-          )}
+          ) : null}
           {user.role === "ADMIN" && (
             <Button asChild variant="default" className="rounded-xl px-6 bg-amber-600 hover:bg-amber-700">
               <Link href="/admin">
@@ -73,6 +73,58 @@ export default function MyProfilePage() {
           )}
         </div>
       </div>
+
+      {user.role !== "INSTRUCTOR" && user.role !== "ADMIN" && (
+        <div className="mt-4">
+          {!user.instructorStatus ? (
+            <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-indigo-100">
+              <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-bold text-lg text-indigo-900">Trở thành giảng viên</h3>
+                  <p className="text-indigo-700">Chia sẻ kiến thức của bạn và tạo ra thu nhập từ đam mê.</p>
+                </div>
+                <Button asChild className="bg-indigo-600 hover:bg-indigo-700 shrink-0">
+                  <Link href="/become-instructor">Đăng ký làm giảng viên</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : user.instructorStatus === "PENDING" ? (
+            <Card className="bg-amber-50 border-amber-200">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="p-3 bg-amber-100 text-amber-600 rounded-full shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-amber-900">Hồ sơ đang chờ duyệt</h3>
+                  <p className="text-amber-700">Hồ sơ của bạn đang được ban quản trị xét duyệt. Bạn có thể truy cập LMS để làm quen giao diện và tạo nháp khóa học.</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : user.instructorStatus === "REJECTED" ? (
+            <Card className="bg-red-50 border-red-200">
+              <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-red-100 text-red-600 rounded-full shrink-0">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg text-red-900">Hồ sơ bị từ chối</h3>
+                    <p className="text-red-700">Lý do: {user.rejectionReason || "Không đạt yêu cầu"}</p>
+                    {user.resubmitAvailableAt && !user.canResubmit && (
+                      <p className="text-red-600 text-sm mt-1">Có thể nộp lại sau: {formatDate(user.resubmitAvailableAt)}</p>
+                    )}
+                  </div>
+                </div>
+                {user.canResubmit && (
+                  <Button asChild variant="destructive" className="shrink-0">
+                    <Link href="/become-instructor">Nộp lại hồ sơ</Link>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
+        </div>
+      )}
       
       <Card>
         <CardHeader className="pb-4 border-b">

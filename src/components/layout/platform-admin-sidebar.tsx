@@ -26,9 +26,9 @@ import { useAuthStore } from "@/store/useAuthStore"
 
 const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  // { name: "Users", href: "/admin/users", icon: Users },
+  { name: "Admin Accounts", href: "/admin/users", icon: Users },
   { name: "Instructors", href: "/admin/instructors", icon: UserCheck },
-  // { name: "Courses", href: "/admin/courses", icon: BookOpen },
+  { name: "Courses", href: "/admin/courses", icon: BookOpen },
   { name: "Categories", href: "/admin/categories", icon: Layers },
   // { name: "Blogs", href: "/admin/blogs", icon: FileText },
   // { name: "Comments", href: "/admin/comments", icon: MessageSquare },
@@ -41,7 +41,7 @@ const menuItems = [
 export function PlatformAdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { clearAuth } = useAuthStore()
+  const { clearAuth, user } = useAuthStore()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleLogout = () => {
@@ -49,18 +49,24 @@ export function PlatformAdminSidebar() {
     router.push("/login")
   }
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-white border-r">
-      <div className="p-6 flex items-center gap-3">
-        <div className="bg-black text-white p-2 rounded-lg">
-          <BookOpen size={20} />
+  const SidebarContent = () => {
+    const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
+
+    return (
+      <div className="flex flex-col h-full bg-white border-r">
+        <div className="p-6 flex items-center gap-3">
+          <div className="bg-black text-white p-2 rounded-lg">
+            <BookOpen size={20} />
+          </div>
+          <span className="font-bold text-xl tracking-tight">LMS Admin</span>
         </div>
-        <span className="font-bold text-xl tracking-tight">LMS Admin</span>
-      </div>
-      
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto pt-4">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
+        
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto pt-4">
+          {menuItems.map((item) => {
+            if (item.href === "/admin/users" && !isSuperAdmin) {
+              return null
+            }
+            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
           return (
             <Link
               key={item.href}
@@ -107,7 +113,7 @@ export function PlatformAdminSidebar() {
         </button>
       </div>
     </div>
-  )
+  )}
 
   return (
     <>

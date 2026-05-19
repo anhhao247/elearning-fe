@@ -11,12 +11,17 @@ interface RoleGuardProps {
 }
 
 export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
-  const { user, _hasHydrated } = useAuthStore()
+  const { user, _hasHydrated, isLoggingOut } = useAuthStore()
   const router = useRouter()
   const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
     if (_hasHydrated) {
+      if (isLoggingOut) {
+        // Người dùng đang chủ động đăng xuất, bỏ qua kiểm tra để router.push("/login") tự xử lý
+        return
+      }
+
       if (!user) {
         toast.error("Bạn cần đăng nhập để truy cập trang này")
         router.push("/login")
@@ -24,6 +29,12 @@ export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
       }
 
       if (user.role !== allowedRole) {
+        // Special case: Allow users with PENDING instructorStatus to access INSTRUCTOR routes
+        if (allowedRole === "INSTRUCTOR" && user.instructorStatus === "PENDING") {
+          setIsAuthorized(true)
+          return
+        }
+
         toast.error("Bạn không có quyền truy cập trang này")
         router.push("/")
         return
@@ -31,7 +42,7 @@ export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
 
       setIsAuthorized(true)
     }
-  }, [_hasHydrated, user, allowedRole, router])
+  }, [_hasHydrated, user, allowedRole, router, isLoggingOut])
 
   if (!isAuthorized) {
     return (

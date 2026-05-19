@@ -82,21 +82,25 @@ const ActionCell = ({ row, table }: { row: any, table: any }) => {
             <Eye className="mr-2 h-4 w-4" />
             Xem chi tiết
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem 
-            className="text-green-600 focus:text-green-600"
-            onClick={() => setIsApproveOpen(true)}
-          >
-            <Check className="mr-2 h-4 w-4" />
-            Phê duyệt
-          </DropdownMenuItem>
-          <DropdownMenuItem 
-            className="text-red-600 focus:text-red-600"
-            onClick={() => setIsRejectOpen(true)}
-          >
-            <X className="mr-2 h-4 w-4" />
-            Từ chối
-          </DropdownMenuItem>
+          {application.status === "PENDING" && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                className="text-green-600 focus:text-green-600"
+                onClick={() => setIsApproveOpen(true)}
+              >
+                <Check className="mr-2 h-4 w-4" />
+                Phê duyệt
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-red-600 focus:text-red-600"
+                onClick={() => setIsRejectOpen(true)}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Từ chối
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -111,6 +115,20 @@ const ActionCell = ({ row, table }: { row: any, table: any }) => {
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] pr-4">
             <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label className="text-right font-bold">Trạng thái</Label>
+                <div className="col-span-3">
+                  {application.status === "APPROVED" && <Badge className="bg-green-600">Đã duyệt</Badge>}
+                  {application.status === "REJECTED" && <Badge variant="destructive">Đã từ chối</Badge>}
+                  {application.status === "PENDING" && <Badge variant="secondary" className="bg-yellow-500 text-white">Chờ duyệt</Badge>}
+                </div>
+              </div>
+              {application.status === "REJECTED" && application.rejectReason && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right font-bold text-red-600">Lý do từ chối</Label>
+                  <div className="col-span-3 text-red-600 font-medium">{application.rejectReason}</div>
+                </div>
+              )}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-bold">Họ tên</Label>
                 <div className="col-span-3">{application.firstName} {application.lastName}</div>
@@ -223,6 +241,20 @@ export const columns: ColumnDef<InstructorApplication>[] = [
     cell: ({ row }) => <div className="max-w-[200px] truncate" title={row.original.headline}>{row.original.headline}</div>
   },
   {
+    accessorKey: "status",
+    header: "Trạng thái",
+    cell: ({ row }) => {
+      const status = row.original.status
+      if (status === "APPROVED") {
+        return <Badge className="bg-green-600 hover:bg-green-700">Đã duyệt</Badge>
+      }
+      if (status === "REJECTED") {
+        return <Badge variant="destructive">Đã từ chối</Badge>
+      }
+      return <Badge variant="secondary" className="bg-yellow-500 text-white hover:bg-yellow-600">Chờ duyệt</Badge>
+    }
+  },
+  {
     accessorKey: "createdAt",
     header: "Ngày nộp",
     cell: ({ row }) => {
@@ -235,3 +267,4 @@ export const columns: ColumnDef<InstructorApplication>[] = [
     cell: ({ row, table }) => <ActionCell row={row} table={table} />,
   },
 ]
+
