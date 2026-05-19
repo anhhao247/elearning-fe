@@ -152,6 +152,34 @@ export const columns: ColumnDef<InstructorCourse>[] = [
     },
   },
   {
+    accessorKey: "approvalStatus",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="-ml-4 hover:bg-transparent"
+        >
+          Trạng thái duyệt
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("approvalStatus") as string || "DRAFT"
+      if (status === "PENDING_REVIEW") {
+        return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none font-normal">Chờ duyệt</Badge>
+      }
+      if (status === "APPROVED") {
+        return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none font-normal">Đã duyệt</Badge>
+      }
+      if (status === "REJECTED") {
+        return <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none font-normal">Từ chối</Badge>
+      }
+      return <Badge variant="outline" className="font-normal bg-slate-100 text-slate-700 border-none">Bản nháp</Badge>
+    },
+  },
+  {
     accessorKey: "level",
     header: "Cấp độ",
     cell: ({ row }) => {

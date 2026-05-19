@@ -100,7 +100,7 @@ export default function RegisterPage() {
     setIsLoading(true)
     try {
       await api.post("/auth/register", data)
-      toast.success("Đăng ký thành công! Đang chuyển hướng...")
+      toast.success("Đăng ký tài khoản thành công!")
       setTimeout(() => router.push("/login"), 1500)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

@@ -14,3 +14,8 @@ export async function updateProfile(payload: UpdateProfilePayload): Promise<User
   const { data } = await api.put("/users/me", payload)
   return data
 }
+
+export async function getMe(): Promise<User> {
+  const { data } = await api.get("/users/me")
+  return data
+}

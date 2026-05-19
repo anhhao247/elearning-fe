@@ -152,23 +152,13 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
         isPublish: data.isPublish,
       }
 
-      if (isEditing) {
-        await updateCourseMutation.mutateAsync({
-          id: courseId!,
-          payload,
-        })
-        toast.success("🎉 Cập nhật thành công!", {
-          description: `Khóa học của bạn đã được cập nhật.`,
-        })
-      } else {
-        const newCourse = await createCourseMutation.mutateAsync(payload)
-        toast.success("🎉 Tạo thành công!", {
-          description: `Đang chuyển hướng tới trang quản lý nội dung...`,
-        })
-        onSuccess()
-        router.push(`/lms/courses/${newCourse.id}/outline`)
-        return
-      }
+      await updateCourseMutation.mutateAsync({
+        id: courseId as string,
+        payload,
+      })
+      toast.success("🎉 Cập nhật thành công!", {
+        description: `Khóa học của bạn đã được cập nhật.`,
+      })
 
       onSuccess()
     } catch (error: any) {
@@ -220,7 +210,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       <form onSubmit={(e) => e.preventDefault()} className="flex-1 flex flex-col space-y-8">
         <div className="space-y-8">
           
@@ -257,7 +247,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
               {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-slate-600 mb-2 block">
                   Category
@@ -276,9 +266,9 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                       <SelectTrigger 
                         id="course-category"
                         ref={field.ref}
-                        className="h-11 border-slate-200 rounded-lg text-sm bg-white"
+                        className="h-11 border-slate-200 rounded-lg text-sm bg-white w-max"
                       >
-                        <SelectValue placeholder="Select..." />
+                        <SelectValue placeholder="Select category" />   
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
@@ -308,15 +298,15 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                       onValueChange={(val) => val && field.onChange(val)}
                       className="justify-start p-1 bg-[#ebf0fa] rounded-lg h-11 w-max"
                     >
-                      <ToggleGroupItem value="BEGINNER" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">Intro</ToggleGroupItem>
-                      <ToggleGroupItem value="INTERMEDIATE" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">Mid</ToggleGroupItem>
-                      <ToggleGroupItem value="ADVANCED" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">Adv</ToggleGroupItem>
+                      <ToggleGroupItem value="BEGINNER" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">BEGINNER</ToggleGroupItem>
+                      <ToggleGroupItem value="INTERMEDIATE" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">INTERMEDIATE</ToggleGroupItem>
+                      <ToggleGroupItem value="ADVANCED" className="text-xs font-semibold px-4 h-8 data-[state=on]:bg-white data-[state=on]:text-slate-900 text-slate-500 data-[state=on]:shadow-sm rounded-md transition-all">ADVANCED</ToggleGroupItem>
                     </ToggleGroup>
                   )}
                 />
                 {errors.level && <p className="text-xs text-red-500 mt-1">{errors.level.message as string}</p>}
               </div>
-
+<div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="course-price" className="text-sm font-semibold text-slate-600 mb-2 block">
                   Price ($)
@@ -376,6 +366,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
                 />
                 {errors.oldPrice && <p className="text-xs text-red-500 mt-1">{errors.oldPrice.message}</p>}
               </div>
+              </div>
             </div>
 
             <div>
@@ -427,7 +418,7 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
               {errors.overview && <p className="text-xs text-red-500 mt-1">{errors.overview.message}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <Controller
                 control={control}
                 name="benefits"
@@ -477,38 +468,45 @@ export function CreateCourseWizard({ courseId, onSuccess, onCancel }: CreateCour
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-3 pt-6 mt-auto">
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-11 px-6 rounded-lg text-slate-600 hover:bg-slate-50 font-semibold"
-            onClick={() => {
-              setValue("isPublish", false)
-              handleSubmit(onSubmit, onInvalid)()
-            }}
-            disabled={isSubmitting}
-          >
-            Save as Draft
-          </Button>
-          <Button
-            type="button"
-            className="h-11 px-8 rounded-lg bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-semibold"
-            onClick={() => {
-              setValue("isPublish", true)
-              handleSubmit(onSubmit, onInvalid)()
-            }}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : isEditing ? (
-              "Save Changes"
-            ) : (
-              "Publish Course"
-            )}
-          </Button>
+          {course?.approvalStatus === "DRAFT" ? (
+            <Button
+              type="button"
+              className="h-11 px-8 rounded-lg bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-semibold"
+              onClick={() => {
+                setValue("isPublish", false)
+                handleSubmit(onSubmit, onInvalid)()
+              }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Save as Draft"
+              )}
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              className="h-11 px-8 rounded-lg bg-[#0a1128] hover:bg-[#0a1128]/90 text-white font-semibold"
+              onClick={() => {
+                setValue("isPublish", true)
+                handleSubmit(onSubmit, onInvalid)()
+              }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          )}
         </div>
       </form>
     </div>

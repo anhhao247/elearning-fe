@@ -22,6 +22,8 @@ import {
   InstructorCourse,
   getInstructorCourses,
   updateCourse,
+  submitCourse,
+  publishCourse,
   syncCourseAI,
   getDashboardStats,
   getRecentEnrollments,
@@ -46,7 +48,7 @@ export function useCategories() {
 
 export function useCreateCourse() {
   return useMutation({
-    mutationFn: (payload: CreateCoursePayload) => createCourse(payload),
+    mutationFn: () => createCourse(),
   })
 }
 
@@ -179,6 +181,30 @@ export function useUpdateCourse() {
       queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
       queryClient.invalidateQueries({ queryKey: ['instructor-course', id] })
       queryClient.invalidateQueries({ queryKey: ['instructor-course-outline', id] })
+    },
+  })
+}
+
+export function useSubmitCourse() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => submitCourse(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-course', id] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-course', Number(id)] })
+    },
+  })
+}
+
+export function usePublishCourse() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => publishCourse(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ['instructor-courses'] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-course', id] })
+      queryClient.invalidateQueries({ queryKey: ['instructor-course', Number(id)] })
     },
   })
 }

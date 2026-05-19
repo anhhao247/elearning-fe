@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { applyInstructor } from "@/lib/services/instructor.service"
+import { useAuthStore } from "@/store/useAuthStore"
 
 // 1. Định nghĩa Schema riêng dành cho Form (UI)
 const instructorFormSchema = z.object({
@@ -33,6 +34,16 @@ const instructorFormSchema = z.object({
   bio: z
     .string()
     .min(50, "Tiểu sử phải có ít nhất 50 ký tự"),
+  expertise: z
+    .string()
+    .min(5, "Lĩnh vực chuyên môn phải có ít nhất 5 ký tự")
+    .max(255, "Lĩnh vực chuyên môn không quá 255 ký tự"),
+  experience: z
+    .string()
+    .min(20, "Kinh nghiệm phải có ít nhất 20 ký tự"),
+  motivation: z
+    .string()
+    .min(20, "Động lực phải có ít nhất 20 ký tự"),
   affiliations: z
     .array(z.object({
       value: z.string().min(1, "Nơi công tác không được để trống")
@@ -48,6 +59,7 @@ type InstructorFormValues = z.infer<typeof instructorFormSchema>
 
 export function InstructorApplyForm() {
   const router = useRouter()
+  const { user, setUser } = useAuthStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // 2. Sử dụng Schema của Form
@@ -56,6 +68,9 @@ export function InstructorApplyForm() {
     defaultValues: {
       headline: "",
       bio: "",
+      expertise: "",
+      experience: "",
+      motivation: "",
       affiliations: [{ value: "" }],
       websiteUrl: "",
       facebookUrl: "",
@@ -80,6 +95,11 @@ export function InstructorApplyForm() {
       
       const response = await applyInstructor(payload as any)
       toast.success(response.message || "Đăng ký thành công!")
+      
+      if (user) {
+        setUser({ ...user, instructorStatus: "PENDING" })
+      }
+
       router.push("/become-instructor/success")
     } catch (error: any) {
       console.error("Apply instructor error:", error)
@@ -135,6 +155,68 @@ export function InstructorApplyForm() {
                   </FormControl>
                   <FormDescription>
                     Giới thiệu bản thân tối thiểu 50 ký tự. Càng chi tiết càng giúp hồ sơ của bạn ấn tượng hơn.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Expertise Section */}
+            <FormField
+              control={form.control}
+              name="expertise"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lĩnh vực chuyên môn (Expertise)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="VD: Trí tuệ nhân tạo, Phát triển Web, Marketing kỹ thuật số..." {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Lĩnh vực chính mà bạn dự định giảng dạy trên nền tảng.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Experience Section */}
+            <FormField
+              control={form.control}
+              name="experience"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kinh nghiệm làm việc & giảng dạy (Experience)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Mô tả chi tiết về số năm kinh nghiệm, các khóa học từng dạy hoặc các thành tựu nổi bật trong ngành..."
+                      className="min-h-[120px] resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Chia sẻ kinh nghiệm thực tế (tối thiểu 20 ký tự) giúp hồ sơ dễ dàng được phê duyệt.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Motivation Section */}
+            <FormField
+              control={form.control}
+              name="motivation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Động lực giảng dạy (Motivation)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Lý do bạn muốn trở thành giảng viên tại Learnly và mục tiêu bạn muốn mang lại cho học viên..."
+                      className="min-h-[120px] resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Chia sẻ động lực và tâm huyết của bạn (tối thiểu 20 ký tự).
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

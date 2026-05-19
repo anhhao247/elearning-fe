@@ -7,8 +7,10 @@ import { useAuthStore } from "@/store/useAuthStore"
 import { useNotificationStore } from "@/store/useNotificationStore"
 import { toast } from "sonner"
 
+import { getMe } from "@/lib/services/user.service"
+
 export const useWebSocket = () => {
-  const { accessToken, user, _hasHydrated } = useAuthStore()
+  const { accessToken, user, _hasHydrated, setUser } = useAuthStore()
   const { addNotification } = useNotificationStore()
   const clientRef = useRef<Client | null>(null)
   const isConnectingRef = useRef(false)
@@ -44,7 +46,7 @@ export const useWebSocket = () => {
         console.log("WebSocket Connected successfully")
         isConnectingRef.current = false
         
-        client.subscribe("/user/queue/notifications", (message: IMessage) => {
+        client.subscribe("/user/queue/notifications", async (message: IMessage) => {
           if (message.body) {
             try {
               const data = JSON.parse(message.body)
@@ -52,6 +54,15 @@ export const useWebSocket = () => {
               toast.success(data.title || "Thông báo mới", {
                 description: data.message,
               })
+
+              if (data.type === "INSTRUCTOR_APPROVAL" || data.type === "INSTRUCTOR_REJECTION") {
+                try {
+                  const updatedUser = await getMe()
+                  setUser(updatedUser)
+                } catch (error) {
+                  console.error("Failed to refetch user on instructor status change:", error)
+                }
+              }
             } catch (error) {
               console.error("Error parsing notification message:", error)
             }

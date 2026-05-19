@@ -9,15 +9,22 @@ export interface User {
   lastName: string | null
   avatar: string | null
   role: string
+  adminRole?: string | null
+  admin_role?: string | null
   dob: string | null
   sex: string | boolean | null
   createdAt: string
+  instructorStatus?: string | null
+  rejectionReason?: string | null
+  canResubmit?: boolean
+  resubmitAvailableAt?: string | null
 }
 
 interface AuthState {
   accessToken: string | null
   user: User | null
   _hasHydrated: boolean
+  isLoggingOut: boolean
   setHasHydrated: (state: boolean) => void
   setToken: (token: string) => void
   setUser: (user: User) => void
@@ -45,10 +52,11 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       user: null,
       _hasHydrated: false,
+      isLoggingOut: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),
-      setToken: (token) => set({ accessToken: token }),
-      setUser: (user) => set({ user }),
-      clearAuth: () => set({ accessToken: null, user: null }),
+      setToken: (token) => set({ accessToken: token, isLoggingOut: false }),
+      setUser: (user) => set({ user, isLoggingOut: false }),
+      clearAuth: () => set({ accessToken: null, user: null, isLoggingOut: true }),
       initializeFromCookie: () => {
         const token = getAuthTokenFromCookie()
         if (token) {
