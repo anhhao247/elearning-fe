@@ -98,7 +98,7 @@ export function CourseFilters() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">Bộ lọc</h3>
+        <h2 className="font-semibold text-lg">Bộ lọc</h2>
         <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-primary h-8 px-2 hover:bg-primary/10">
           <RotateCcw className="w-3.5 h-3.5 mr-2" />
           Xóa tất cả
@@ -110,6 +110,7 @@ export function CourseFilters() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
+            aria-label="Tìm kiếm khóa học"
             placeholder="Tìm kiếm khóa học..."
             className="pl-8 bg-background"
             value={keyword}
@@ -131,7 +132,7 @@ export function CourseFilters() {
               applyFilters({ sortBy, sortDir })
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="Sắp xếp danh sách khóa học">
               <SelectValue placeholder="Mới nhất" />
             </SelectTrigger>
             <SelectContent>
@@ -155,6 +156,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="cat-all" 
+              aria-label="Tất cả danh mục"
               checked={selectedCategoryIds.length === 0}
               onCheckedChange={() => applyFilters({ categoryId: "ALL" })}
             />
@@ -164,6 +166,7 @@ export function CourseFilters() {
             <div key={cat.id} className="flex items-center space-x-2">
               <Checkbox 
                 id={`cat-${cat.id}`} 
+                aria-label={`Danh mục ${cat.name}`}
                 checked={selectedCategoryIds.includes(String(cat.id))}
                 onCheckedChange={(checked) => handleCategoryToggle(String(cat.id), checked as boolean)}
               />
@@ -185,6 +188,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="level-all" 
+              aria-label="Tất cả trình độ"
               checked={defaultLevel === "ALL"}
               onCheckedChange={() => applyFilters({ level: "ALL" })}
             />
@@ -193,6 +197,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="level-beg" 
+              aria-label="Trình độ Sơ cấp"
               checked={defaultLevel === "BEGINNER"}
               onCheckedChange={(c) => applyFilters({ level: c ? "BEGINNER" : "ALL" })}
             />
@@ -201,6 +206,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="level-int" 
+              aria-label="Trình độ Trung cấp"
               checked={defaultLevel === "INTERMEDIATE"}
               onCheckedChange={(c) => applyFilters({ level: c ? "INTERMEDIATE" : "ALL" })}
             />
@@ -209,6 +215,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="level-adv" 
+              aria-label="Trình độ Cao cấp"
               checked={defaultLevel === "ADVANCED"}
               onCheckedChange={(c) => applyFilters({ level: c ? "ADVANCED" : "ALL" })}
             />
@@ -226,6 +233,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="price-all" 
+              aria-label="Tất cả giá"
               checked={defaultIsFree === "ALL"}
               onCheckedChange={() => applyFilters({ isFree: "ALL" })}
             />
@@ -234,6 +242,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="price-free" 
+              aria-label="Khóa học Miễn phí"
               checked={defaultIsFree === "true"}
               onCheckedChange={(c) => applyFilters({ isFree: c ? "true" : "ALL" })}
             />
@@ -242,6 +251,7 @@ export function CourseFilters() {
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="price-paid" 
+              aria-label="Khóa học Trả phí"
               checked={defaultIsFree === "false"}
               onCheckedChange={(c) => applyFilters({ isFree: c ? "false" : "ALL" })}
             />

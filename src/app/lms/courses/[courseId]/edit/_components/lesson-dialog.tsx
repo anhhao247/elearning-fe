@@ -35,7 +35,7 @@ const lessonSchema = z.object({
   isPublish: z.boolean().default(true),
 
   // VIDEO fields
-  platform: z.enum(["YOUTUBE", "VIMEO"]).optional(),
+  platform: z.enum(["YOUTUBE", "CLOUDFLARE"]).optional(),
   videoId: z.string().optional(),
 
   // Shared by VIDEO & QUIZ
@@ -830,14 +830,14 @@ export function LessonDialog({
                           <Label className="text-xs text-slate-500 uppercase tracking-wider">Platform</Label>
                           <Select
                             value={watch("platform")}
-                            onValueChange={(val) => setValue("platform", val as "YOUTUBE" | "VIMEO")}
+                            onValueChange={(val) => setValue("platform", val as "YOUTUBE" | "CLOUDFLARE")}
                           >
                             <SelectTrigger className="bg-white">
                               <SelectValue placeholder="Chọn nền tảng" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="YOUTUBE">YouTube</SelectItem>
-                              <SelectItem value="VIMEO">Vimeo</SelectItem>
+                              <SelectItem value="CLOUDFLARE">Cloudeflare</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

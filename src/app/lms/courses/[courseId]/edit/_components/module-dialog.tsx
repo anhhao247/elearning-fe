@@ -15,12 +15,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
 
 const moduleSchema = z.object({
   title: z.string().min(1, "Tên chương là bắt buộc"),
   description: z.string().min(1, "Mô tả chương là bắt buộc"),
-  isPublish: z.boolean().default(true),
+  isPublish: z.boolean().default(true).optional(),
 })
 
 type ModuleFormValues = z.infer<typeof moduleSchema>
@@ -90,22 +89,6 @@ export function ModuleDialog({
             {errors.description && (
               <p className="text-xs text-red-500">{errors.description.message}</p>
             )}
-          </div>
-          <div className="flex items-center space-x-2 py-2">
-            <Controller
-              control={control}
-              name="isPublish"
-              render={({ field }) => (
-                <Switch
-                  id="isPublish"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
-            <Label htmlFor="isPublish" className="text-sm font-medium cursor-pointer">
-              Công khai chương học
-            </Label>
           </div>
           <DialogFooter>
             <Button

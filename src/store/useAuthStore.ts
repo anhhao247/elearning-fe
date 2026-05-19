@@ -14,6 +14,10 @@ export interface User {
   dob: string | null
   sex: string | boolean | null
   createdAt: string
+  instructorStatus?: string | null
+  rejectionReason?: string | null
+  canResubmit?: boolean
+  resubmitAvailableAt?: string | null
 }
 
 interface AuthState {

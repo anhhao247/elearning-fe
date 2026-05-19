@@ -36,7 +36,7 @@ export interface InstructorModule {
 }
 
 export interface VideoDetails {
-  platform: "YOUTUBE" | "VIMEO" | "OTHER"
+  platform: "YOUTUBE" | "CLOUDFLARE" | "OTHER"
   videoId: string
   duration: number
 }

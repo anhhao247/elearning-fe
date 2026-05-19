@@ -20,9 +20,9 @@ interface LevelConfig {
 function getLevelConfig(level: string): LevelConfig {
   switch (level) {
     case "BEGINNER":
-      return { label: "Cơ bản", className: "bg-success/10 text-success border border-success/30 dark:bg-success/20" }
+      return { label: "Cơ bản", className: "bg-success/10 text-green-700 dark:text-success border border-success/30 dark:bg-success/20" }
     case "INTERMEDIATE":
-      return { label: "Trung cấp", className: "bg-warning/10 text-warning border border-warning/30 dark:bg-warning/20" }
+      return { label: "Trung cấp", className: "bg-warning/10 text-amber-800 dark:text-warning border border-warning/30 dark:bg-warning/20" }
     case "ADVANCED":
       return { label: "Nâng cao", className: "bg-danger/10 text-danger border border-danger/30 dark:bg-danger/20" }
     default:

@@ -28,7 +28,7 @@ const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Admin Accounts", href: "/admin/users", icon: Users },
   { name: "Instructors", href: "/admin/instructors", icon: UserCheck },
-  // { name: "Courses", href: "/admin/courses", icon: BookOpen },
+  { name: "Courses", href: "/admin/courses", icon: BookOpen },
   { name: "Categories", href: "/admin/categories", icon: Layers },
   // { name: "Blogs", href: "/admin/blogs", icon: FileText },
   // { name: "Comments", href: "/admin/comments", icon: MessageSquare },

@@ -4,6 +4,7 @@ import { Search, Bell, User as UserIcon, PanelLeft, ChevronDown } from "lucide-r
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
+import { useSidebarStore } from "@/store/useSidebarStore"
 import { useRouter } from "next/navigation"
 import { NotificationBell } from "@/components/layout/notification-bell"
 import { UserAvatar } from "@/components/layout/user-avatar"
@@ -19,6 +20,7 @@ import { LogOut, User as UserIconLucide } from "lucide-react"
 
 export function AdminNavbar() {
   const { user, clearAuth } = useAuthStore()
+  const { toggleCollapse } = useSidebarStore()
   const router = useRouter()
 
   const handleLogout = () => {
@@ -33,7 +35,12 @@ export function AdminNavbar() {
   return (
     <header className="h-16 border-b bg-white flex items-center justify-between px-6 sticky top-0 z-30">
       <div className="flex items-center gap-4 flex-1">
-        <Button variant="ghost" size="icon" className="text-slate-500 lg:inline-flex hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-slate-500 lg:inline-flex hidden"
+          onClick={toggleCollapse}
+        >
           <PanelLeft className="h-5 w-5" />
         </Button>
         <div className="relative max-w-md w-full ml-2">

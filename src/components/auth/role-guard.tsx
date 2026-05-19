@@ -29,6 +29,12 @@ export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
       }
 
       if (user.role !== allowedRole) {
+        // Special case: Allow users with PENDING instructorStatus to access INSTRUCTOR routes
+        if (allowedRole === "INSTRUCTOR" && user.instructorStatus === "PENDING") {
+          setIsAuthorized(true)
+          return
+        }
+
         toast.error("Bạn không có quyền truy cập trang này")
         router.push("/")
         return
