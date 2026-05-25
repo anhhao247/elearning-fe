@@ -1,58 +1,175 @@
 "use client"
 
 import { useState } from "react"
-import {
-  useAdminUsers,
-  useCreateAdminUser,
-  useUpdateAdminUser,
-  useDeleteAdminUser,
-  useRestoreAdminUser
-} from "@/hooks/queries/use-admin-users"
+import { useStudentUsers, useBanStudentUser, useUnbanStudentUser } from "@/hooks/queries/use-student-users"
 import { DataTable } from "./data-table"
-import { columns } from "./columns"
-import { Button } from "@/components/ui/button"
-import { Plus, AlertCircle } from "lucide-react"
-import { AdminUserDialog } from "./_components/admin-user-dialog"
-import { CreateAdminUserPayload, AdminUser } from "@/lib/services/admin-user.service"
+import { studentUserColumns } from "./columns"
+import { AlertCircle } from "lucide-react"
 import { useAuthStore } from "@/store/useAuthStore"
+import { StudentUser } from "@/lib/services/student-user.service"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+
+function BanUserDialog({
+  open,
+  onOpenChange,
+  user,
+  onSubmit,
+  isLoading,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  user: StudentUser | null
+  onSubmit: (reason: string, bannedUntil: string | null) => Promise<void>
+  isLoading?: boolean
+}) {
+  const [reason, setReason] = useState("")
+  const [bannedUntil, setBannedUntil] = useState("")
+  const [error, setError] = useState("")
+
+  const handleOpen = (v: boolean) => {
+    if (v) {
+      setReason("")
+      setBannedUntil("")
+      setError("")
+    }
+    onOpenChange(v)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!reason.trim()) { setError("Vui lòng nhập lý do khóa tài khoản."); return }
+    let isoDate: string | null = null
+    if (bannedUntil) {
+      const date = new Date(bannedUntil)
+      if (date <= new Date()) { setError("Thời hạn khóa phải lớn hơn thời gian hiện tại."); return }
+      isoDate = date.toISOString()
+    }
+    await onSubmit(reason, isoDate)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Khóa tài khoản</DialogTitle>
+          <DialogDescription>
+            {user && <>Khóa tài khoản <strong>{user.username}</strong> ({user.role === "INSTRUCTOR" ? "Giảng viên" : "Học viên"}).</>}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          <div className="space-y-2">
+            <Label htmlFor="ban-reason">Lý do khóa <span className="text-destructive">*</span></Label>
+            <Textarea
+              id="ban-reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Nhập lý do vi phạm..."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ban-until">Khóa đến thời gian <span className="ml-1 text-xs text-muted-foreground font-normal">(Để trống nếu khóa vĩnh viễn)</span></Label>
+            <Input
+              id="ban-until"
+              type="datetime-local"
+              value={bannedUntil}
+              onChange={(e) => setBannedUntil(e.target.value)}
+            />
+          </div>
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isLoading}>Hủy</Button>
+            <Button type="submit" variant="destructive" disabled={isLoading}>
+              {isLoading ? "Đang xử lý..." : "Khóa tài khoản"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ViewBanReasonDialog({
+  open,
+  onOpenChange,
+  user,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  user: StudentUser | null
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Thông tin khóa tài khoản</DialogTitle>
+          <DialogDescription>
+            {user && <strong>{user.username}</strong>}
+          </DialogDescription>
+        </DialogHeader>
+        {user && (
+          <div className="space-y-4 py-2 text-sm">
+            <div>
+              <span className="font-semibold">Thời gian khóa: </span>
+              {user.bannedAt ? new Date(user.bannedAt).toLocaleString("vi-VN") : "Không rõ"}
+            </div>
+            <div>
+              <span className="font-semibold">Thời hạn: </span>
+              {user.bannedUntil ? new Date(user.bannedUntil).toLocaleString("vi-VN") : "Vĩnh viễn"}
+            </div>
+            <div>
+              <span className="font-semibold">Lý do: </span>
+              <p className="mt-1 p-3 bg-slate-50 border border-slate-100 rounded-md whitespace-pre-wrap text-slate-700">
+                {user.banReason || "Không có lý do được cung cấp."}
+              </p>
+            </div>
+          </div>
+        )}
+        <DialogFooter className="pt-2">
+          <Button type="button" onClick={() => onOpenChange(false)}>Đóng</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export default function UsersPage() {
   const { user, _hasHydrated } = useAuthStore()
   const [pageIndex, setPageIndex] = useState(0)
-  const [keyword, setKeyword] = useState<string>("")
+  const [keyword, setKeyword] = useState("")
+  const [role, setRole] = useState<"STUDENT" | "INSTRUCTOR" | undefined>(undefined)
 
-  // Dialog state
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
+  const [banDialogOpen, setBanDialogOpen] = useState(false)
+  const [selectedUserToBan, setSelectedUserToBan] = useState<StudentUser | null>(null)
 
-  // Alert dialog state for delete
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null)
+  const [viewBanReasonDialogOpen, setViewBanReasonDialogOpen] = useState(false)
+  const [selectedUserForReason, setSelectedUserForReason] = useState<StudentUser | null>(null)
 
   const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
+  const isSupportAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPPORT_ADMIN" || user?.admin_role === "SUPPORT_ADMIN")
+  const canAccess = isSuperAdmin || isSupportAdmin
 
-  const { data, isLoading, isError, error } = useAdminUsers({
+  const { data, isLoading, isError, error } = useStudentUsers({
     page: pageIndex,
     size: 10,
     keyword: keyword || undefined,
+    role: role,
   })
 
-  const createMutation = useCreateAdminUser()
-  const updateMutation = useUpdateAdminUser()
-  const deleteMutation = useDeleteAdminUser()
-  const restoreMutation = useRestoreAdminUser()
+  const banMutation = useBanStudentUser()
+  const unbanMutation = useUnbanStudentUser()
 
-  if (_hasHydrated && !isSuperAdmin) {
+  if (_hasHydrated && !canAccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
         <div className="p-4 bg-destructive/10 text-destructive rounded-full">
@@ -60,121 +177,95 @@ export default function UsersPage() {
         </div>
         <h1 className="text-2xl font-bold tracking-tight">Không có quyền truy cập</h1>
         <p className="text-muted-foreground max-w-md">
-          Chức năng tạo và quản lý tài khoản quản trị viên chỉ dành riêng cho tài khoản có vai trò SUPER_ADMIN.
+          Chức năng này chỉ dành riêng cho tài khoản có vai trò SUPER_ADMIN hoặc SUPPORT_ADMIN.
         </p>
       </div>
     )
   }
 
-  const handleSearch = (newKeyword: string) => {
-    setKeyword(newKeyword)
+  const handleSearch = (kw: string) => {
+    setKeyword(kw)
     setPageIndex(0)
   }
 
-  const handleCreate = () => {
-    setSelectedUser(null)
-    setDialogOpen(true)
+  const handleRoleFilter = (r: string) => {
+    setRole(r ? (r as "STUDENT" | "INSTRUCTOR") : undefined)
+    setPageIndex(0)
   }
 
-  const handleEdit = (adminUser: AdminUser) => {
-    setSelectedUser(adminUser)
-    setDialogOpen(true)
+  const handleBanClick = (targetUser: StudentUser) => {
+    setSelectedUserToBan(targetUser)
+    setBanDialogOpen(true)
   }
 
-  const handleDeleteClick = (id: number) => {
-    setUserIdToDelete(id)
-    setDeleteDialogOpen(true)
-  }
-
-  const confirmDelete = async () => {
-    if (userIdToDelete) {
-      await deleteMutation.mutateAsync(userIdToDelete)
-      setDeleteDialogOpen(false)
-      setUserIdToDelete(null)
+  const handleBanSubmit = async (reason: string, bannedUntil: string | null) => {
+    if (selectedUserToBan) {
+      await banMutation.mutateAsync({ id: selectedUserToBan.id, payload: { reason, bannedUntil } })
+      setBanDialogOpen(false)
+      setSelectedUserToBan(null)
     }
   }
 
-  const handleRestore = async (id: number) => {
-    await restoreMutation.mutateAsync(id)
+  const handleUnban = async (id: number) => {
+    await unbanMutation.mutateAsync(id)
   }
 
-  const handleSubmit = async (payload: Partial<CreateAdminUserPayload>) => {
-    if (selectedUser) {
-      await updateMutation.mutateAsync({ id: selectedUser.id, payload })
-    } else {
-      await createMutation.mutateAsync(payload as CreateAdminUserPayload)
-    }
-    setDialogOpen(false)
+  const handleViewBanReason = (targetUser: StudentUser) => {
+    setSelectedUserForReason(targetUser)
+    setViewBanReasonDialogOpen(true)
   }
 
-  // data trả về là mảng AdminUser[], nếu có totalPages từ PaginatedResponse thì dùng, nếu không thì mặc định 1
-  const usersList = Array.isArray(data) ? data : (data as any)?.content || []
-  const totalPages = (data as any)?.totalPages || 1
+  const usersList = data?.content || []
+  const totalPages = data?.totalPages || 1
+  const totalElements = data?.totalElements
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Quản lý Tài khoản Admin</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Quản lý Người dùng</h1>
           <p className="text-muted-foreground">
-            Quản lý, tạo mới, chỉnh sửa và xóa các tài khoản quản trị viên trên hệ thống.
+            Xem và quản lý tài khoản Học viên và Giảng viên trên hệ thống.
           </p>
         </div>
-        <Button onClick={handleCreate} className="bg-black text-white hover:bg-black/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Tạo tài khoản Admin
-        </Button>
       </div>
 
       {isError ? (
         <div className="p-4 border border-destructive/50 bg-destructive/10 text-destructive rounded-md">
-          <p>Không thể tải danh sách tài khoản.</p>
+          <p>Không thể tải danh sách người dùng.</p>
           <p className="text-sm opacity-80">{error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định"}</p>
         </div>
       ) : (
         <DataTable
-          columns={columns}
+          columns={studentUserColumns}
           data={usersList}
           pageCount={totalPages}
           pageIndex={pageIndex}
           onPageChange={setPageIndex}
           loading={isLoading}
           onSearch={handleSearch}
+          onRoleFilter={handleRoleFilter}
+          totalElements={totalElements}
           meta={{
-            onEdit: handleEdit,
-            onDelete: handleDeleteClick,
-            onRestore: handleRestore,
+            onBan: handleBanClick,
+            onUnban: handleUnban,
+            onViewBanReason: handleViewBanReason,
           }}
         />
       )}
 
-      <AdminUserDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        user={selectedUser}
-        onSubmit={handleSubmit}
-        isLoading={createMutation.isPending || updateMutation.isPending}
+      <BanUserDialog
+        open={banDialogOpen}
+        onOpenChange={setBanDialogOpen}
+        user={selectedUserToBan}
+        onSubmit={handleBanSubmit}
+        isLoading={banMutation.isPending}
       />
-
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tài khoản quản trị viên này sẽ bị xóa khỏi hệ thống.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-500 text-white hover:bg-red-600"
-            >
-              {deleteMutation.isPending ? "Đang xóa..." : "Xóa tài khoản"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ViewBanReasonDialog
+        open={viewBanReasonDialogOpen}
+        onOpenChange={setViewBanReasonDialogOpen}
+        user={selectedUserForReason}
+      />
     </div>
   )
 }

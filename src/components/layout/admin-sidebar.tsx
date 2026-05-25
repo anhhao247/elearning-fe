@@ -30,7 +30,6 @@ const menuItems = [
   { name: "Courses", href: "/lms/courses", icon: BookOpen },
   { name: "Media", href: "/lms/media", icon: ImageIcon },
   { name: "Coupons", href: "/lms/coupons", icon: Ticket },
-  { name: "Refunds", href: "/lms/refunds", icon: RotateCcw },
 ]
 
 export function AdminSidebar() {

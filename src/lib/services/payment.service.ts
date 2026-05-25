@@ -94,8 +94,8 @@ export interface RefundRequestPayload {
   reason: string
 }
 
-export async function requestRefund(payload: RefundRequestPayload): Promise<{ message: string }> {
-  const { data } = await api.post('/v1/refunds/request', payload)
+export async function requestRefund(payload: RefundRequestPayload): Promise<RefundItem> {
+  const { data } = await api.post('/v1/student/refund-requests', payload)
   return data
 }
 
@@ -106,6 +106,8 @@ export interface RefundItem {
   orderId: number
   reason: string
   status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  reviewedById?: number | null
+  reviewedByUsername?: string | null
   updatedAt: string
   userId: number
   username?: string
@@ -134,23 +136,41 @@ export interface RefundItem {
   }
 }
 
-export async function getRefundDetail(refundId: number | string): Promise<RefundItem> {
-  const { data } = await api.get(`/v1/refunds/${refundId}`)
+export async function getAdminRefundDetail(refundId: number | string): Promise<RefundItem> {
+  const { data } = await api.get(`/v1/admin/refund-requests/${refundId}`)
   return data
 }
 
-export async function getPendingRefunds(params?: any): Promise<PageResponse<RefundItem>> {
-  const { data } = await api.get('/v1/refunds/pending', { params })
+export async function getAdminRefundRequests(params?: any): Promise<PageResponse<RefundItem>> {
+  const cleanParams = { ...params }
+  if (cleanParams.keyword === "") {
+    delete cleanParams.keyword
+  }
+  const { data } = await api.get('/v1/admin/refund-requests', { params: cleanParams })
   return data
 }
 
-export interface ProcessRefundPayload {
-  status: 'APPROVED' | 'REJECTED'
-  note: string
+export async function getStudentRefundRequests(params?: any): Promise<PageResponse<RefundItem>> {
+  const { data } = await api.get('/v1/student/refund-requests', { params })
+  return data
 }
 
-export async function processRefund(refundId: number, payload: ProcessRefundPayload): Promise<RefundItem> {
-  const { data } = await api.put(`/v1/refunds/${refundId}/process`, payload)
+
+export interface ApproveRefundPayload {
+  note?: string
+}
+
+export async function approveRefund(refundId: number, payload: ApproveRefundPayload): Promise<RefundItem> {
+  const { data } = await api.post(`/v1/admin/refund-requests/${refundId}/approve`, payload)
+  return data
+}
+
+export interface RejectRefundPayload {
+  reason: string
+}
+
+export async function rejectRefund(refundId: number, payload: RejectRefundPayload): Promise<RefundItem> {
+  const { data } = await api.post(`/v1/admin/refund-requests/${refundId}/reject`, payload)
   return data
 }
 

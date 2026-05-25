@@ -18,13 +18,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useState, useEffect } from "react"
 import { useDebounce } from "@/hooks/useDebounce"
 
@@ -36,9 +29,7 @@ interface DataTableProps<TData, TValue> {
   onPageChange?: (page: number) => void
   loading?: boolean
   onSearch?: (keyword: string) => void
-  onRoleFilter?: (role: string) => void
   meta?: any
-  totalElements?: number
 }
 
 export function DataTable<TData, TValue>({
@@ -49,9 +40,7 @@ export function DataTable<TData, TValue>({
   onPageChange,
   loading = false,
   onSearch,
-  onRoleFilter,
   meta,
-  totalElements,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -62,7 +51,6 @@ export function DataTable<TData, TValue>({
   })
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [roleFilter, setRoleFilter] = useState("ALL")
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
   useEffect(() => {
@@ -71,38 +59,18 @@ export function DataTable<TData, TValue>({
     }
   }, [debouncedSearchTerm, onSearch])
 
-  const handleRoleChange = (value: string) => {
-    setRoleFilter(value)
-    onRoleFilter?.(value === "ALL" ? "" : value)
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Tìm kiếm người dùng..."
+            placeholder="Tìm kiếm tài khoản..."
             className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Select value={roleFilter} onValueChange={handleRoleChange}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Lọc theo vai trò" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">Tất cả</SelectItem>
-            <SelectItem value="STUDENT">Học viên</SelectItem>
-            <SelectItem value="INSTRUCTOR">Giảng viên</SelectItem>
-          </SelectContent>
-        </Select>
-        {totalElements !== undefined && (
-          <span className="text-sm text-muted-foreground ml-auto">
-            Tổng cộng: <strong>{totalElements}</strong> người dùng
-          </span>
-        )}
       </div>
 
       <div className="rounded-md border bg-card">
@@ -110,16 +78,18 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>
@@ -146,7 +116,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Không tìm thấy người dùng nào.
+                  Không tìm thấy kết quả.
                 </TableCell>
               </TableRow>
             )}

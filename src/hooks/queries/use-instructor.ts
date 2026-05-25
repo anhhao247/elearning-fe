@@ -35,6 +35,11 @@ import {
   getStudentQuizzes,
   getStudentComments,
   saveBulkOutline,
+  getPresignedUrl,
+  PresignVideoPayload,
+  notifyUploadComplete,
+  UploadCompletePayload,
+  getVideoStatus
 } from '@/lib/services/instructor.service'
 import { generateOutlineAI, GenerateOutlineRequest } from '@/lib/services/ai.service'
 
@@ -293,6 +298,34 @@ export function useSaveBulkOutline() {
     onSuccess: (_, { courseId }) => {
       queryClient.invalidateQueries({ queryKey: ['instructor-course-outline', courseId] })
       queryClient.invalidateQueries({ queryKey: ['instructor-course', courseId] })
+    }
+  })
+}
+
+export function useVideoPresign() {
+  return useMutation({
+    mutationFn: (payload: PresignVideoPayload) => getPresignedUrl(payload)
+  })
+}
+
+export function useVideoUploadComplete() {
+  return useMutation({
+    mutationFn: (payload: UploadCompletePayload) => notifyUploadComplete(payload)
+  })
+}
+
+export function useVideoStatus(contentId: number | string | null) {
+  return useQuery({
+    queryKey: ['instructor-video-status', contentId],
+    queryFn: () => getVideoStatus(contentId!),
+    enabled: !!contentId,
+    refetchInterval: (query: any) => {
+      const data = query?.state?.data || query
+      // Poll every 3 seconds if status is processing/pending
+      if (data?.uploadStatus === 'PROCESSING' || data?.uploadStatus === 'PENDING') {
+        return 3000
+      }
+      return false
     }
   })
 }

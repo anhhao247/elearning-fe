@@ -66,3 +66,32 @@ export function useRestoreAdminUser() {
     },
   });
 }
+
+export function useBanAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: { reason: string; bannedUntil?: string | null } }) =>
+      AdminUserService.banUser(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast.success('Khóa tài khoản thành công');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Khóa tài khoản thất bại');
+    },
+  });
+}
+
+export function useUnbanAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => AdminUserService.unbanUser(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast.success('Mở khóa tài khoản thành công');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Mở khóa tài khoản thất bại');
+    },
+  });
+}

@@ -54,8 +54,11 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as CustomAxiosRequestConfig
 
-    // Avoid retry on refresh token endpoint itself
-    if (originalRequest?.url?.includes('/auth/refresh')) {
+    // Avoid retry on refresh token endpoint itself or login endpoint
+    if (
+      originalRequest?.url?.includes('/auth/refresh') ||
+      originalRequest?.url?.includes('/auth/login')
+    ) {
       return Promise.reject(error)
     }
 
@@ -90,7 +93,7 @@ api.interceptors.response.use(
         processQueue(refreshError, null)
         useAuthStore.getState().clearAuth()
 
-        if (typeof window !== 'undefined') {
+        if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
           window.location.href = '/login'
         }
         

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, use } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { useAdminCourseDetail, useApproveCourse, useRejectCourse } from "@/hooks/queries/use-admin-courses"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,30 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { AdminContent } from "@/types/admin-course"
 
+const getYoutubeVideoId = (video: AdminContent["video"]): string => {
+  if (!video) return ""
+  const rawValue = (video.videoId || video.platformVideoId || "").trim()
+  if (!rawValue) return ""
+
+  try {
+    const url = new URL(rawValue)
+    const hostname = url.hostname.toLowerCase()
+    if (hostname.includes("youtu.be")) {
+      return url.pathname.slice(1)
+    }
+    if (hostname.includes("youtube.com")) {
+      const v = url.searchParams.get("v")
+      if (v) return v
+      const pathParts = url.pathname.split("/").filter(Boolean)
+      return pathParts[pathParts.length - 1] || ""
+    }
+  } catch {
+    // not a full url
+  }
+
+  return rawValue.split(/[&?]/)[0]
+}
+
 export default function CourseReviewPage({ params }: { params: Promise<{ courseId: string }> }) {
   const router = useRouter()
   const resolvedParams = use(params)
@@ -33,6 +57,17 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
   const rejectMutation = useRejectCourse()
 
   const [selectedContent, setSelectedContent] = useState<AdminContent | null>(null)
+
+  useEffect(() => {
+    if (!selectedContent && course?.curriculum?.length) {
+      for (const module of course.curriculum) {
+        if (module.contents.length > 0) {
+          setSelectedContent(module.contents[0])
+          break
+        }
+      }
+    }
+  }, [course, selectedContent])
   
   // Action Dialog State
   const [actionType, setActionType] = useState<"APPROVE" | "REJECT" | null>(null)
@@ -194,8 +229,32 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
                 )}
                 
                 {selectedContent.contentType === "VIDEO" && selectedContent.video && (
-                  <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
-                    <p className="text-white/50">Video Placeholder: {selectedContent.video.videoId}</p>
+                  <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-sm">
+                    {selectedContent.video.platform?.toUpperCase() === "YOUTUBE" ? (
+                      (() => {
+                        const videoId = getYoutubeVideoId(selectedContent.video)
+                        return videoId ? (
+                          <iframe
+                            className="absolute inset-0 w-full h-full"
+                            src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
+                            title={selectedContent.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border">
+                            <p className="text-sm text-slate-400">Không tìm thấy mã video YouTube.</p>
+                          </div>
+                        )
+                      })()
+                    ) : (
+                      <div className="aspect-video bg-muted rounded-lg flex items-center justify-center border">
+                        <p className="text-sm text-slate-400">
+                          Video platform không được hỗ trợ: {selectedContent.video.platform}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
                 

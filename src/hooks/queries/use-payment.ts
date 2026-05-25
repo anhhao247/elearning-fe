@@ -4,11 +4,14 @@ import {
   PaymentHistoryParams, 
   requestRefund, 
   RefundRequestPayload,
-  getPendingRefunds,
   RefundItem,
-  processRefund,
-  ProcessRefundPayload,
-  getRefundDetail
+  getAdminRefundRequests,
+  getAdminRefundDetail,
+  approveRefund,
+  ApproveRefundPayload,
+  rejectRefund,
+  RejectRefundPayload,
+  getStudentRefundRequests
 } from '@/lib/services/payment.service'
 
 export function usePaymentHistory(params?: PaymentHistoryParams) {
@@ -19,18 +22,26 @@ export function usePaymentHistory(params?: PaymentHistoryParams) {
   })
 }
 
-export function usePendingRefunds(params?: any) {
+export function useAdminRefundRequests(params?: any) {
   return useQuery({
-    queryKey: ['pending-refunds', params],
-    queryFn: () => getPendingRefunds(params),
+    queryKey: ['admin-refund-requests', params],
+    queryFn: () => getAdminRefundRequests(params),
     staleTime: 60 * 1000 * 5, // 5 minutes
   })
 }
 
-export function useRefundDetail(refundId: number | string | null) {
+export function useStudentRefundRequests(params?: any) {
   return useQuery({
-    queryKey: ['refund-detail', refundId],
-    queryFn: () => getRefundDetail(refundId!),
+    queryKey: ['student-refund-requests', params],
+    queryFn: () => getStudentRefundRequests(params),
+    staleTime: 60 * 1000 * 5, // 5 minutes
+  })
+}
+
+export function useAdminRefundDetail(refundId: number | string | null) {
+  return useQuery({
+    queryKey: ['admin-refund-detail', refundId],
+    queryFn: () => getAdminRefundDetail(refundId!),
     enabled: !!refundId,
     staleTime: 60 * 1000 * 5, // 5 minutes
   })
@@ -42,17 +53,31 @@ export function useRequestRefund() {
     mutationFn: (payload: RefundRequestPayload) => requestRefund(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-history'] })
+      queryClient.invalidateQueries({ queryKey: ['student-refund-requests'] })
     },
   })
 }
 
-export function useProcessRefund() {
+export function useApproveRefund() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ refundId, payload }: { refundId: number, payload: ProcessRefundPayload }) => 
-      processRefund(refundId, payload),
+    mutationFn: ({ refundId, payload }: { refundId: number, payload: ApproveRefundPayload }) => 
+      approveRefund(refundId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pending-refunds'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-refund-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-refund-detail'] })
+    },
+  })
+}
+
+export function useRejectRefund() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ refundId, payload }: { refundId: number, payload: RejectRefundPayload }) => 
+      rejectRefund(refundId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-refund-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-refund-detail'] })
     },
   })
 }

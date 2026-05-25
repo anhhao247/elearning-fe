@@ -243,6 +243,43 @@ export async function getContentById(contentId: number | string, contentType?: s
   return data
 }
 
+// ─── Cloudflare Video APIs ──────────────────────────────────────────────────
+
+export interface PresignVideoPayload {
+  contentId: number
+  fileName: string
+  contentType: string
+  fileSize: number
+}
+
+export interface PresignVideoResponse {
+  contentId: number
+  objectKey: string
+  uploadUrl: string
+  headers: Record<string, string>
+  expiresAt: string
+}
+
+export async function getPresignedUrl(payload: PresignVideoPayload): Promise<PresignVideoResponse> {
+  const { data } = await api.post('/v1/instructor/videos/presign', payload)
+  return data
+}
+
+export interface UploadCompletePayload {
+  contentId: number
+  objectKey: string
+}
+
+export async function notifyUploadComplete(payload: UploadCompletePayload): Promise<any> {
+  const { data } = await api.post('/v1/instructor/videos/upload-complete', payload)
+  return data
+}
+
+export async function getVideoStatus(contentId: number | string): Promise<any> {
+  const { data } = await api.get(`/v1/instructor/videos/${contentId}/status`)
+  return data
+}
+
 export async function getCategories(): Promise<Category[]> {
   const { data } = await api.get('/categories')
   return data

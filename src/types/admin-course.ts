@@ -95,7 +95,8 @@ export interface AdminContent {
   isIndex: boolean
   video: {
     platform: string
-    videoId: string
+    videoId?: string | null
+    platformVideoId?: string | null
     duration: number
   } | null
   reading: {
