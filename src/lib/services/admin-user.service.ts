@@ -36,8 +36,8 @@ export interface CreateAdminUserPayload {
 }
 
 export const AdminUserService = {
-  getUsers: async (params?: GetAdminUsersParams): Promise<AdminUser[]> => {
-    const response = await api.get('/v1/admin/users', { params });
+  getUsers: async (): Promise<AdminUser[]> => {
+    const response = await api.get('/v1/admin/users/admins');
     return response.data;
   },
 

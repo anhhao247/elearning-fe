@@ -48,7 +48,7 @@ export function getAuthTokenFromCookie(): string | null {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       accessToken: null,
       user: null,
       _hasHydrated: false,
@@ -67,9 +67,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "auth-storage",
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.setHasHydrated(true)
-        }
+        state?.setHasHydrated(true)
       },
     }
   )

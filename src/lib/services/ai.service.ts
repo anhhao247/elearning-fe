@@ -21,6 +21,17 @@ export interface AiChatResponse {
 
 export async function sendAiChatMessage(payload: AiChatRequest): Promise<AiChatResponse> {
   const { data } = await api.post('/v1/ai/chat', payload)
+
+  if (
+    data?.status === 429 ||
+    data?.status === '429' ||
+    data?.error === 'AI_RATE_LIMIT_EXCEEDED'
+  ) {
+    const error = new Error(data?.message || data?.error || 'AI rate limit exceeded') as any
+    error.response = { status: Number(data?.status) || 429, data }
+    throw error
+  }
+
   return data
 }
 

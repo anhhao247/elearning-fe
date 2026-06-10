@@ -28,14 +28,14 @@ const menuItems = [
   { name: "Dashboard", href: "/lms/dashboard", icon: LayoutDashboard },
   { name: "Students", href: "/lms/students", icon: Users },
   { name: "Courses", href: "/lms/courses", icon: BookOpen },
-  { name: "Media", href: "/lms/media", icon: ImageIcon },
+  // { name: "Media", href: "/lms/media", icon: ImageIcon },
   { name: "Coupons", href: "/lms/coupons", icon: Ticket },
 ]
 
 export function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { clearAuth } = useAuthStore()
+  const { user, clearAuth } = useAuthStore()
   const { isOpen, setIsOpen, toggleOpen, isCollapsed } = useSidebarStore()
 
   const handleLogout = () => {
@@ -54,6 +54,7 @@ export function AdminSidebar() {
       
       <nav className={cn("flex-1 space-y-1 overflow-y-auto pt-4", collapsed ? "px-2" : "px-4")}>
         {menuItems.map((item) => {
+          if (user?.instructorStatus === "PENDING" && item.href !== "/lms/courses") return null
           const isActive = pathname === item.href
           return (
             <Link
@@ -79,7 +80,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="p-4 border-t space-y-1">
-        <Link
+        {/* <Link
           href="/lms/settings"
           title={collapsed ? "Settings" : undefined}
           className={cn(
@@ -95,7 +96,7 @@ export function AdminSidebar() {
             pathname === "/lms/settings" ? "text-black" : "text-slate-400 group-hover:text-black"
           )} />
           {!collapsed && <span className="text-sm truncate">Settings</span>}
-        </Link>
+        </Link> */}
         <button
           onClick={handleLogout}
           title={collapsed ? "Đăng xuất" : undefined}

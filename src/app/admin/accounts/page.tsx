@@ -103,11 +103,7 @@ export default function AccountsPage() {
 
   const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
 
-  const { data, isLoading, isError, error } = useAdminUsers({
-    page: pageIndex,
-    size: 10,
-    keyword: keyword || undefined,
-  })
+  const { data, isLoading, isError, error } = useAdminUsers()
 
   const createMutation = useCreateAdminUser()
   const updateMutation = useUpdateAdminUser()
@@ -193,9 +189,19 @@ export default function AccountsPage() {
     setDialogOpen(false)
   }
 
-  // data trả về là mảng AdminUser[], nếu có totalPages từ PaginatedResponse thì dùng, nếu không thì mặc định 1
-  const usersList = Array.isArray(data) ? data : (data as any)?.content || []
-  const totalPages = (data as any)?.totalPages || 1
+  // data trả về là mảng AdminUser[]
+  let usersList = Array.isArray(data) ? data : (data as any)?.content || []
+  
+  if (keyword) {
+    const lowerKw = keyword.toLowerCase()
+    usersList = usersList.filter((u: AdminUser) => 
+      u.username.toLowerCase().includes(lowerKw) ||
+      u.email.toLowerCase().includes(lowerKw) ||
+      (u.firstName + " " + u.lastName).toLowerCase().includes(lowerKw)
+    )
+  }
+  
+  const totalPages = 1
 
   return (
     <div className="space-y-6">

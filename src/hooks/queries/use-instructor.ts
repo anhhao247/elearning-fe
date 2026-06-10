@@ -39,7 +39,11 @@ import {
   PresignVideoPayload,
   notifyUploadComplete,
   UploadCompletePayload,
-  getVideoStatus
+  getVideoStatus,
+  getCourseDetailStats,
+  getCourseReviews,
+  getCourseStudents,
+  getCourseQuestions,
 } from '@/lib/services/instructor.service'
 import { generateOutlineAI, GenerateOutlineRequest } from '@/lib/services/ai.service'
 
@@ -327,5 +331,45 @@ export function useVideoStatus(contentId: number | string | null) {
       }
       return false
     }
+  })
+}
+
+export function useCourseDetailStats(courseId: number | string) {
+  return useQuery({
+    queryKey: ['course-detail-stats', courseId],
+    queryFn: () => getCourseDetailStats(courseId),
+    enabled: !!courseId,
+  })
+}
+
+export function useCourseReviews(courseId: number | string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['course-reviews', courseId, page, size],
+    queryFn: () => getCourseReviews(courseId, { page, size }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useCourseStudentsDetail(courseId: number | string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['course-students-detail', courseId, page, size],
+    queryFn: () => getCourseStudents(courseId, { page, size }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useCourseQuestions(
+  courseId: number | string,
+  page = 0,
+  size = 10,
+  status?: 'ANSWERED' | 'UNANSWERED'
+) {
+  return useQuery({
+    queryKey: ['course-questions', courseId, page, size, status],
+    queryFn: () => getCourseQuestions(courseId, { page, size, status }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
   })
 }

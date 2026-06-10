@@ -6,7 +6,8 @@ import { ContentComment } from "@/types/learning"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Loader2, MessageSquare, Reply, Send } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Loader2, MessageSquare, Reply, Send, HelpCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { vi } from "date-fns/locale"
 import { useAuthStore } from "@/store/useAuthStore"
@@ -21,6 +22,7 @@ export function CommentSection({ contentId }: CommentSectionProps) {
   const { user } = useAuthStore()
   const { data: comments, isLoading } = useComments(contentId)
   const [commentText, setCommentText] = useState("")
+  const [isQuestion, setIsQuestion] = useState(false)
   const createCommentMutation = useCreateComment(contentId)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,9 +32,11 @@ export function CommentSection({ contentId }: CommentSectionProps) {
     try {
       await createCommentMutation.mutateAsync({
         commentContent: commentText,
+        isQuestion: isQuestion || undefined,
       })
       setCommentText("")
-      toast.success("Bình luận của bạn đã được gửi")
+      setIsQuestion(false)
+      toast.success(isQuestion ? "Câu hỏi của bạn đã được gửi tới giảng viên" : "Bình luận của bạn đã được gửi")
     } catch (error) {
       toast.error("Không thể gửi bình luận. Vui lòng thử lại.")
     }
@@ -63,18 +67,47 @@ export function CommentSection({ contentId }: CommentSectionProps) {
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
           />
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            {/* Question toggle */}
+            <label
+              htmlFor="isQuestion"
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer select-none transition-colors",
+                isQuestion
+                  ? "border-indigo-300 bg-indigo-50 text-indigo-700"
+                  : "border-slate-200 bg-slate-50 text-muted-foreground hover:border-indigo-200 hover:text-indigo-600"
+              )}
+            >
+              <Checkbox
+                id="isQuestion"
+                checked={isQuestion}
+                onCheckedChange={(v) => setIsQuestion(!!v)}
+                className="border-indigo-400 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+              />
+              <span className="flex items-center gap-1.5 text-sm font-medium">
+                <HelpCircle className="w-3.5 h-3.5" />
+                Hỏi giảng viên
+              </span>
+            </label>
+
+            <Button
+              type="submit"
               disabled={!commentText.trim() || createCommentMutation.isPending}
-              className="rounded-xl px-6 bg-indigo-600 hover:bg-indigo-700"
+              className={cn(
+                "rounded-xl px-6",
+                isQuestion
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+              )}
             >
               {createCommentMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : isQuestion ? (
+                <HelpCircle className="w-4 h-4 mr-2" />
               ) : (
                 <Send className="w-4 h-4 mr-2" />
               )}
-              Gửi bình luận
+              {isQuestion ? "Gửi câu hỏi" : "Gửi bình luận"}
             </Button>
           </div>
         </form>

@@ -28,10 +28,12 @@ import { useAuthStore } from "@/store/useAuthStore"
 const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, access: "all" },
   { name: "Admin Accounts", href: "/admin/accounts", icon: ShieldCheck, access: "superAdmin" },
-  { name: "Users", href: "/admin/users", icon: Users, access: "superOrSupport" },
+  { name: "Users", href: "/admin/users", icon: Users, access: "superOrSupportOrContent" },
+  { name: "Audit Logs", href: "/admin/audit-logs", icon: FileText, access: "superOrFinanceOrSupport" },
+  { name: "Reports", href: "/admin/reports", icon: MessageSquare, access: "all" },
   { name: "Instructors", href: "/admin/instructors", icon: UserCheck, access: "all" },
   { name: "Courses", href: "/admin/courses", icon: BookOpen, access: "all" },
-  { name: "Categories", href: "/admin/categories", icon: Layers, access: "all" },
+  { name: "Categories", href: "/admin/categories", icon: Layers, access: "superOrFinanceOrSupport" },
   { name: "Refunds", href: "/admin/refunds", icon: RotateCcw, access: "finance" },
 ]
 
@@ -49,6 +51,7 @@ export function PlatformAdminSidebar() {
   const SidebarContent = () => {
     const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
     const isSupportAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPPORT_ADMIN" || user?.admin_role === "SUPPORT_ADMIN")
+    const isContentModerator = user?.role === "ADMIN" && (user?.adminRole === "CONTENT_MODERATOR" || user?.admin_role === "CONTENT_MODERATOR")
     const isFinanceAdmin = user?.adminRole === "FINANCE_ADMIN" || user?.admin_role === "FINANCE_ADMIN"
 
     return (
@@ -64,6 +67,8 @@ export function PlatformAdminSidebar() {
           {menuItems.map((item) => {
             if (item.access === "superAdmin" && !isSuperAdmin) return null
             if (item.access === "superOrSupport" && !isSuperAdmin && !isSupportAdmin) return null
+            if (item.access === "superOrSupportOrContent" && !isSuperAdmin && !isSupportAdmin && !isContentModerator) return null
+            if (item.access === "superOrFinanceOrSupport" && !isSuperAdmin && !isFinanceAdmin && !isSupportAdmin) return null
             if (item.access === "finance" && !isSuperAdmin && !isFinanceAdmin) return null
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
           return (

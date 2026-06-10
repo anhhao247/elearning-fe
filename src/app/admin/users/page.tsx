@@ -60,7 +60,7 @@ function BanUserDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Khóa tài khoản</DialogTitle>
           <DialogDescription>
@@ -110,7 +110,7 @@ function ViewBanReasonDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Thông tin khóa tài khoản</DialogTitle>
           <DialogDescription>
@@ -157,7 +157,8 @@ export default function UsersPage() {
 
   const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
   const isSupportAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPPORT_ADMIN" || user?.admin_role === "SUPPORT_ADMIN")
-  const canAccess = isSuperAdmin || isSupportAdmin
+  const isContentModerator = user?.role === "ADMIN" && (user?.adminRole === "CONTENT_MODERATOR" || user?.admin_role === "CONTENT_MODERATOR")
+  const canAccess = isSuperAdmin || isSupportAdmin || isContentModerator
 
   const { data, isLoading, isError, error } = useStudentUsers({
     page: pageIndex,
@@ -177,7 +178,7 @@ export default function UsersPage() {
         </div>
         <h1 className="text-2xl font-bold tracking-tight">Không có quyền truy cập</h1>
         <p className="text-muted-foreground max-w-md">
-          Chức năng này chỉ dành riêng cho tài khoản có vai trò SUPER_ADMIN hoặc SUPPORT_ADMIN.
+          Chức năng này chỉ dành riêng cho tài khoản có vai trò SUPER_ADMIN, SUPPORT_ADMIN hoặc CONTENT_MODERATOR.
         </p>
       </div>
     )

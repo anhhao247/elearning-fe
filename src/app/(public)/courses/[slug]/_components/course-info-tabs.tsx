@@ -13,7 +13,7 @@ export function CourseInfoTabs({ course }: CourseInfoTabsProps) {
     <div className="w-full bg-card rounded-xl border border-border/50 shadow-sm overflow-hidden">
       <Tabs defaultValue="overview" className="w-full">
         {/* Tab List */}
-        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-8 sm:gap-12 md:gap-16">
+        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-4 sm:gap-6 md:gap-8 overflow-x-auto flex-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {[
             { value: "overview", label: "Overview", icon: <BookOpen className="w-4 h-4" /> },
             { value: "requirements", label: "Requirements", icon: <ClipboardList className="w-4 h-4" /> },
@@ -38,10 +38,10 @@ export function CourseInfoTabs({ course }: CourseInfoTabsProps) {
           {/* Overview */}
           <TabsContent value="overview" className="mt-0 focus-visible:outline-none animate-in fade-in-30 duration-200">
             <h3 className="text-section-title mb-5">Overview</h3>
-            <div 
-              className="text-body leading-relaxed text-[15px] prose prose-sm dark:prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ 
-                __html: course.overview || course.description || "Chưa có thông tin tổng quan cho khóa học này." 
+            <div
+              className="text-body leading-relaxed text-[15px] prose prose-sm dark:prose-invert max-w-none break-words text-justify"
+              dangerouslySetInnerHTML={{
+                __html: course.overview || course.description || "Chưa có thông tin tổng quan cho khóa học này."
               }}
             />
           </TabsContent>
@@ -56,7 +56,7 @@ export function CourseInfoTabs({ course }: CourseInfoTabsProps) {
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs mt-0.5">
                       {index + 1}
                     </div>
-                    <span className="text-body text-[15px] leading-relaxed">{req}</span>
+                    <span className="text-body text-[15px] leading-relaxed break-words min-w-0">{req}</span>
                   </li>
                 ))}
               </ul>
@@ -81,7 +81,7 @@ export function CourseInfoTabs({ course }: CourseInfoTabsProps) {
                     <div className="shrink-0 w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <span className="text-body font-medium text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
+                    <span className="text-body font-medium text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed break-words min-w-0">
                       {benefit}
                     </span>
                   </div>

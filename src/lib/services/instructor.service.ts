@@ -559,3 +559,76 @@ export async function getInstructorPublicCourses(instructorId: number | string):
   const { data } = await api.get(`/v1/instructors/${instructorId}/courses`)
   return data
 }
+
+// ─── Course Detail Types ─────────────────────────────────────────────────────
+
+export interface CourseDetailStats {
+  courseId: number
+  totalStudents: number
+  totalRevenue: number
+  averageRating: number
+  totalReviews: number
+}
+
+export interface CourseReview {
+  id: number
+  userId: number
+  username: string
+  courseId: number
+  rating: number
+  comment: string
+  createdAt: string
+}
+
+export interface CourseStudent {
+  userId: number
+  fullName: string
+  avatar: string | null
+  enrolledAt: string
+  progressPercent: number
+  completedAt: string | null
+}
+
+export interface CourseQuestion {
+  commentId: number
+  commentContent: string
+  studentId: number
+  studentUsername: string
+  contentId: number
+  contentTitle: string
+  createdAt: string
+  updatedAt: string
+  isAnswered: boolean
+}
+
+// ─── Course Detail API ───────────────────────────────────────────────────────
+
+export async function getCourseDetailStats(courseId: number | string): Promise<CourseDetailStats> {
+  const { data } = await api.get(`/v1/instructor/courses/${courseId}/stats`)
+  return data
+}
+
+export async function getCourseReviews(
+  courseId: number | string,
+  params?: { page?: number; size?: number }
+): Promise<PaginatedResponse<CourseReview>> {
+  const { data } = await api.get(`/v1/instructor/courses/${courseId}/reviews`, { params })
+  return data
+}
+
+export async function getCourseStudents(
+  courseId: number | string,
+  params?: { page?: number; size?: number }
+): Promise<PaginatedResponse<CourseStudent>> {
+  const { data } = await api.get(`/v1/instructor/courses/${courseId}/students`, { params })
+  return data
+}
+
+export async function getCourseQuestions(
+  courseId: number | string,
+  params?: { page?: number; size?: number; status?: 'ANSWERED' | 'UNANSWERED' }
+): Promise<PaginatedResponse<CourseQuestion>> {
+  const { data } = await api.get(`/v1/instructor/courses/${courseId}/questions`, { params })
+  return data
+}
+

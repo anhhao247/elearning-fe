@@ -1,4 +1,4 @@
-import { Course, PageResponse, MyCoursesPageResponse } from '@/types/course'
+import { Course, PageResponse, MyCoursesPageResponse, SearchSuggestionsResponse } from '@/types/course'
 import { api } from '@/lib/axios'
 
 const isServer = typeof window === 'undefined'
@@ -41,6 +41,11 @@ export async function getCourses(params: Record<string, string | string[] | unde
 
 export async function getCourseDetail(id: string | number) {
   const { data } = await api.get(`/v1/courses/${id}`)
+  return data
+}
+
+export async function getSearchSuggestions(keyword: string): Promise<SearchSuggestionsResponse> {
+  const { data } = await api.get('/v1/search/suggestions', { params: { q: keyword } })
   return data
 }
 

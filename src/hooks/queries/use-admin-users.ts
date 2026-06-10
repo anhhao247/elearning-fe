@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AdminUserService, GetAdminUsersParams, CreateAdminUserPayload } from '@/lib/services/admin-user.service';
 import { toast } from 'sonner';
 
-export function useAdminUsers(params?: GetAdminUsersParams) {
+export function useAdminUsers() {
   return useQuery({
-    queryKey: ['admin-users', params],
-    queryFn: () => AdminUserService.getUsers(params),
+    queryKey: ['admin-users'],
+    queryFn: () => AdminUserService.getUsers(),
     placeholderData: (previousData) => previousData,
   });
 }

@@ -97,6 +97,7 @@ export interface AdminContent {
     platform: string
     videoId?: string | null
     platformVideoId?: string | null
+    objectKey?: string | null
     duration: number
   } | null
   reading: {

@@ -46,6 +46,12 @@ export async function verifyVNPayReturn(queryString: string): Promise<VerifyPaym
   return data
 }
 
+export async function verifySubscriptionVNPayReturn(queryString: string): Promise<VerifyPaymentResponse> {
+  const sanitizedQuery = queryString.startsWith('?') ? queryString : `?${queryString}`
+  const { data } = await api.get(`/v1/payment/subscription/callback${sanitizedQuery}`)
+  return data
+}
+
 export interface ValidateCouponPayload {
   code: string
   courseId: number
