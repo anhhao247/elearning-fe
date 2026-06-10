@@ -34,9 +34,9 @@ export function CourseHero({ course }: CourseHeroProps) {
         </div>
 
         {/* Main hero grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 py-10 lg:pb-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 py-10 lg:pb-14">
           {/* Left: Course info (8/12) */}
-          <div className="lg:col-span-8 space-y-5">
+          <div className="lg:col-span-8 min-w-0 space-y-5">
             {/* Category badge */}
             {course.category?.name && (
               <Badge className="bg-white/10 hover:bg-white/20 text-white border-none font-semibold text-xs px-3 py-1 rounded-md w-fit">
@@ -51,8 +51,8 @@ export function CourseHero({ course }: CourseHeroProps) {
 
             {/* Description */}
             {course.description && (
-              <div 
-                className="text-body text-zinc-300 max-w-[600px] lg:max-w-[650px] prose prose-invert prose-sm"
+              <div
+                className="text-body text-zinc-300 max-w-none prose prose-invert prose-sm break-words text-left"
                 dangerouslySetInnerHTML={{ __html: course.description }}
               />
             )}

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, BookOpen, FileText, Settings, LogOut, GraduationCap, LayoutDashboard, CreditCard } from "lucide-react";
+import { User, BookOpen, FileText, Settings, LogOut, GraduationCap, LayoutDashboard, CreditCard, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
@@ -33,6 +33,7 @@ export default function MyProfileLayout({ children }: { children: React.ReactNod
     { href: "/my-profile", label: "Tài khoản", icon: User },
     { href: "/my-profile/courses", label: "Khóa học của tôi", icon: BookOpen },
     // { href: "/my-profile/posts", label: "Bài viết", icon: FileText },
+    { href: "/my-profile/subscription", label: "Gói Pro", icon: Crown },
     { href: "/my-profile/payments", label: "Lịch sử thanh toán", icon: CreditCard },
     { href: "/my-profile/settings", label: "Cài đặt", icon: Settings },
   ];

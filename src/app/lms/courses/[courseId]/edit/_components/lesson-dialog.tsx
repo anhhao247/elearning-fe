@@ -841,48 +841,47 @@ export function LessonDialog({
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="videoId" className="text-xs text-slate-500 uppercase tracking-wider">Video URL</Label>
-                          <Input
-                            id="videoId"
-                            {...register("videoId", {
-                              onChange: (e) => {
-                                const value = e.target.value
-                                if (!value) return
+                        {watch("platform") !== "CLOUDFLARE" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="videoId" className="text-xs text-slate-500 uppercase tracking-wider">Video URL</Label>
+                            <Input
+                              id="videoId"
+                              {...register("videoId", {
+                                onChange: (e) => {
+                                  const value = e.target.value
+                                  if (!value) return
 
-                                // YouTube URL Extraction logic
-                                try {
-                                  if (value.includes("youtube.com") || value.includes("youtu.be")) {
-                                    const url = new URL(value)
-                                    let id = ""
+                                  // YouTube URL Extraction logic
+                                  try {
+                                    if (value.includes("youtube.com") || value.includes("youtu.be")) {
+                                      const url = new URL(value)
+                                      let id = ""
 
-                                    if (url.hostname.includes("youtube.com")) {
-                                      if (url.pathname.includes("/watch")) {
-                                        // Handles ?v=ID&params
-                                        const vMatch = value.match(/[?&]v=([^#\s]+)/)
-                                        if (vMatch) id = vMatch[1]
-                                      } else if (url.pathname.includes("/embed/")) {
-                                        // Handles /embed/ID?params
-                                        id = url.pathname.replace("/embed/", "") + url.search
+                                      if (url.hostname.includes("youtube.com")) {
+                                        if (url.pathname.includes("/watch")) {
+                                          const vMatch = value.match(/[?&]v=([^#\s]+)/)
+                                          if (vMatch) id = vMatch[1]
+                                        } else if (url.pathname.includes("/embed/")) {
+                                          id = url.pathname.replace("/embed/", "") + url.search
+                                        }
+                                      } else if (url.hostname.includes("youtu.be")) {
+                                        id = url.pathname.slice(1) + url.search
                                       }
-                                    } else if (url.hostname.includes("youtu.be")) {
-                                      // Handles youtu.be/ID?params
-                                      id = url.pathname.slice(1) + url.search
-                                    }
 
-                                    if (id) {
-                                      setValue("videoId", id)
+                                      if (id) {
+                                        setValue("videoId", id)
+                                      }
                                     }
+                                  } catch (err) {
+                                    // Invalid URL, ignore
                                   }
-                                } catch (err) {
-                                  // Invalid URL, ignore
                                 }
-                              }
-                            })}
-                            placeholder=""
-                            className="bg-white"
-                          />
-                        </div>
+                              })}
+                              placeholder=""
+                              className="bg-white"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

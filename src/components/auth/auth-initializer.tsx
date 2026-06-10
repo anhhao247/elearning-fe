@@ -35,6 +35,8 @@ export function AuthInitializer() {
           toast.error("Phiên đăng nhập không còn hợp lệ")
         }
       }
+
+      useAuthStore.getState().setHasHydrated(true)
     }
 
     initAuth()

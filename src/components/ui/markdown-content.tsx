@@ -27,15 +27,21 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
           h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
           h2: ({ children }) => <h2 className="text-base font-bold mb-1">{children}</h2>,
           h3: ({ children }) => <h3 className="text-sm font-bold mb-1">{children}</h3>,
-          code: ({ node, inline, className, children, ...props }: any) => {
-            return inline ? (
-              <code className="bg-muted px-1 py-0.5 rounded text-[0.85em]" {...props}>
+          pre: ({ children }) => (
+            <pre className="bg-muted p-2 rounded-lg overflow-x-auto my-2 text-[0.85em]">
+              {children}
+            </pre>
+          ),
+          code: ({ node, className, children, ...props }: any) => {
+            const isBlock = node?.parent?.tagName === "pre"
+            return isBlock ? (
+              <code className={className} {...props}>
                 {children}
               </code>
             ) : (
-              <pre className="bg-muted p-2 rounded-lg overflow-x-auto my-2 text-[0.85em]">
-                <code {...props}>{children}</code>
-              </pre>
+              <code className="bg-muted px-1 py-0.5 rounded text-[0.85em]" {...props}>
+                {children}
+              </code>
             )
           },
         }}

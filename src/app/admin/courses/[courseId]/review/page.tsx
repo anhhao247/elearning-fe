@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, use } from "react"
+import { useEffect, useState, use } from "react"
 import { useRouter } from "next/navigation"
 import { useAdminCourseDetail, useApproveCourse, useRejectCourse } from "@/hooks/queries/use-admin-courses"
 import { Button } from "@/components/ui/button"
@@ -23,6 +23,41 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { AdminContent } from "@/types/admin-course"
 
+const getYoutubeVideoId = (video: AdminContent["video"]): string => {
+  if (!video) return ""
+  const rawValue = (video.videoId || video.platformVideoId || "").trim()
+  if (!rawValue) return ""
+
+  try {
+    const url = new URL(rawValue)
+    const hostname = url.hostname.toLowerCase()
+    if (hostname.includes("youtu.be")) {
+      return url.pathname.slice(1)
+    }
+    if (hostname.includes("youtube.com")) {
+      const v = url.searchParams.get("v")
+      if (v) return v
+      const pathParts = url.pathname.split("/").filter(Boolean)
+      return pathParts[pathParts.length - 1] || ""
+    }
+  } catch {
+    // not a full url
+  }
+
+  return rawValue.split(/[&?]/)[0]
+}
+
+const R2_BASE_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_BASE_URL || "https://pub-821b6d7770774dcd90fc8db5416faa97.r2.dev"
+
+const getR2VideoUrl = (video: AdminContent["video"]): string => {
+  if (!video) return ""
+  if (video.objectKey) return `${R2_BASE_URL}/${video.objectKey}`
+  // fallback: videoId or platformVideoId might be a full URL
+  const raw = (video.videoId || video.platformVideoId || "").trim()
+  if (raw.startsWith("http")) return raw
+  return ""
+}
+
 export default function CourseReviewPage({ params }: { params: Promise<{ courseId: string }> }) {
   const router = useRouter()
   const resolvedParams = use(params)
@@ -33,6 +68,17 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
   const rejectMutation = useRejectCourse()
 
   const [selectedContent, setSelectedContent] = useState<AdminContent | null>(null)
+
+  useEffect(() => {
+    if (!selectedContent && course?.curriculum?.length) {
+      for (const module of course.curriculum) {
+        if (module.contents.length > 0) {
+          setSelectedContent(module.contents[0])
+          break
+        }
+      }
+    }
+  }, [course, selectedContent])
   
   // Action Dialog State
   const [actionType, setActionType] = useState<"APPROVE" | "REJECT" | null>(null)
@@ -132,15 +178,15 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
           </div>
           
           <div className="p-2">
-            <Accordion type="multiple" defaultValue={course.curriculum.map(m => m.moduleId.toString())} className="w-full">
-              {course.curriculum.map((module) => (
-                <AccordionItem key={module.moduleId} value={module.moduleId.toString()} className="border-none">
+            <Accordion type="multiple" defaultValue={course.curriculum.map((curriculumModule) => curriculumModule.moduleId.toString())} className="w-full">
+              {course.curriculum.map((curriculumModule) => (
+                <AccordionItem key={curriculumModule.moduleId} value={curriculumModule.moduleId.toString()} className="border-none">
                   <AccordionTrigger className="px-3 py-2 hover:bg-slate-50 rounded-md text-sm font-semibold">
-                    {module.title}
+                    {curriculumModule.title}
                   </AccordionTrigger>
                   <AccordionContent className="pt-1 pb-2">
                     <div className="flex flex-col gap-1">
-                      {module.contents.map((content) => {
+                      {curriculumModule.contents.map((content) => {
                         const isSelected = selectedContent?.contentId === content.contentId
                         return (
                           <button
@@ -160,7 +206,7 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
                           </button>
                         )
                       })}
-                      {module.contents.length === 0 && (
+                      {curriculumModule.contents.length === 0 && (
                         <p className="text-xs text-slate-400 px-3 py-1 italic">Trống</p>
                       )}
                     </div>
@@ -194,8 +240,59 @@ export default function CourseReviewPage({ params }: { params: Promise<{ courseI
                 )}
                 
                 {selectedContent.contentType === "VIDEO" && selectedContent.video && (
-                  <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
-                    <p className="text-white/50">Video Placeholder: {selectedContent.video.videoId}</p>
+                  <div className="space-y-3">
+                    {/* Platform badge */}
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 font-semibold uppercase tracking-wider">
+                        {selectedContent.video.platform}
+                      </span>
+                    </div>
+
+                    <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-sm">
+                      {/* Cloudflare R2 */}
+                      {(selectedContent.video.platform?.toUpperCase() === "CLOUDFLARE" ||
+                        selectedContent.video.objectKey) ? (
+                        (() => {
+                          const url = getR2VideoUrl(selectedContent.video)
+                          return url ? (
+                            <video
+                              className="absolute inset-0 w-full h-full"
+                              controls
+                              src={url}
+                              title={selectedContent.title}
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <p className="text-sm text-slate-400">Không tìm thấy URL video Cloudflare.</p>
+                            </div>
+                          )
+                        })()
+                      ) : selectedContent.video.platform?.toUpperCase() === "YOUTUBE" ? (
+                        (() => {
+                          const videoId = getYoutubeVideoId(selectedContent.video)
+                          return videoId ? (
+                            <iframe
+                              className="absolute inset-0 w-full h-full"
+                              src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
+                              title={selectedContent.title}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <p className="text-sm text-slate-400">Không tìm thấy mã video YouTube.</p>
+                            </div>
+                          )
+                        })()
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <p className="text-sm text-slate-400">
+                            Video platform không được hỗ trợ: {selectedContent.video.platform}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
                 

@@ -44,6 +44,18 @@ export interface MyCourse {
   progress: number
 }
 
+export interface SearchSuggestionCourse {
+  id: number
+  title: string
+  thumbnail?: string | null
+  instructorName: string
+}
+
+export interface SearchSuggestionsResponse {
+  keywords: string[]
+  courses: SearchSuggestionCourse[]
+}
+
 // Cấu trúc phân trang đặc thù của Spring (nằm ở route /me/courses)
 export interface MyCoursesPageResponse {
   content: MyCourse[]

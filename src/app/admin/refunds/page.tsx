@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { usePendingRefunds } from "@/hooks/queries/use-payment"
+import { useAdminRefundRequests } from "@/hooks/queries/use-payment"
 import { RefundItem } from "@/lib/services/payment.service"
 import { 
   ColumnDef, 
@@ -70,7 +70,7 @@ export default function InstructorRefundsPage() {
     setParams(prev => ({ ...prev, keyword: debouncedKeyword, page: 0 }))
   }, [debouncedKeyword])
 
-  const { data: pageData, isLoading } = usePendingRefunds(params)
+  const { data: pageData, isLoading } = useAdminRefundRequests(params)
 
   const formatDate = (dateString: string) => {
     if (!dateString) return { date: "N/A", time: "" }

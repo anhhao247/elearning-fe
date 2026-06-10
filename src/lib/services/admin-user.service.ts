@@ -14,6 +14,10 @@ export interface AdminUser {
   createdAt: string;
   isActive?: boolean;
   isDeleted?: boolean;
+  bannedUntil?: string | null;
+  banReason?: string | null;
+  isBanned?: boolean;
+  bannedAt?: string | null;
 }
 
 export interface GetAdminUsersParams {
@@ -32,8 +36,8 @@ export interface CreateAdminUserPayload {
 }
 
 export const AdminUserService = {
-  getUsers: async (params?: GetAdminUsersParams): Promise<AdminUser[]> => {
-    const response = await api.get('/v1/admin/users', { params });
+  getUsers: async (): Promise<AdminUser[]> => {
+    const response = await api.get('/v1/admin/users/admins');
     return response.data;
   },
 
@@ -53,6 +57,16 @@ export const AdminUserService = {
 
   restoreUser: async (id: number): Promise<AdminUser> => {
     const response = await api.put(`/v1/admin/users/${id}/restore`);
+    return response.data;
+  },
+
+  banUser: async (id: number, payload: { reason: string; bannedUntil?: string | null }): Promise<AdminUser> => {
+    const response = await api.patch(`/v1/admin/users/${id}/ban`, payload);
+    return response.data;
+  },
+
+  unbanUser: async (id: number): Promise<AdminUser> => {
+    const response = await api.patch(`/v1/admin/users/${id}/unban`);
     return response.data;
   },
 };

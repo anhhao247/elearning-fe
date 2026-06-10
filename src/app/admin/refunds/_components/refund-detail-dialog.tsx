@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useRefundDetail } from "@/hooks/queries/use-payment"
+import { useAdminRefundDetail } from "@/hooks/queries/use-payment"
 import { Loader2, User, CreditCard, BookOpen, Info, Calendar, FileText } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
@@ -32,7 +32,7 @@ export function RefundDetailDialog({
   onApprove,
   onReject 
 }: RefundDetailDialogProps) {
-  const { data: refund, isLoading } = useRefundDetail(refundId)
+  const { data: refund, isLoading } = useAdminRefundDetail(refundId)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN").format(amount) + "đ"

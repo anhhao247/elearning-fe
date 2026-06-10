@@ -13,11 +13,11 @@ export function ContentTabs({ content }: ContentTabsProps) {
   return (
     <div className="mt-2 mb-16 md:mb-8">
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-8 sm:gap-12 md:gap-16">
+        <TabsList className="w-full justify-start bg-transparent border-b rounded-none h-auto p-0 gap-4 sm:gap-6 md:gap-8 overflow-x-auto flex-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {[
             { value: "overview", label: "Tổng quan", icon: <BookText className="w-4 h-4" /> },
             { value: "qa", label: "Hỏi đáp", icon: <MessageSquare className="w-4 h-4" /> },
-            { value: "resources", label: "Tài liệu", icon: <FileText className="w-4 h-4" /> },
+            // { value: "resources", label: "Tài liệu", icon: <FileText className="w-4 h-4" /> },
           ].map((tab) => (
             <TabsTrigger
               key={tab.value}
@@ -50,7 +50,7 @@ export function ContentTabs({ content }: ContentTabsProps) {
             "
           >
             {content.description ? (
-              <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">{content.description}</p>
+              <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed break-words min-w-0">{content.description}</p>
             ) : (
               <p className="text-muted-foreground italic">Bài học này không có mô tả chi tiết.</p>
             )}

@@ -18,24 +18,23 @@ import {
   LogOut,
   Settings,
   Menu,
-  X
+  X,
+  RotateCcw
 } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/useAuthStore"
 
 const menuItems = [
-  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
-  { name: "Admin Accounts", href: "/admin/users", icon: Users },
-  { name: "Instructors", href: "/admin/instructors", icon: UserCheck },
-  { name: "Courses", href: "/admin/courses", icon: BookOpen },
-  { name: "Categories", href: "/admin/categories", icon: Layers },
-  // { name: "Blogs", href: "/admin/blogs", icon: FileText },
-  // { name: "Comments", href: "/admin/comments", icon: MessageSquare },
-  // { name: "Media", href: "/admin/media", icon: ImageIcon },
-  // { name: "Coupons", href: "/admin/coupons", icon: Ticket },
-  // { name: "Orders", href: "/admin/orders", icon: ShoppingCart },
-  // { name: "Roles", href: "/admin/roles", icon: ShieldCheck },
+  { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, access: "all" },
+  { name: "Admin Accounts", href: "/admin/accounts", icon: ShieldCheck, access: "superAdmin" },
+  { name: "Users", href: "/admin/users", icon: Users, access: "superOrSupportOrContent" },
+  { name: "Audit Logs", href: "/admin/audit-logs", icon: FileText, access: "superOrFinanceOrSupport" },
+  { name: "Reports", href: "/admin/reports", icon: MessageSquare, access: "all" },
+  { name: "Instructors", href: "/admin/instructors", icon: UserCheck, access: "all" },
+  { name: "Courses", href: "/admin/courses", icon: BookOpen, access: "all" },
+  { name: "Categories", href: "/admin/categories", icon: Layers, access: "superOrFinanceOrSupport" },
+  { name: "Refunds", href: "/admin/refunds", icon: RotateCcw, access: "finance" },
 ]
 
 export function PlatformAdminSidebar() {
@@ -51,6 +50,9 @@ export function PlatformAdminSidebar() {
 
   const SidebarContent = () => {
     const isSuperAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPER_ADMIN" || user?.admin_role === "SUPER_ADMIN")
+    const isSupportAdmin = user?.role === "ADMIN" && (user?.adminRole === "SUPPORT_ADMIN" || user?.admin_role === "SUPPORT_ADMIN")
+    const isContentModerator = user?.role === "ADMIN" && (user?.adminRole === "CONTENT_MODERATOR" || user?.admin_role === "CONTENT_MODERATOR")
+    const isFinanceAdmin = user?.adminRole === "FINANCE_ADMIN" || user?.admin_role === "FINANCE_ADMIN"
 
     return (
       <div className="flex flex-col h-full bg-white border-r">
@@ -63,9 +65,11 @@ export function PlatformAdminSidebar() {
         
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto pt-4">
           {menuItems.map((item) => {
-            if (item.href === "/admin/users" && !isSuperAdmin) {
-              return null
-            }
+            if (item.access === "superAdmin" && !isSuperAdmin) return null
+            if (item.access === "superOrSupport" && !isSuperAdmin && !isSupportAdmin) return null
+            if (item.access === "superOrSupportOrContent" && !isSuperAdmin && !isSupportAdmin && !isContentModerator) return null
+            if (item.access === "superOrFinanceOrSupport" && !isSuperAdmin && !isFinanceAdmin && !isSupportAdmin) return null
+            if (item.access === "finance" && !isSuperAdmin && !isFinanceAdmin) return null
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
           return (
             <Link

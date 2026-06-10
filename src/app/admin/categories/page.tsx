@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/store/useAuthStore"
 import { 
   useAdminCategories, 
   useCreateCategory, 
@@ -37,6 +39,15 @@ export default function AdminCategoriesPage() {
   // Alert dialog state for delete
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [categoryIdToDelete, setCategoryIdToDelete] = useState<number | null>(null)
+
+  const { user } = useAuthStore()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (user?.adminRole === 'CONTENT_MODERATOR' || user?.admin_role === 'CONTENT_MODERATOR') {
+      router.push('/admin/dashboard')
+    }
+  }, [user, router])
 
   const { data, isLoading, isError, error } = useAdminCategories({
     page: pageIndex,

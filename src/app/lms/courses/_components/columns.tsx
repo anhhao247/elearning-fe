@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Image from "next/image"
@@ -213,10 +214,17 @@ export const columns: ColumnDef<InstructorCourse>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Thao tác</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href={`/lms/courses/${id}/outline`}>
-                Outline
+              <Link href={`/lms/courses/${id}/detail`}>
+                Xem chi tiết
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              {/* <Link href={`/lms/courses/${id}/outline`}>
+                Outline
+              </Link> */}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => table.options.meta?.onEdit?.(id)}>
               Edit

@@ -35,6 +35,15 @@ import {
   getStudentQuizzes,
   getStudentComments,
   saveBulkOutline,
+  getPresignedUrl,
+  PresignVideoPayload,
+  notifyUploadComplete,
+  UploadCompletePayload,
+  getVideoStatus,
+  getCourseDetailStats,
+  getCourseReviews,
+  getCourseStudents,
+  getCourseQuestions,
 } from '@/lib/services/instructor.service'
 import { generateOutlineAI, GenerateOutlineRequest } from '@/lib/services/ai.service'
 
@@ -294,5 +303,73 @@ export function useSaveBulkOutline() {
       queryClient.invalidateQueries({ queryKey: ['instructor-course-outline', courseId] })
       queryClient.invalidateQueries({ queryKey: ['instructor-course', courseId] })
     }
+  })
+}
+
+export function useVideoPresign() {
+  return useMutation({
+    mutationFn: (payload: PresignVideoPayload) => getPresignedUrl(payload)
+  })
+}
+
+export function useVideoUploadComplete() {
+  return useMutation({
+    mutationFn: (payload: UploadCompletePayload) => notifyUploadComplete(payload)
+  })
+}
+
+export function useVideoStatus(contentId: number | string | null) {
+  return useQuery({
+    queryKey: ['instructor-video-status', contentId],
+    queryFn: () => getVideoStatus(contentId!),
+    enabled: !!contentId,
+    refetchInterval: (query: any) => {
+      const data = query?.state?.data || query
+      // Poll every 3 seconds if status is processing/pending
+      if (data?.uploadStatus === 'PROCESSING' || data?.uploadStatus === 'PENDING') {
+        return 3000
+      }
+      return false
+    }
+  })
+}
+
+export function useCourseDetailStats(courseId: number | string) {
+  return useQuery({
+    queryKey: ['course-detail-stats', courseId],
+    queryFn: () => getCourseDetailStats(courseId),
+    enabled: !!courseId,
+  })
+}
+
+export function useCourseReviews(courseId: number | string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['course-reviews', courseId, page, size],
+    queryFn: () => getCourseReviews(courseId, { page, size }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useCourseStudentsDetail(courseId: number | string, page = 0, size = 10) {
+  return useQuery({
+    queryKey: ['course-students-detail', courseId, page, size],
+    queryFn: () => getCourseStudents(courseId, { page, size }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
+  })
+}
+
+export function useCourseQuestions(
+  courseId: number | string,
+  page = 0,
+  size = 10,
+  status?: 'ANSWERED' | 'UNANSWERED'
+) {
+  return useQuery({
+    queryKey: ['course-questions', courseId, page, size, status],
+    queryFn: () => getCourseQuestions(courseId, { page, size, status }),
+    enabled: !!courseId,
+    placeholderData: (prev) => prev,
   })
 }

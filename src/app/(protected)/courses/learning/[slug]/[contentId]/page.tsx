@@ -3,7 +3,7 @@
 import { useState, use, useMemo } from "react"
 import Link from "next/link"
 import {
-  ChevronLeft, Menu, Video, PanelRightClose, PanelRightOpen,
+  ChevronLeft, Menu, Video, PanelRightClose, PanelRightOpen, Flag,
 } from "lucide-react"
 
 import { useSyllabus, useContentDetail } from "@/hooks/queries/use-learning"
@@ -15,6 +15,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
+import { useAuthStore } from "@/store/useAuthStore"
+import { ReportDialog } from "@/components/features/reports/report-dialog"
 
 export default function LearningPage({
   params,
@@ -26,6 +28,8 @@ export default function LearningPage({
 
   const contentId = Number(contentIdStr)
   const [activePanel, setActivePanel] = useState<'syllabus' | 'notes' | null>('syllabus')
+  const [isReportOpen, setIsReportOpen] = useState(false)
+  const user = useAuthStore((state) => state.user)
 
   const courseId = useMemo(() => {
     const parts = slug.split("-")
@@ -35,6 +39,7 @@ export default function LearningPage({
 
   const { data: syllabus, isLoading: isSyllabusLoading, error: syllabusError } = useSyllabus(courseId, courseId > 0)
   const { data: contentDetail, isLoading: isContentLoading, error: contentError } = useContentDetail(contentId, contentId > 0)
+  const canReport = user?.role === "STUDENT" && !!syllabus
 
   const progressStats = useMemo(() => {
     if (!syllabus) return { completed: 0, total: 0, percentage: 0 }
@@ -71,6 +76,17 @@ export default function LearningPage({
 
         {/* Progress & AI Action */}
         <div className="flex items-center gap-3 shrink-0">
+          {canReport && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="hidden md:flex gap-2 border-slate-700 text-slate-200 bg-slate-800  text-xs rounded-lg px-4 font-semibold"
+              onClick={() => setIsReportOpen(true)}
+            >
+              <Flag className="w-3.5 h-3.5" />
+              Báo cáo bài học
+            </Button>
+          )}
           <Link href={`/courses/learning/${slug}/${contentId}/interview`}>
             <Button size="sm" className="hidden md:flex gap-2 bg-primary hover:bg-primary/90 text-white text-xs rounded-lg px-4 font-semibold shadow-sm">
               <Video className="w-3.5 h-3.5" />
@@ -207,6 +223,17 @@ export default function LearningPage({
 
 
       </div>
+
+      {canReport && (
+        <ReportDialog
+          open={isReportOpen}
+          onOpenChange={setIsReportOpen}
+          targetType="CONTENT"
+          targetId={contentId}
+          subjectLabel="Bài học"
+          subjectName={contentDetail?.title}
+        />
+      )}
     </div>
   )
 }
