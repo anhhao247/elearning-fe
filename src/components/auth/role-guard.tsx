@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useAuthStore } from "@/store/useAuthStore"
 import { toast } from "sonner"
 
@@ -13,6 +13,7 @@ interface RoleGuardProps {
 export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
   const { user, _hasHydrated, isLoggingOut } = useAuthStore()
   const router = useRouter()
+  const pathname = usePathname()
   const [isAuthorized, setIsAuthorized] = useState(false)
 
   useEffect(() => {
@@ -31,8 +32,15 @@ export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
       if (user.role !== allowedRole) {
         // Special case: Allow users with PENDING instructorStatus to access INSTRUCTOR routes
         if (allowedRole === "INSTRUCTOR" && user.instructorStatus === "PENDING") {
-          setIsAuthorized(true)
-          return
+          // Chỉ cho phép truy cập /lms/courses
+          if (pathname.startsWith("/lms/courses")) {
+            setIsAuthorized(true)
+            return
+          } else {
+            toast.error("Bạn chỉ có quyền truy cập trang Khóa học trong lúc chờ duyệt")
+            router.push("/lms/courses")
+            return
+          }
         }
 
         toast.error("Bạn không có quyền truy cập trang này")
@@ -42,7 +50,7 @@ export function RoleGuard({ children, allowedRole }: RoleGuardProps) {
 
       setIsAuthorized(true)
     }
-  }, [_hasHydrated, user, allowedRole, router, isLoggingOut])
+  }, [_hasHydrated, user, allowedRole, router, pathname, isLoggingOut])
 
   if (!isAuthorized) {
     return (

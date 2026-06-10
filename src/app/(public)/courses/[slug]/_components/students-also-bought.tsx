@@ -45,7 +45,7 @@ export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlso
       {/* Section header */}
       <div className="flex items-start justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Students also bought</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Học viên cũng quan tâm</h2>
           <p className="text-sm text-muted-foreground mt-1">Các khóa học thường đăng ký cùng khóa học này</p>
         </div>
         <Button
@@ -124,10 +124,11 @@ export function StudentsAlsoBought({ categoryId, currentCourseId }: StudentsAlso
                   </p>
                 )}
 
-                {(course.description) && (
-                  <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                    {course.description}
-                  </p>
+                {course.description && (
+                  <div 
+                    className="text-sm text-muted-foreground line-clamp-2 leading-relaxed [&_*]:inline"
+                    dangerouslySetInnerHTML={{ __html: course.description }}
+                  />
                 )}
 
                 {/* Price */}

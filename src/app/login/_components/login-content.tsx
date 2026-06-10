@@ -139,8 +139,32 @@ function LoginContent() {
         toast.success("Đăng nhập thành công!")
         handleRoleBasedRedirect(userRes.data.role)
       }
-    } catch {
-      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.")
+    } catch (error: any) {
+      const errData = error.response?.data
+      if (errData?.code === "USER_BANNED") {
+        toast.error("Tài khoản bị khóa", {
+          description: (
+            <div className="mt-1 space-y-1 text-sm">
+              <p>{errData.message}</p>
+              {errData.bannedUntil && (
+                <p>
+                  <span className="font-semibold">Thời hạn khóa đến: </span> 
+                  {new Date(errData.bannedUntil).toLocaleString("vi-VN")}
+                </p>
+              )}
+            </div>
+          ),
+          duration: 10000,
+        })
+      } else if (errData?.code === "INVALID_CREDENTIALS") {
+        toast.error("Đăng nhập thất bại", {
+          description: errData.message || "Tên đăng nhập hoặc mật khẩu không đúng",
+        })
+      } else {
+        toast.error("Đăng nhập thất bại", {
+          description: errData?.message || "Vui lòng kiểm tra lại thông tin đăng nhập.",
+        })
+      }
     } finally {
       setIsLoading(false)
     }

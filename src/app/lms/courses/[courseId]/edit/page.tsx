@@ -44,6 +44,7 @@ import { toast } from "sonner"
 import { ModuleDialog } from "./_components/module-dialog"
 import { LessonDialog } from "./_components/lesson-dialog"
 import { AiOutlineDialog } from "./_components/ai-outline-dialog"
+import { UploadVideoDialog } from "./_components/upload-video-dialog"
 import { CreateCourseWizard } from "../../_components/create-course-wizard"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
@@ -255,6 +256,10 @@ export default function CourseEditPage() {
     open: false,
     mode: "create"
   })
+  const [uploadDialog, setUploadDialog] = useState<{ open: boolean, contentId: number | null }>({
+    open: false,
+    contentId: null
+  })
 
   const handleSyncAI = async () => {
     try {
@@ -384,6 +389,8 @@ export default function CourseEditPage() {
     try {
       const { title, contentType, platform, videoId, duration, body, description, passPercent, questions } = values
 
+      let finalContentId: number | null = null
+
       if (lessonDialog.mode === "create") {
         // 1. Create content
         const createdContent = await createContent.mutateAsync({
@@ -396,6 +403,7 @@ export default function CourseEditPage() {
         })
 
         const currentContentId = createdContent.id || (createdContent as any).contentId;
+        finalContentId = currentContentId;
 
         // 2. Update details
         if (contentType === "VIDEO") {
@@ -440,6 +448,7 @@ export default function CourseEditPage() {
         }
       } else {
         const currentContentId = lessonDialog.data.contentId
+        finalContentId = currentContentId
         // Edit mode
         await updateContent.mutateAsync({
           contentId: currentContentId,
@@ -507,6 +516,11 @@ export default function CourseEditPage() {
       toast.success(lessonDialog.mode === "create" ? "Đã thêm bài giảng và cấu hình chi tiết" : "Đã cập nhật bài giảng")
       setLessonDialog({ ...lessonDialog, open: false })
       refetch()
+
+      // Automatically open upload dialog if creating a Cloudflare video
+      if (lessonDialog.mode === "create" && contentType === "VIDEO" && platform === "CLOUDFLARE" && finalContentId) {
+        setUploadDialog({ open: true, contentId: finalContentId })
+      }
     } catch (err: any) {
       console.error("Error in onLessonSubmit:", err);
       toast.error(err.message || "Thao tác thất bại, vui lòng thử lại.");
@@ -558,7 +572,7 @@ export default function CourseEditPage() {
                   Processing...
                 </>
               ) : (
-                "Gửi đi xem xét"
+                "Submit"
               )}
             </Button>
           )}
@@ -600,9 +614,9 @@ export default function CourseEditPage() {
             onClick={() => setAiDialogOpen(true)}
           >
             <Sparkles className="w-4 h-4" />
-            Tạo Outline AI
+            AI Syllabus Creator
           </Button>
-          <Button 
+          {/* <Button 
             variant="outline"
             className="border-slate-200 text-slate-700 rounded-xl px-4 h-10 text-sm font-bold flex items-center gap-2 transition-transform active:scale-95"
             onClick={handleSyncAI}
@@ -614,7 +628,7 @@ export default function CourseEditPage() {
               <Sparkles className="w-4 h-4 text-blue-500" />
             )}
             Đồng bộ AI
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -714,6 +728,13 @@ export default function CourseEditPage() {
         open={aiDialogOpen} 
         onOpenChange={setAiDialogOpen}
         courseId={Number(courseId)}
+        onSuccess={() => refetch()}
+      />
+
+      <UploadVideoDialog
+        isOpen={uploadDialog.open}
+        contentId={uploadDialog.contentId}
+        onClose={() => setUploadDialog({ open: false, contentId: null })}
         onSuccess={() => refetch()}
       />
     </div>

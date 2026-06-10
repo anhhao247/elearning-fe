@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { useProcessRefund } from "@/hooks/queries/use-payment"
+import { useApproveRefund, useRejectRefund } from "@/hooks/queries/use-payment"
 import { toast } from "sonner"
 import { Loader2, CheckCircle, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -25,7 +25,9 @@ interface ProcessRefundDialogProps {
 
 export function ProcessRefundDialog({ refundId, status, isOpen, onClose }: ProcessRefundDialogProps) {
   const [note, setNote] = React.useState("")
-  const { mutate: processRefund, isPending } = useProcessRefund()
+  const { mutate: approveRefund, isPending: isApproving } = useApproveRefund()
+  const { mutate: rejectRefund, isPending: isRejecting } = useRejectRefund()
+  const isPending = isApproving || isRejecting
 
   React.useEffect(() => {
     if (isOpen) {
@@ -36,19 +38,39 @@ export function ProcessRefundDialog({ refundId, status, isOpen, onClose }: Proce
   const handleSubmit = () => {
     if (!refundId || !status) return
 
-    processRefund(
-      { refundId, payload: { status, note } },
-      {
-        onSuccess: () => {
-          toast.success(status === 'APPROVED' ? "Đã duyệt hoàn tiền thành công" : "Đã từ chối yêu cầu hoàn tiền")
-          setNote("")
-          onClose()
-        },
-        onError: (error: any) => {
-          toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi xử lý yêu cầu")
-        },
+    if (status === 'APPROVED') {
+      approveRefund(
+        { refundId, payload: { note } },
+        {
+          onSuccess: () => {
+            toast.success("Đã duyệt hoàn tiền thành công")
+            setNote("")
+            onClose()
+          },
+          onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi xử lý yêu cầu")
+          },
+        }
+      )
+    } else {
+      if (!note.trim()) {
+        toast.error("Vui lòng nhập lý do từ chối")
+        return
       }
-    )
+      rejectRefund(
+        { refundId, payload: { reason: note } },
+        {
+          onSuccess: () => {
+            toast.success("Đã từ chối yêu cầu hoàn tiền")
+            setNote("")
+            onClose()
+          },
+          onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Đã xảy ra lỗi khi xử lý yêu cầu")
+          },
+        }
+      )
+    }
   }
 
   return (

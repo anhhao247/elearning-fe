@@ -51,7 +51,7 @@ export default function CourseDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 relative items-start">
 
           {/* Main column: 8/12 */}
-          <div className="lg:col-span-8 space-y-6 pt-8">
+          <div className="lg:col-span-8 min-w-0 space-y-6 pt-8">
             {/* Info tabs: Overview / Requirements / Benefits / Techniques */}
             <CourseInfoTabs course={course} />
 

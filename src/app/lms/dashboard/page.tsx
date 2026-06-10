@@ -7,12 +7,8 @@ import {
   Sparkles,
   TrendingUp,
   TrendingDown,
-  Video,
-  FileText,
-  HelpCircle,
   Star,
   AlertCircle,
-  CheckCircle2,
   ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
@@ -38,7 +34,6 @@ import {
 import {
   useDashboardStats,
   useRecentEnrollments,
-  usePendingSync,
   useCourseStats,
 } from "@/hooks/queries/use-instructor"
 import { cn } from "@/lib/utils"
@@ -69,23 +64,7 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-function contentTypeIcon(type: string) {
-  switch (type) {
-    case "VIDEO":   return <Video className="w-3.5 h-3.5" />
-    case "READING": return <FileText className="w-3.5 h-3.5" />
-    case "QUIZ":    return <HelpCircle className="w-3.5 h-3.5" />
-    default:        return <FileText className="w-3.5 h-3.5" />
-  }
-}
 
-function contentTypeColor(type: string) {
-  switch (type) {
-    case "VIDEO":   return "bg-blue-50 text-blue-600 border-blue-100"
-    case "READING": return "bg-emerald-50 text-emerald-600 border-emerald-100"
-    case "QUIZ":    return "bg-purple-50 text-purple-600 border-purple-100"
-    default:        return "bg-slate-50 text-slate-600"
-  }
-}
 
 function isPositiveChange(change: string) {
   return change.startsWith("+")
@@ -152,7 +131,6 @@ const courseChartConfig = {
 export default function DashboardPage() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats()
   const { data: enrollments, isLoading: enrollmentsLoading } = useRecentEnrollments()
-  const { data: pendingSync, isLoading: pendingLoading } = usePendingSync()
   const { data: courseStats, isLoading: courseStatsLoading } = useCourseStats()
 
   const chartData = courseStats?.map((c) => ({
@@ -186,14 +164,6 @@ export default function DashboardPage() {
       iconClass: "text-amber-600",
       bgClass: "bg-amber-50",
     },
-    {
-      title: "Nội dung chờ đồng bộ AI",
-      value: stats?.pendingSyncContent ?? 0,
-      change: stats?.pendingSyncContentChange ?? "",
-      icon: Sparkles,
-      iconClass: "text-violet-600",
-      bgClass: "bg-violet-50",
-    },
   ]
 
   return (
@@ -205,104 +175,52 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Stats Row ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {statCards.map((s) => (
           <StatCard key={s.title} {...s} loading={statsLoading} />
         ))}
       </div>
 
-      {/* ── Middle Row: Chart + Pending Sync ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-        {/* Bar Chart */}
-        <Card className="lg:col-span-2 border-slate-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base font-bold text-slate-800">Hiệu suất khóa học</CardTitle>
-            <CardDescription>Số học viên theo từng khóa học</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {courseStatsLoading ? (
-              <div className="flex gap-3 items-end h-48">
-                {[60, 90, 45, 80, 55].map((h, i) => (
-                  <Skeleton key={i} className="flex-1 rounded" style={{ height: h }} />
-                ))}
-              </div>
-            ) : chartData.length === 0 ? (
-              <div className="h-48 flex items-center justify-center text-slate-400 text-sm">
-                Chưa có dữ liệu khóa học
-              </div>
-            ) : (
-              <ChartContainer config={courseChartConfig} className="h-52 w-full">
-                <BarChart data={chartData} barGap={4}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 11, fill: "#94a3b8" }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11, fill: "#94a3b8" }}
-                    axisLine={false}
-                    tickLine={false}
-                    width={28}
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="students" radius={[6, 6, 0, 0]} fill="hsl(221, 83%, 53%)" name="students" />
-                </BarChart>
-              </ChartContainer>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Pending Sync */}
-        <Card className="border-slate-100 shadow-sm">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold text-slate-800 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-violet-500" />
-                Chờ đồng bộ AI
-              </CardTitle>
-              {pendingSync && pendingSync.length > 0 && (
-                <Badge className="bg-violet-100 text-violet-700 border-violet-200 rounded-full px-2 py-0.5 text-xs font-bold">
-                  {pendingSync.length}
-                </Badge>
-              )}
+      {/* ── Middle Row: Chart ── */}
+      <Card className="border-slate-100 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-bold text-slate-800">Hiệu suất khóa học</CardTitle>
+          <CardDescription>Số học viên theo từng khóa học</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {courseStatsLoading ? (
+            <div className="flex gap-3 items-end h-48">
+              {[60, 90, 45, 80, 55].map((h, i) => (
+                <Skeleton key={i} className="flex-1 rounded" style={{ height: h }} />
+              ))}
             </div>
-            <CardDescription>Nội dung chưa được đồng bộ với AI</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {pendingLoading ? (
-              <div className="space-y-2 px-6 pb-4">
-                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
-              </div>
-            ) : !pendingSync || pendingSync.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center px-6">
-                <CheckCircle2 className="w-10 h-10 text-emerald-400 mb-2" />
-                <p className="text-sm font-medium text-slate-600">Tất cả đã được đồng bộ!</p>
-                <p className="text-xs text-slate-400 mt-1">Không có nội dung nào chờ xử lý.</p>
-              </div>
-            ) : (
-              <ul className="divide-y divide-slate-50">
-                {pendingSync.map((item) => (
-                  <li key={item.contentId} className="flex items-center gap-3 px-6 py-3">
-                    <div className={cn(
-                      "flex items-center justify-center w-8 h-8 rounded-lg border flex-shrink-0",
-                      contentTypeColor(item.contentType)
-                    )}>
-                      {contentTypeIcon(item.contentType)}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-slate-800 truncate">{item.contentTitle}</p>
-                      <p className="text-xs text-slate-400 truncate">{item.courseName}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          ) : chartData.length === 0 ? (
+            <div className="h-48 flex items-center justify-center text-slate-400 text-sm">
+              Chưa có dữ liệu khóa học
+            </div>
+          ) : (
+            <ChartContainer config={courseChartConfig} className="h-52 w-full">
+              <BarChart data={chartData} barGap={4}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 11, fill: "#94a3b8" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "#94a3b8" }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={28}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="students" radius={[6, 6, 0, 0]} fill="hsl(221, 83%, 53%)" name="students" />
+              </BarChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
 
       {/* ── Bottom Row: Recent Enrollments + Course Table ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

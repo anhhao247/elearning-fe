@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { Bot, X, Send, Loader2, Sparkles, BookOpen, ExternalLink } from "lucide-react"
+import { Bot, X, Send, Loader2, Sparkles, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { sendAiChatMessage, AiChatResponse } from "@/lib/services/ai.service"
 import { getCourseDetail } from "@/lib/services/course.service"
@@ -20,6 +20,21 @@ interface Message {
   ctaLabel?: string
   ctaOnClick?: () => void
   suggestedCourses?: any[]
+}
+
+interface AiErrorBody {
+  message?: string
+  error?: string
+  status?: number | string
+}
+
+interface AiErrorLike {
+  response?: {
+    status?: number
+    data?: AiErrorBody
+  }
+  data?: AiErrorBody
+  message?: string
 }
 
 interface AiChatboxProps {
@@ -173,8 +188,22 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
 
       const aiMessage = await buildAiMessage(response)
       setMessages((prev) => [...prev, aiMessage])
-    } catch {
-      toast.error("Không thể kết nối với AI. Vui lòng thử lại.")
+    } catch (error: unknown) {
+      const axiosResponse = (error as AiErrorLike)?.response
+      const errorBody = axiosResponse?.data ?? (error as AiErrorLike)?.data
+      const message = errorBody?.message || errorBody?.error || (error as AiErrorLike)?.message
+      const isRateLimit =
+        axiosResponse?.status === 429 ||
+        errorBody?.status === 429 ||
+        errorBody?.status === '429' ||
+        errorBody?.error === 'AI_RATE_LIMIT_EXCEEDED'
+
+      if (isRateLimit) {
+        toast.error(message || "Bạn đã dùng quá số lượt chat AI hôm nay.")
+      } else {
+        toast.error(message || "Không thể kết nối với AI. Vui lòng thử lại.")
+      }
+
       setMessages((prev) => prev.filter((m) => m.id !== userMessage.id))
       setInput(trimmed)
     } finally {
@@ -192,8 +221,8 @@ export function AiChatbox({ courseId, contentId, currentLessonTitle }: AiChatbox
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
 
-  // Chỉ hiển thị khi đã hydrate và user đã đăng nhập
-  if (!_hasHydrated || !user) return null
+  // Chỉ hiển thị khi đã hydrate
+  if (!_hasHydrated) return null
 
   return (
     <>

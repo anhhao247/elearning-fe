@@ -474,7 +474,7 @@ export default function AdminDashboardPage() {
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Quản lý Users", href: "/admin/users", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Học viên & Giảng viên", href: "/admin/users", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
             { label: "Giảng viên", href: "/admin/instructors", icon: GraduationCap, color: "text-violet-600", bg: "bg-violet-50" },
             { label: "Khóa học", href: "/admin/courses", icon: BookOpen, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Categories", href: "/admin/categories", icon: ClipboardList, color: "text-amber-600", bg: "bg-amber-50" },

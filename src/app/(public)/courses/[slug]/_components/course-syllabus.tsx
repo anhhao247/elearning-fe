@@ -32,6 +32,21 @@ export function CourseSyllabus({ modules, totalDuration, totalLessons, totalChap
     }
   }
 
+  const formatDuration = (seconds: number) => {
+    if (!seconds || seconds <= 0) return "0p"
+    const h = Math.floor(seconds / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = seconds % 60
+    
+    if (h > 0) {
+      return `${h}h${m > 0 ? `${m}p` : ""}`
+    }
+    if (m > 0) {
+      return `${m}p`
+    }
+    return `${s}s`
+  }
+
   const chapterCount = totalChapters ?? modules.length
   const lessonCount = totalLessons ?? modules.reduce((acc, m) => acc + (m.lessonCount || 0), 0)
 
@@ -114,7 +129,7 @@ export function CourseSyllabus({ modules, totalDuration, totalLessons, totalChap
                         </div>
                         {content.videoDuration !== null && content.videoDuration !== undefined && (
                           <span className="text-xs text-muted-foreground whitespace-nowrap shrink-0">
-                            {content.videoDuration} phút
+                            {formatDuration(content.videoDuration)}
                           </span>
                         )}
                       </div>

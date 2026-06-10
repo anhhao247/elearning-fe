@@ -123,6 +123,7 @@ export interface ContentComment {
 export interface CreateCommentPayload {
   commentContent: string
   parentId?: number | null
+  isQuestion?: boolean
 }
 
 export interface UserNote {

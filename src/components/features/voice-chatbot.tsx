@@ -23,6 +23,21 @@ interface Message {
   suggestedCourses?: any[]
 }
 
+interface AiErrorBody {
+  message?: string
+  error?: string
+  status?: number | string
+}
+
+interface AiErrorLike {
+  response?: {
+    status?: number
+    data?: AiErrorBody
+  }
+  data?: AiErrorBody
+  message?: string
+}
+
 type VideoState = "normal" | "thinking" | "answer"
 
 interface VoiceChatbotProps {
@@ -244,8 +259,22 @@ export function VoiceChatbot({ courseId, contentId, currentLessonTitle }: VoiceC
           })
         }
       }
-    } catch {
-      toast.error("Không thể kết nối với AI. Vui lòng thử lại.")
+    } catch (error: unknown) {
+      const axiosResponse = (error as AiErrorLike)?.response
+      const errorBody = axiosResponse?.data ?? (error as AiErrorLike)?.data
+      const message = errorBody?.message || errorBody?.error || (error as AiErrorLike)?.message
+      const isRateLimit =
+        axiosResponse?.status === 429 ||
+        errorBody?.status === 429 ||
+        errorBody?.status === '429' ||
+        errorBody?.error === 'AI_RATE_LIMIT_EXCEEDED'
+
+      if (isRateLimit) {
+        toast.error(message || "Bạn đã dùng quá số lượt chat AI hôm nay.")
+      } else {
+        toast.error(message || "Không thể kết nối với AI. Vui lòng thử lại.")
+      }
+
       if (isFromVoice) {
         setVideoState("normal")
         setAiReplyText("Lỗi kết nối.")
@@ -332,7 +361,7 @@ export function VoiceChatbot({ courseId, contentId, currentLessonTitle }: VoiceC
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })
 
-  if (!_hasHydrated || !user) return null
+  if (!_hasHydrated) return null
 
   return (
     <>

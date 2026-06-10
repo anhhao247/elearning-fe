@@ -17,6 +17,7 @@ import {
   Loader2,
   ShoppingCart,
   Zap,
+  Flag,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -36,6 +37,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { ReportDialog } from "@/components/features/reports/report-dialog"
 
 interface CourseSidebarProps {
   course: CourseDetail
@@ -54,9 +56,11 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
   const [appliedCoupon, setAppliedCoupon] = useState<ValidateCouponResponse | null>(null)
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState("vnpay")
+  const [isReportOpen, setIsReportOpen] = useState(false)
 
   const user = useAuthStore((state) => state.user)
   const router = useRouter()
+  const canReport = user?.role === "STUDENT" && course.isEnrolled
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return
@@ -200,10 +204,20 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
                 </Button>
               </>
             )}
+            {canReport && (
+              <Button
+                variant="outline"
+                className="w-full font-semibold h-11 border-dashed"
+                onClick={() => setIsReportOpen(true)}
+              >
+                <Flag className="w-4 h-4 mr-2" />
+                Báo cáo khóa học
+              </Button>
+            )}
           </div>
 
           {/* Social actions */}
-          <div className="flex items-center justify-evenly py-2 text-muted-foreground text-sm">
+          {/* <div className="flex items-center justify-evenly py-2 text-muted-foreground text-sm">
             <button className="flex items-center gap-1.5 hover:text-foreground transition-colors group px-3 py-1.5 rounded-lg hover:bg-muted/50">
               <Heart className="w-4 h-4 group-hover:text-rose-500 transition-colors" />
               <span>Yêu thích</span>
@@ -218,7 +232,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
               <Gift className="w-4 h-4 group-hover:text-emerald-500 transition-colors" />
               <span>Tặng</span>
             </button>
-          </div>
+          </div> */}
 
           {/* Money-back guarantee */}
           {course.hasMoneyBackGuarantee && (
@@ -230,6 +244,17 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
 
           {/* Course includes */}
           <div>
+
+          {canReport && (
+            <ReportDialog
+              open={isReportOpen}
+              onOpenChange={setIsReportOpen}
+              targetType="COURSE"
+              targetId={course.id}
+              subjectLabel="Khóa học"
+              subjectName={course.title}
+            />
+          )}
             <h3 className="font-bold text-sm mb-3 text-foreground">Khóa học này bao gồm:</h3>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
               {course.totalDuration && course.totalDuration !== "0m" && (
