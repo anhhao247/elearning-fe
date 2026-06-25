@@ -38,10 +38,6 @@ export function CourseFilters() {
     ...catIds
   ]
 
-  // We leave sort in CourseFilters for now, maybe at the very top or bottom
-  const defaultSortBy = searchParams.get("sortBy") || "createdAt"
-  const defaultSortDir = searchParams.get("sortDir") || "desc"
-
   const [keyword, setKeyword] = useState(defaultKeyword)
 
   const applyFilters = useCallback((updates: Record<string, string | null>) => {
@@ -119,35 +115,7 @@ export function CourseFilters() {
         </div>
       </form>
 
-      <Separator />
 
-      {/* Sắp xếp (Sort) */}
-      <div className="space-y-3">
-        <h4 className="font-medium text-sm">Sắp xếp theo</h4>
-        <div className="flex flex-col gap-2">
-          <Select 
-            value={`${defaultSortBy}-${defaultSortDir}`} 
-            onValueChange={(val) => {
-              const [sortBy, sortDir] = val.split("-")
-              applyFilters({ sortBy, sortDir })
-            }}
-          >
-            <SelectTrigger aria-label="Sắp xếp danh sách khóa học">
-              <SelectValue placeholder="Mới nhất" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="createdAt-desc">Mới nhất</SelectItem>
-              <SelectItem value="createdAt-asc">Cũ nhất</SelectItem>
-              <SelectItem value="price-asc">Giá (Thấp đến Cao)</SelectItem>
-              <SelectItem value="price-desc">Giá (Cao đến Thấp)</SelectItem>
-              <SelectItem value="title-asc">Tên (A-Z)</SelectItem>
-              <SelectItem value="title-desc">Tên (Z-A)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <Separator />
 
       {/* Danh mục (Categories) */}
       <div className="space-y-3">
@@ -172,7 +140,6 @@ export function CourseFilters() {
               />
               <Label htmlFor={`cat-${cat.id}`} className="flex-1 cursor-pointer font-normal flex justify-between">
                 <span>{cat.name}</span>
-                <span className="text-muted-foreground text-xs bg-muted px-1.5 py-0.5 rounded-full">{cat.count}</span>
               </Label>
             </div>
           ))}
