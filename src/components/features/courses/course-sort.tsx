@@ -22,22 +22,14 @@ export function CourseSort() {
     newParams.set("sortBy", sortBy)
     newParams.set("sortDir", sortDir)
     newParams.set("page", "0")
-    router.push(`/courses?${newParams.toString()}`, { scroll: false })
-
-    // Scroll to the course list container smoothly
-    setTimeout(() => {
-      const element = document.getElementById("course-list-container")
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" })
-      }
-    }, 100)
+    router.push(`/courses?${newParams.toString()}`)
   }, [router, searchParams])
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline">Sắp xếp theo:</span>
-      <Select 
-        value={`${defaultSortBy}-${defaultSortDir}`} 
+      <Select
+        value={`${defaultSortBy}-${defaultSortDir}`}
         onValueChange={(val) => {
           const [sortBy, sortDir] = val.split("-")
           applySort(sortBy, sortDir)
@@ -49,8 +41,8 @@ export function CourseSort() {
         <SelectContent>
           <SelectItem value="createdAt-desc">Mới nhất</SelectItem>
           <SelectItem value="createdAt-asc">Cũ nhất</SelectItem>
-          <SelectItem value="price-asc">Giá (Thấp đến Cao)</SelectItem>
-          <SelectItem value="price-desc">Giá (Cao đến Thấp)</SelectItem>
+          <SelectItem value="price-asc">Giá tăng dần</SelectItem>
+          <SelectItem value="price-desc">Giá giảm dần</SelectItem>
           <SelectItem value="title-asc">Tên (A-Z)</SelectItem>
           <SelectItem value="title-desc">Tên (Z-A)</SelectItem>
         </SelectContent>

@@ -39,7 +39,8 @@ export default async function CoursesPage({ searchParams }: PageProps) {
   return (
     <>
       {/* Hero Banner Section */}
-      <div className="relative bg-gradient-to-r from-slate-950 via-[#0a0f24] to-slate-950 py-16 md:py-24 text-white overflow-hidden border-b border-indigo-950/60">
+      <div className="relative bg-gradient-to-r from-slate-950 via-[#0a0f24] to-slate-950 py-16 md:py-24 text-white overflow-hidden border-b border-indigo-950/60 h-screen">
+
         {/* Grid pattern background */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-25" />
 
@@ -112,7 +113,7 @@ export default async function CoursesPage({ searchParams }: PageProps) {
         </div>
       </div>
 
-      <div id="course-list-container" className="page-container section-spacing scroll-mt-24">
+      <div className="page-container section-spacing">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Filter Trigger */}
           <div className="lg:hidden flex justify-between items-center bg-card p-4 rounded-lg border">
@@ -157,7 +158,7 @@ async function CourseList({ params }: { params: string }) {
   // Chuyển URLSearchParams string thành object hỗ trợ multi-value
   const searchParams = new URLSearchParams(params)
   const paramObj: Record<string, string | string[]> = {}
-  
+
   searchParams.forEach((value, key) => {
     if (paramObj[key]) {
       if (Array.isArray(paramObj[key])) {
@@ -169,7 +170,7 @@ async function CourseList({ params }: { params: string }) {
       paramObj[key] = value
     }
   })
-  
+
   let data
   try {
     data = await getCourses(paramObj)
