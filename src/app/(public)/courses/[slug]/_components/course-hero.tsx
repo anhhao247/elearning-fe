@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star, Clock, Users, BookOpen, ChevronLeft, Globe, CalendarDays } from "lucide-react"
 import Link from "next/link"
+import { useState, useEffect, useRef } from "react"
 
 interface CourseHeroProps {
   course: CourseDetail
@@ -18,6 +19,17 @@ const LEVEL_CONFIG: Record<string, { label: string; className: string }> = {
 
 export function CourseHero({ course }: CourseHeroProps) {
   const levelConfig = LEVEL_CONFIG[course.level] || { label: course.level, className: "bg-muted text-muted-foreground border-border" }
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [shouldShowButton, setShouldShowButton] = useState(false)
+  const descriptionRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (descriptionRef.current) {
+      if (descriptionRef.current.scrollHeight > 100) {
+        setShouldShowButton(true)
+      }
+    }
+  }, [course.description])
 
   return (
     <div className="bg-[#1c1d1f] dark:bg-zinc-900 text-white">
@@ -51,10 +63,28 @@ export function CourseHero({ course }: CourseHeroProps) {
 
             {/* Description */}
             {course.description && (
-              <div
-                className="text-body text-zinc-300 max-w-none prose prose-invert prose-sm break-words text-left"
-                dangerouslySetInnerHTML={{ __html: course.description }}
-              />
+              <div className="space-y-2">
+                <div className="relative">
+                  <div
+                    ref={descriptionRef}
+                    className={`text-body text-zinc-300 max-w-none prose prose-invert prose-sm break-words text-left transition-all duration-300 ${
+                      !isExpanded && shouldShowButton ? "max-h-[100px] overflow-hidden" : ""
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: course.description }}
+                  />
+                  {!isExpanded && shouldShowButton && (
+                    <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#1c1d1f] dark:from-zinc-900 to-transparent pointer-events-none" />
+                  )}
+                </div>
+                {shouldShowButton && (
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors focus:outline-none"
+                  >
+                    {isExpanded ? "Thu gọn" : "Xem thêm"}
+                  </button>
+                )}
+              </div>
             )}
 
             {/* Stats row */}

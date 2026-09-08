@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { GSAPScrollTrigger } from "@/components/features/gsap-scroll-trigger";
 
 export const metadata = {
   title: "Về chúng tôi | Learnly",
@@ -57,6 +58,7 @@ const team = [
 export default function AboutPage() {
   return (
     <div className="flex flex-col gap-16 pb-16">
+      <GSAPScrollTrigger />
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-muted/30 py-20 px-4">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_45%_at_50%_50%,var(--primary-foreground)_0%,transparent_100%)] opacity-20" />
@@ -84,7 +86,7 @@ export default function AboutPage() {
       {/* Mission & Vision */}
       <section className="page-container">
         <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="space-y-6">
+          <div className="space-y-6 gsap-slide-right">
             <h2 className="text-3xl font-bold">Sứ mệnh của chúng tôi</h2>
             <p className="text-lg text-muted-foreground">
               Learnly ra đời với mục tiêu xóa bỏ rào cản về chi phí và địa lý trong giáo dục. Chúng tôi tin rằng bất kỳ ai cũng xứng đáng được học tập từ những chuyên gia hàng đầu thế giới.
@@ -103,7 +105,7 @@ export default function AboutPage() {
               ))}
             </ul>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 gsap-slide-left">
             <div className="space-y-4 pt-8">
               <Card className="bg-primary/5 border-primary/10 transition-all hover:shadow-md hover:-translate-y-1">
                 <CardHeader className="pb-2">
@@ -149,7 +151,7 @@ export default function AboutPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-primary py-16 text-primary-foreground">
+      <section className="bg-primary py-16 text-primary-foreground gsap-fade-up">
         <div className="page-container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, i) => (
@@ -203,7 +205,7 @@ export default function AboutPage() {
       </section> */}
 
       {/* CTA Section */}
-      <section className="page-container mb-8">
+      <section className="page-container mb-8 gsap-fade-up">
         <Card className="bg-muted border-none p-8 md:p-12 text-center overflow-hidden relative">
           <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 bg-primary/10 rounded-full blur-3xl" />

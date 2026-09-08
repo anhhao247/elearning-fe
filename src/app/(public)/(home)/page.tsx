@@ -6,6 +6,7 @@ import { BookOpen, Users, Video, Award, Code, Briefcase, Layout, MonitorPlay, St
 import { getCourses } from "@/lib/services/course.service";
 import { CourseCard } from "@/components/features/courses/course-card";
 import { Course } from "@/types/course";
+import { GSAPScrollTrigger } from "@/components/features/gsap-scroll-trigger";
 
 export default async function Home() {
   let popularCourses: Course[] = [];
@@ -20,12 +21,14 @@ export default async function Home() {
 
   return (
     <>
+      <GSAPScrollTrigger />
+
       {/* ── Hero Section ── */}
       <section className="relative overflow-hidden bg-background">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-0" />
         <div className="page-container relative z-10 pt-20 pb-24 lg:pt-32 lg:pb-36 flex flex-col lg:flex-row items-center gap-12">
           {/* Left: text */}
-          <div className="flex-1 text-center lg:text-left space-y-8">
+          <div className="flex-1 text-center lg:text-left space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
             <Badge variant="outline" className="px-4 py-1.5 text-sm font-semibold border-primary/20 bg-primary/5 text-primary">
               🌟 Nền tảng học tập hàng đầu 2026
             </Badge>
@@ -66,7 +69,7 @@ export default async function Home() {
           </div>
 
           {/* Right: hero image */}
-          <div className="flex-1 w-full relative">
+          <div className="flex-1 w-full relative animate-in fade-in slide-in-from-right-5 duration-700">
             <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-2xl border border-border/50">
               <Image
                 src="/hero-bg.png"
@@ -93,7 +96,7 @@ export default async function Home() {
       </section>
 
       {/* ── Stats Bar ── */}
-      <section className="border-y border-border/50 bg-card py-10">
+      <section className="border-y border-border/50 bg-card py-10 gsap-fade-up">
         <div className="page-container grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-border/50 text-center">
           {[
             { value: "50+", label: "Khóa học" },
@@ -112,7 +115,7 @@ export default async function Home() {
       {/* ── Popular Categories ── */}
       <section className="py-20">
         <div className="page-container">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 gsap-fade-up">
             <div>
               {/* Section title theo design system */}
               <h2 className="text-2xl font-semibold tracking-tight">Danh mục nổi bật</h2>
@@ -134,7 +137,7 @@ export default async function Home() {
               { icon: Layout,      title: "Thiết kế UI/UX",   count: "85+ khóa học",  color: "text-pink-500",    bg: "bg-pink-500/10" },
               { icon: MonitorPlay, title: "Marketing",         count: "90+ khóa học",  color: "text-emerald-500", bg: "bg-emerald-500/10" },
             ].map((cat, i) => (
-              <Link key={i} href="/courses">
+              <Link key={i} href="/courses" className="gsap-fade-up">
                 {/* card-base: rounded-xl border bg-background shadow-sm hover:shadow-md */}
                 <div className="card-base p-6 flex flex-col items-center text-center gap-4 group cursor-pointer hover:-translate-y-0.5 transition-transform duration-200">
                   <div className={`p-4 rounded-full ${cat.bg} ${cat.color} group-hover:scale-110 transition-transform duration-300`}>
@@ -154,7 +157,7 @@ export default async function Home() {
       {/* ── Popular Courses ── */}
       <section className="bg-muted/30 border-y border-border/50 py-20">
         <div className="page-container">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 gsap-fade-up">
             <div>
               <h2 className="text-2xl font-semibold tracking-tight">Khóa học được yêu thích</h2>
               <p className="mt-3 text-body max-w-2xl">
@@ -171,12 +174,14 @@ export default async function Home() {
           {popularCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {popularCourses.map((course) => (
-                <CourseCard key={course.id} course={course} />
+                <div key={course.id} className="gsap-fade-up">
+                  <CourseCard course={course} />
+                </div>
               ))}
             </div>
           ) : (
             /* Empty state */
-            <div className="text-center py-16 rounded-xl border bg-background">
+            <div className="text-center py-16 rounded-xl border bg-background gsap-fade-up">
               <BookOpen className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
               <p className="text-body">Hiện chưa có khóa học nào, vui lòng quay lại sau.</p>
             </div>
@@ -187,7 +192,7 @@ export default async function Home() {
       {/* ── Why Choose Us ── */}
       <section className="py-20">
         <div className="page-container">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 gsap-fade-up">
             <Badge variant="secondary" className="mb-4">Tại sao chọn Learnly?</Badge>
             <h2 className="text-2xl font-semibold tracking-tight">Học tập hiệu quả với phương pháp hiện đại</h2>
             <p className="mt-4 text-body max-w-2xl mx-auto">
@@ -213,7 +218,7 @@ export default async function Home() {
               }
             ].map((feature, i) => (
               /* card-base + hover lift */
-              <div key={i} className="card-base p-8 flex flex-col relative overflow-hidden group hover:-translate-y-1 transition-all duration-300">
+              <div key={i} className="card-base p-8 flex flex-col relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 gsap-fade-up">
                 <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500">
                   <feature.icon className="w-32 h-32 text-primary" />
                 </div>
@@ -229,7 +234,7 @@ export default async function Home() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="page-container pb-24 pt-10">
+      <section className="page-container pb-24 pt-10 gsap-fade-up">
         <div className="bg-primary rounded-3xl p-8 md:p-16 text-center text-primary-foreground relative overflow-hidden shadow-2xl">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-foreground/10 rounded-full blur-3xl" />

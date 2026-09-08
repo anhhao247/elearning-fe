@@ -48,7 +48,7 @@ export default function CourseDetailPage() {
 
       {/* Main content + sidebar */}
       <div className="page-container pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 relative items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 relative">
 
           {/* Main column: 8/12 */}
           <div className="lg:col-span-8 min-w-0 space-y-6 pt-8">
@@ -76,7 +76,7 @@ export default function CourseDetailPage() {
           </div>
 
           {/* Sidebar: 4/12 — float up to overlap the dark hero */}
-          <aside className="lg:col-span-4 relative mt-0 lg:mt-[-280px]">
+          <aside className="lg:col-span-4 relative mt-0 lg:mt-[-440px] z-10">
             <CourseSidebar course={course} />
           </aside>
         </div>
