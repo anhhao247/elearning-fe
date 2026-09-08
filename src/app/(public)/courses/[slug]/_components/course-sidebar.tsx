@@ -130,7 +130,7 @@ export function CourseSidebar({ course }: CourseSidebarProps) {
 
   return (
     <>
-      <div className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border/50 sticky top-6 z-10">
+      <div className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border/50 lg:sticky lg:top-24 z-10">
         {/* Thumbnail */}
         {course.thumbnail ? (
           <div className="relative aspect-video w-full overflow-hidden bg-muted">
